@@ -1,5 +1,50 @@
-<div class="content">
-
+<main>
     <!-- Map container -->
     <div id="map"></div>
-</div>
+
+    <div class="content-form">
+        <mat-card>
+            <div class="card-overlay" *ngIf="false">
+                <mat-spinner strokeWidth="2" diameter="50"></mat-spinner>
+            </div>
+
+            <form [formGroup]="formFiltro">
+                <h1 class="title">Calcular ponto de interesse</h1>
+                <p>Para visualizar informações específicas utilize os filtros abaixo:</p>
+                <p class="subtitle">Vamos começar!</p>
+
+                <section class="fields">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Ponto de interesse</mat-label>
+                        <input type="text" placeholder="Ponto de interesse" aria-label="Ponto de interesse" matInput
+                            name="from" formControlName="pontoInteresse" [matAutocomplete]="autoPoi">
+                        <mat-autocomplete #autoPoi="matAutocomplete">
+                            <mat-option *ngFor="let municipio of filteredOptionsPoi | async"
+                                [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                                {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Placa</mat-label>
+                        <input type="text" placeholder="Placa" aria-label="Placa" matInput name="to"
+                            formControlName="placa" [matAutocomplete]="autoPlaca">
+                        <mat-autocomplete #autoPlaca="matAutocomplete">
+                            <mat-option *ngFor="let municipio of filteredOptionsPlaca | async"
+                                [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                                {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+
+                </section>
+
+                <div class="buttons">
+                    <button mat-flat-button color="primary">Próximo</button>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</main>
