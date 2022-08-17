@@ -39,4 +39,8 @@ export class HomeComponent implements OnInit {
             dataLeitura: [null],
         });
     }
+
+    public redefinirFiltros() {
+        this.formFiltro.reset();
+    }
 }

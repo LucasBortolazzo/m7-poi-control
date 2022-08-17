@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -13,7 +13,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HttpClientModule } from '@angular/common/http';
+import {
+    MatNativeDateModule,
+    MAT_DATE_FORMATS,
+    MAT_DATE_LOCALE,
+} from '@angular/material/core';
 
 @NgModule({
     declarations: [],
@@ -34,6 +40,12 @@ import { HttpClientModule } from '@angular/common/http';
         MatAutocompleteModule,
         MatSelectModule,
         MatSnackBarModule,
+        MatNativeDateModule,
+        MatDatepickerModule,
+    ],
+    providers: [
+        MatDatepickerModule,
+        { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
     ],
 })
 export class SharedModule {}

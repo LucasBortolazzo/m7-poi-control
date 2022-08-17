@@ -2,16 +2,16 @@
 @import '../../../styles/02-tools/tools-dir';
 
 #map {
-  height: 600px;
+  height: 60rem;
   background-color: #ccc;
 }
 
 .content-form {
-  width: 40rem;
+  width: 35rem;
   max-height: 60rem;
   position: absolute;
   overflow: hidden;
-  top: 70px;
+  top: 7.8rem;
   right: 7rem;
   padding: 0;
   @include flex(row, center, center);
@@ -20,18 +20,44 @@
   background-color: $gray-600;
 
   form {
-    .title,
-    .subtitle {
-      text-align: center;
-      font-weight: bold;
+    .form-title {
+      .title {
+        text-align: center;
+        font-weight: bold;
+        font-style: italic;
+        text-align: center;
+        color: $brand-blue-light;
+      }
+
+      .subtitle {
+        font-size: 1.5rem;
+
+        span {
+          &:last-child {
+            font-weight: bold;
+            font-style: italic;
+          }
+        }
+      }
+
+      .info {
+        text-align: center;
+        font-weight: bold;
+      }
     }
 
     .fields {
-      // @include flex(column, center, center);
+      @include flex(column, center, center);
+      margin-bottom: 1rem;
 
       .mat-form-field {
         width: 100%;
       }
+    }
+
+    .buttons {
+      @include flex(center, flex-start, flex-end);
+      gap: 1rem;
     }
   }
 }

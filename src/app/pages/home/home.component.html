@@ -9,12 +9,19 @@
             </div>
 
             <form [formGroup]="formFiltro">
-                <h1 class="title">Calcular ponto de interesse</h1>
-                <p>Para visualizar informações específicas utilize os filtros abaixo:</p>
-                <p class="subtitle">Vamos começar!</p>
+
+                <!-- Título -->
+                <div class="form-title">
+                    <h1 class="title">Point of interest control</h1>
+                    <p class="subtitle">Olá <span class="icon">👋</span>. Seja bem vindo ao <span>Poi Control.</span>
+                        Para visualizar informações específicas utilize os filtros abaixo.</p>
+                    <p class="info">Vamos começar😀:</p>
+                </div>
 
                 <section class="fields">
-                    <mat-form-field appearance="fill">
+
+                    <!-- Ponto de interesse -->
+                    <mat-form-field appearance="outline">
                         <mat-label>Ponto de interesse</mat-label>
                         <input type="text" placeholder="Ponto de interesse" aria-label="Ponto de interesse" matInput
                             name="from" formControlName="pontoInteresse" [matAutocomplete]="autoPoi">
@@ -26,10 +33,10 @@
                         </mat-autocomplete>
                     </mat-form-field>
 
-
-                    <mat-form-field appearance="fill">
+                    <!-- Placa -->
+                    <mat-form-field appearance="outline">
                         <mat-label>Placa</mat-label>
-                        <input type="text" placeholder="Placa" aria-label="Placa" matInput name="to"
+                        <input type="text" placeholder="Placa" aria-label="Placa" matInput name="placa"
                             formControlName="placa" [matAutocomplete]="autoPlaca">
                         <mat-autocomplete #autoPlaca="matAutocomplete">
                             <mat-option *ngFor="let municipio of filteredOptionsPlaca | async"
@@ -39,10 +46,22 @@
                         </mat-autocomplete>
                     </mat-form-field>
 
+                    <!-- Data leitura -->
+                    <mat-form-field appearance="outline">
+                        <mat-label>Data da leitura</mat-label>
+                        <input matInput [matDatepicker]="picker" placeholder="Data da leitura"
+                            aria-label="Data da leitura" formControlName="dataLeitura">
+                        <mat-hint>DD/MM/YYYY</mat-hint>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
                 </section>
 
+                <!-- Botões de ação -->
                 <div class="buttons">
-                    <button mat-flat-button color="primary">Próximo</button>
+                    <button mat-flat-button color="accent" (click)="redefinirFiltros()">Redefinir filtros</button>
+                    <button mat-flat-button color="primary">Calcular</button>
                 </div>
             </form>
         </mat-card>
