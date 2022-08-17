@@ -4,66 +4,68 @@
 
     <div class="content-form">
         <mat-card>
-            <div class="card-overlay" *ngIf="false">
-                <mat-spinner strokeWidth="2" diameter="50"></mat-spinner>
-            </div>
-
-            <form [formGroup]="formFiltro">
-
-                <!-- Título -->
-                <div class="form-title">
-                    <h1 class="title">Point of interest control</h1>
-                    <p class="subtitle">Olá <span class="icon">👋</span>. Seja bem vindo ao <span>Poi Control.</span>
-                        Para visualizar informações específicas utilize os filtros abaixo.</p>
-                    <p class="info">Vamos começar😀:</p>
+            <mat-card-header>
+                <mat-card-title> Point of interest control </mat-card-title>
+                <mat-card-subtitle>
+                    <p>Olá <span class="icon">👋</span>. Seja bem vindo ao <span>Poi Control.</span>
+                        Para visualizar informações específicas utilize os filtros abaixo:</p>
+                </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="card-overlay" *ngIf="false">
+                    <mat-spinner strokeWidth="2" diameter="50"></mat-spinner>
                 </div>
 
-                <section class="fields">
+                <form [formGroup]="formFiltro">
 
-                    <!-- Ponto de interesse -->
-                    <mat-form-field appearance="outline">
-                        <mat-label>Ponto de interesse</mat-label>
-                        <input type="text" placeholder="Ponto de interesse" aria-label="Ponto de interesse" matInput
-                            name="from" formControlName="pontoInteresse" [matAutocomplete]="autoPoi">
-                        <mat-autocomplete #autoPoi="matAutocomplete">
-                            <mat-option *ngFor="let municipio of filteredOptionsPoi | async"
-                                [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
-                                {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
+                    <section class="fields">
 
-                    <!-- Placa -->
-                    <mat-form-field appearance="outline">
-                        <mat-label>Placa</mat-label>
-                        <input type="text" placeholder="Placa" aria-label="Placa" matInput name="placa"
-                            formControlName="placa" [matAutocomplete]="autoPlaca">
-                        <mat-autocomplete #autoPlaca="matAutocomplete">
-                            <mat-option *ngFor="let municipio of filteredOptionsPlaca | async"
-                                [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
-                                {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
+                        <!-- Ponto de interesse -->
+                        <mat-form-field appearance="outline">
+                            <mat-label>Ponto de interesse</mat-label>
+                            <input type="text" placeholder="Ponto de interesse" aria-label="Ponto de interesse" matInput
+                                name="from" formControlName="pontoInteresse" [matAutocomplete]="autoPoi">
+                            <mat-autocomplete #autoPoi="matAutocomplete">
+                                <mat-option *ngFor="let municipio of filteredOptionsPoi | async"
+                                    [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                                    {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
 
-                    <!-- Data leitura -->
-                    <mat-form-field appearance="outline">
-                        <mat-label>Data da leitura</mat-label>
-                        <input matInput [matDatepicker]="picker" placeholder="Data da leitura"
-                            aria-label="Data da leitura" formControlName="dataLeitura">
-                        <mat-hint>DD/MM/YYYY</mat-hint>
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field>
+                        <!-- Placa -->
+                        <mat-form-field appearance="outline">
+                            <mat-label>Placa</mat-label>
+                            <input type="text" placeholder="Placa" aria-label="Placa" matInput name="placa"
+                                formControlName="placa" [matAutocomplete]="autoPlaca">
+                            <mat-autocomplete #autoPlaca="matAutocomplete">
+                                <mat-option *ngFor="let municipio of filteredOptionsPlaca | async"
+                                    [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                                    {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
 
-                </section>
+                        <!-- Data leitura -->
+                        <mat-form-field appearance="outline">
+                            <mat-label>Data da leitura</mat-label>
+                            <input matInput [matDatepicker]="picker" placeholder="Data da leitura"
+                                aria-label="Data da leitura" formControlName="dataLeitura">
+                            <mat-hint>DD/MM/YYYY</mat-hint>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
 
-                <!-- Botões de ação -->
-                <div class="buttons">
-                    <button mat-flat-button color="accent" (click)="redefinirFiltros()">Redefinir filtros</button>
-                    <button mat-flat-button color="primary">Calcular</button>
-                </div>
-            </form>
+                    </section>
+
+                    <!-- Botões de ação -->
+                    <div class="buttons">
+                        <button mat-button color="primary" (click)="redefinirFiltros()">Redefinir
+                            filtros</button>
+                        <button mat-flat-button color="primary">Visualizar</button>
+                    </div>
+                </form>
+            </mat-card-content>
         </mat-card>
     </div>
 </main>

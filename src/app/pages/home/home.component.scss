@@ -19,33 +19,34 @@
   border-radius: 6px;
   background-color: $gray-600;
 
-  form {
-    .form-title {
-      .title {
-        text-align: center;
-        font-weight: bold;
-        font-style: italic;
-        text-align: center;
-        color: $brand-blue-light;
-      }
+  mat-card {
+    .mat-card-title {
+      text-align: center;
+      font-weight: bold;
+      font-style: italic;
+      text-align: center;
+      color: $brand-blue-light;
+      margin-bottom: 2rem;
+    }
 
-      .subtitle {
-        font-size: 1.5rem;
+    .mat-card-subtitle {
+      font-size: 1.5rem;
 
-        span {
-          &:last-child {
-            font-weight: bold;
-            font-style: italic;
-          }
+      span {
+        &:last-child {
+          font-weight: bold;
+          font-style: italic;
         }
-      }
-
-      .info {
-        text-align: center;
-        font-weight: bold;
       }
     }
 
+    .info {
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+
+  form {
     .fields {
       @include flex(column, center, center);
       margin-bottom: 1rem;
@@ -56,8 +57,7 @@
     }
 
     .buttons {
-      @include flex(center, flex-start, flex-end);
-      gap: 1rem;
+      @include flex(center, flex-start, space-between);
     }
   }
 }

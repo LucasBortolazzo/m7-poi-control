@@ -15,6 +15,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HttpClientModule } from '@angular/common/http';
+import { MatExpansionModule } from '@angular/material/expansion';
+
 import {
     MatNativeDateModule,
     MAT_DATE_FORMATS,
@@ -42,6 +44,7 @@ import {
         MatSnackBarModule,
         MatNativeDateModule,
         MatDatepickerModule,
+        MatExpansionModule,
     ],
     providers: [
         MatDatepickerModule,
