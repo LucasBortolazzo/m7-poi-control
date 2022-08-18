@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     lat: selectedPoi.latitude,
                     lng: selectedPoi.longitude,
                 };
-                this._gMapService.map.setCenter(center);
+                this._gMapService.setMapcenter(center);
                 this._gMapService.createCircle(selectedPoi.raio);
             },
         });
