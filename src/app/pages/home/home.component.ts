@@ -16,6 +16,7 @@ import {
 
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
+import { GMapService } from './services/gmap.service';
 
 import { PoiService } from './services/poi.service';
 
@@ -28,6 +29,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _subscription: Subscription = new Subscription();
     private _map: google.maps.Map;
 
+    private _circle: google.maps.Circle;
+
     public formFiltro: FormGroup;
 
     public loading = false;
@@ -38,6 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     constructor(
         private _fb: FormBuilder,
         private _snackBar: MatSnackBar,
+        private _gMapService: GMapService,
         private _poiService: PoiService
     ) {}
 
@@ -49,14 +53,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private _initializeMap() {
-        let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
-
-        this._map = new google.maps.Map(
-            document.querySelector('#map') as HTMLElement,
-            {
-                center: startPoint,
-                zoom: 15,
-            }
+        this._gMapService._initializeMap(
+            document.querySelector('#map') as HTMLElement
         );
     }
 
@@ -68,7 +66,18 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
-    private _implementEvents() {}
+    private _implementEvents() {
+        this.formFiltro.get('poi').valueChanges.subscribe({
+            next: (selectedPoi: Poi) => {
+                const center = {
+                    lat: selectedPoi.latitude,
+                    lng: selectedPoi.longitude,
+                };
+                this._gMapService.map.setCenter(center);
+                this._gMapService.createCircle(selectedPoi.raio);
+            },
+        });
+    }
 
     private _carregarDados() {
         this.loading = true;
@@ -82,7 +91,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.pois = pois;
                     },
                     error: e => {
-                        console.log(e);
                         this.exibirMensagemErro(e);
                     },
                 })
