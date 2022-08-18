@@ -14,33 +14,26 @@
             <mat-card-content>
 
                 <form [formGroup]="formFiltro">
-
                     <section class="fields">
 
                         <!-- Ponto de interesse -->
                         <mat-form-field appearance="outline">
                             <mat-label>Ponto de interesse</mat-label>
-                            <input type="text" placeholder="Ponto de interesse" aria-label="Ponto de interesse" matInput
-                                name="from" formControlName="poi" [matAutocomplete]="autoPoi">
-                            <mat-autocomplete #autoPoi="matAutocomplete">
-                                <mat-option *ngFor="let municipio of filteredOptionsPoi | async"
-                                    [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
-                                    {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
+                            <mat-select formControlName="poi" name="poi">
+                                <mat-option *ngFor="let poi of pois" [value]="poi">
+                                    {{poi.id}} - {{ poi.nome }}
                                 </mat-option>
-                            </mat-autocomplete>
+                            </mat-select>
                         </mat-form-field>
 
                         <!-- Placa -->
                         <mat-form-field appearance="outline">
                             <mat-label>Placa</mat-label>
-                            <input type="text" placeholder="Placa" aria-label="Placa" matInput name="placa"
-                                formControlName="placa" [matAutocomplete]="autoPlaca">
-                            <mat-autocomplete #autoPlaca="matAutocomplete">
-                                <mat-option *ngFor="let municipio of filteredOptionsPlaca | async"
-                                    [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
-                                    {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
+                            <mat-select formControlName="placa" name="placa">
+                                <mat-option *ngFor="let placa of placas" [value]="placa">
+                                    {{ placa }}
                                 </mat-option>
-                            </mat-autocomplete>
+                            </mat-select>
                         </mat-form-field>
 
                         <!-- Data leitura -->

@@ -28,15 +28,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _subscription: Subscription = new Subscription();
     private _map: google.maps.Map;
 
-    private _pois: Poi[] = [];
-    private _placas: string[] = [];
-    private _leituraPosicao: LeituraPosicao[] = [];
-
     public formFiltro: FormGroup;
 
     public loading = false;
-    public filteredOptionsPoi: Observable<any[]>;
-    public filteredOptionsPlaca: Observable<any[]>;
+    public pois: Poi[] = [];
+    public placas: string[] = [];
+    public leituraPosicao: LeituraPosicao[] = [];
 
     constructor(
         private _fb: FormBuilder,
@@ -71,37 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
-    private _implementEvents() {
-        this.filteredOptionsPoi = this.formFiltro.get('poi').valueChanges.pipe(
-            startWith(''),
-            debounceTime(500),
-            filter(value => value.length >= 3),
-            map(value => this._filterPoi(value))
-        );
-
-        this.filteredOptionsPlaca = this.formFiltro
-            .get('placa')
-            .valueChanges.pipe(
-                startWith(''),
-                debounceTime(500),
-                filter(value => value.length >= 3),
-                map(value => this._filterPlaca(value))
-            );
-    }
-
-    private _filterPoi(value: string): Poi[] {
-        const filterValue = value ? value.toLowerCase() : '';
-        return this._pois.filter(poi =>
-            poi.nome.trim().toLowerCase().includes(filterValue)
-        );
-    }
-
-    private _filterPlaca(value: string): string[] {
-        const filterValue = value ? value.toLowerCase() : '';
-        return this._placas.filter(placa =>
-            placa.trim().toLowerCase().includes(filterValue)
-        );
-    }
+    private _implementEvents() {}
 
     private _carregarDados() {
         this.loading = true;
@@ -112,7 +79,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 .pipe(retry(3))
                 .subscribe({
                     next: (pois: Poi[]) => {
-                        this._pois = pois;
+                        this.pois = pois;
                     },
                     error: e => {
                         console.log(e);
@@ -127,7 +94,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 .pipe(retry(3))
                 .subscribe({
                     next: (placas: string[]) => {
-                        this._placas = placas;
+                        this.placas = placas;
                     },
                     error: e => {
                         this.exibirMensagemErro(e);
@@ -146,7 +113,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 )
                 .subscribe({
                     next: (leituraPosicao: LeituraPosicao[]) => {
-                        this._leituraPosicao = leituraPosicao;
+                        this.leituraPosicao = leituraPosicao;
                     },
                     error: e => {
                         this.exibirMensagemErro(e);

@@ -45,6 +45,7 @@ import {
         MatNativeDateModule,
         MatDatepickerModule,
         MatExpansionModule,
+        MatSelectModule,
     ],
     providers: [
         MatDatepickerModule,
