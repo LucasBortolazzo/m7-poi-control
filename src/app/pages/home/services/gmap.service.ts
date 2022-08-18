@@ -1,19 +1,13 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class GMapService {
     private _map: google.maps.Map;
     private _circle: google.maps.Circle;
 
+    private _onChangeMapCenterEvent = new EventEmitter<void>();
+
     constructor() {}
-
-    public get map() {
-        return this._map;
-    }
-
-    public set map(map: google.maps.Map) {
-        this._map = map;
-    }
 
     public _initializeMap(mapContainer: HTMLElement) {
         let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
@@ -22,18 +16,35 @@ export class GMapService {
             center: startPoint,
             zoom: 16,
         });
+
+        this._implementEvents();
+    }
+
+    private _implementEvents() {
+        this._onChangeMapCenterEvent.subscribe(() => {
+            this.destroyAllOverlayMap();
+        });
+    }
+
+    public get map(): google.maps.Map {
+        return this._map;
+    }
+
+    public set map(map: google.maps.Map) {
+        this._map = map;
+    }
+
+    public setMapcenter(
+        center: google.maps.LatLng | google.maps.LatLngLiteral
+    ) {
+        this.map.setCenter(center);
+        this._onChangeMapCenterEvent.next();
     }
 
     public createCircle(
         radius?: number,
         center?: google.maps.LatLng | google.maps.LatLngLiteral
     ) {
-        if (!this.map) {
-            return;
-        }
-
-        this._circle?.setMap(null);
-
         this._circle = new google.maps.Circle({
             strokeColor: 'transparent',
             strokeOpacity: 0.8,
@@ -45,5 +56,9 @@ export class GMapService {
         });
 
         this._circle.setMap(this.map);
+    }
+
+    public destroyAllOverlayMap() {
+        this._circle.setMap(null);
     }
 }
