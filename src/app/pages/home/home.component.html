@@ -41,7 +41,6 @@
                             <mat-label>Data da leitura</mat-label>
                             <input matInput [matDatepicker]="picker" placeholder="Data da leitura"
                                 aria-label="Data da leitura" formControlName="dataLeitura">
-                            <mat-hint>DD/MM/YYYY</mat-hint>
                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
@@ -52,7 +51,7 @@
                     <div class="buttons">
                         <button mat-button color="primary" (click)="redefinirFiltros()">Redefinir
                             filtros</button>
-                        <button mat-flat-button color="primary">Visualizar</button>
+                        <button mat-flat-button color="primary" (click)="visualizarPois()">Visualizar</button>
                     </div>
                 </form>
             </mat-card-content>

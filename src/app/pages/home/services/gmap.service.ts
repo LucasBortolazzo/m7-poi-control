@@ -61,7 +61,7 @@ export class GMapService {
         this._overlaysArray.push(this._circle);
     }
 
-    public deleteOverlays() {
+    private deleteOverlays() {
         if (this._overlaysArray) {
             for (let i in this._overlaysArray) {
                 this._overlaysArray[i].setMap(null);

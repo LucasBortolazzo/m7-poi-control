@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
+import { FilterForm } from '../model/filtro-form';
 import { LeituraPosicao } from '../model/leitura-posicao';
 
 import { Poi } from '../model/poi';
@@ -17,22 +18,26 @@ export class PoiService {
     }
 
     public getPlacas(): Observable<string[]> {
-        const url = `${environment.api}/placas`;
+        const url = `${environment.api}/posicao/placas`;
         return this.http.get<any>(url);
     }
 
-    public getLeituraPosicao(): Observable<LeituraPosicao[]> {
-        const url = `${environment.api}/posicao`;
-        return this.http.get<any>(url);
-    }
-
-    public getLeituraPosicaoByPlaca(
-        placa: string
+    public getLeituraPosicao(
+        filtro?: FilterForm
     ): Observable<LeituraPosicao[]> {
         const url = `${environment.api}/posicao`;
-
         let params = new HttpParams();
-        params = params.append('placa', placa);
+
+        if (filtro) {
+            if (filtro.placa) {
+                params = params.append('placa', filtro.placa);
+            }
+
+            if (filtro.dataLeitura) {
+                const dataEncoded = encodeURI(filtro.dataLeitura.toString());
+                params = params.append('data', dataEncoded);
+            }
+        }
 
         return this.http.get<any>(url, { params: params });
     }

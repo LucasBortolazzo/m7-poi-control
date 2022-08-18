@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -13,6 +14,7 @@ import {
     startWith,
     Subscription,
 } from 'rxjs';
+import { FilterForm } from './model/filtro-form';
 
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
@@ -79,6 +81,48 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
+    private get _filtroForm(): FilterForm {
+        return null;
+        const poi = this.formFiltro.get('poi').value;
+        const placa = this.formFiltro.get('placa').value;
+        let dataLeitura = this.formFiltro.get('dataLeitura').value;
+
+        dataLeitura = dataLeitura
+            ? formatDate(dataLeitura, 'MM/dd/yyyy', 'pt-br')
+            : dataLeitura;
+
+        const objFiltro: FilterForm = {
+            poi: poi,
+            placa: placa,
+            dataLeitura: dataLeitura,
+        };
+
+        return objFiltro;
+    }
+
+    private _carregarLeituraPosicao() {
+        this.loading = true;
+
+        this._subscription.add(
+            this._poiService
+                .getLeituraPosicao(this._filtroForm)
+                .pipe(
+                    retry(3),
+                    finalize(() => {
+                        this.loading = false;
+                    })
+                )
+                .subscribe({
+                    next: (leituraPosicao: LeituraPosicao[]) => {
+                        this.leituraPosicao = leituraPosicao;
+                    },
+                    error: e => {
+                        this.exibirMensagemErro(e);
+                    },
+                })
+        );
+    }
+
     private _carregarDados() {
         this.loading = true;
 
@@ -110,24 +154,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 })
         );
 
-        this._subscription.add(
-            this._poiService
-                .getLeituraPosicao()
-                .pipe(
-                    retry(3),
-                    finalize(() => {
-                        this.loading = false;
-                    })
-                )
-                .subscribe({
-                    next: (leituraPosicao: LeituraPosicao[]) => {
-                        this.leituraPosicao = leituraPosicao;
-                    },
-                    error: e => {
-                        this.exibirMensagemErro(e);
-                    },
-                })
-        );
+        this._carregarLeituraPosicao();
     }
 
     private _exibirMensagem(mensagem: string) {
@@ -149,6 +176,10 @@ export class HomeComponent implements OnInit, OnDestroy {
             verticalPosition: 'top',
             duration: 10000,
         });
+    }
+
+    public visualizarPois() {
+        this._carregarLeituraPosicao();
     }
 
     public redefinirFiltros() {
