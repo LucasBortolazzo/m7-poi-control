@@ -4,6 +4,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 export class GMapService {
     private _map: google.maps.Map;
     private _circle: google.maps.Circle;
+    private _overlaysArray: any[] = [];
 
     private _onChangeMapCenterEvent = new EventEmitter<void>();
 
@@ -22,7 +23,7 @@ export class GMapService {
 
     private _implementEvents() {
         this._onChangeMapCenterEvent.subscribe(() => {
-            this.destroyAllOverlayMap();
+            this.deleteOverlays();
         });
     }
 
@@ -56,9 +57,16 @@ export class GMapService {
         });
 
         this._circle.setMap(this.map);
+
+        this._overlaysArray.push(this._circle);
     }
 
-    public destroyAllOverlayMap() {
-        this._circle.setMap(null);
+    public deleteOverlays() {
+        if (this._overlaysArray) {
+            for (let i in this._overlaysArray) {
+                this._overlaysArray[i].setMap(null);
+            }
+            this._overlaysArray.length = 0;
+        }
     }
 }
