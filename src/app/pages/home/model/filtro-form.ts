@@ -1,5 +1,7 @@
+import { Poi } from './poi';
+
 export interface FilterForm {
-    poi?: number;
+    poi?: Poi;
     placa?: string;
     dataLeitura?: Date;
 }

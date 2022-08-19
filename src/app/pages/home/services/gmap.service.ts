@@ -27,6 +27,10 @@ export class GMapService {
         });
     }
 
+    public resetMap() {
+        this.setMapcenter(null);
+    }
+
     public get map(): google.maps.Map {
         return this._map;
     }
@@ -36,9 +40,15 @@ export class GMapService {
     }
 
     public setMapcenter(
-        center: google.maps.LatLng | google.maps.LatLngLiteral
+        center: google.maps.LatLng | google.maps.LatLngLiteral,
+        config?: { emitChangeEvent: boolean }
     ) {
         this.map.setCenter(center);
+
+        if (config && !config.emitChangeEvent) {
+            return;
+        }
+
         this._onChangeMapCenterEvent.next();
     }
 
