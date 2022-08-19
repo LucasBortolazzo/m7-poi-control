@@ -6,8 +6,8 @@ import { VeiculoLeitura } from './veiculo-leitura';
 
 export interface PoisVeiculosTotalizador {
     poi: Poi;
-    veiculo: VeiculoLeitura;
-    totalizadorTempoPoi: TotalizadorTempo;
-    overlay: OverlayType;
-    leituraPosicaoVeiculosPoi: LeituraPosicao[];
+    veiculos?: VeiculoLeitura[];
+    totalizadorTempoPoi?: TotalizadorTempo;
+    overlay?: OverlayType;
+    leituraPosicaoVeiculosPoi?: LeituraPosicao[];
 }

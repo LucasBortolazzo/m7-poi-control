@@ -3,9 +3,8 @@ import { OverlayType } from './overlay-type';
 import { TotalizadorTempo } from './totalizador-tempo';
 
 export interface VeiculoLeitura {
-    id: number;
     placa: string;
-    leiturasVeiculo: LeituraPosicao[];
-    totalizadorTempoVeiculo: TotalizadorTempo;
-    overlay: OverlayType;
+    leiturasVeiculo?: LeituraPosicao[];
+    totalizadorTempoVeiculo?: TotalizadorTempo;
+    overlay?: OverlayType;
 }

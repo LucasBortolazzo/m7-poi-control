@@ -21,6 +21,7 @@ import { FilterForm } from './model/filtro-form';
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
 import { PoisVeiculosTotalizador } from './model/pois-veiculos-totalizador';
+import { VeiculoLeitura } from './model/veiculo-leitura';
 
 import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
@@ -37,8 +38,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _circle: google.maps.Circle;
 
     private _poisVeiculosTotalizadorData: {
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador;
-        leiturasPosicaoveiculosPoi: LeituraPosicao;
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[];
+        leiturasPosicaoveiculosPoi: LeituraPosicao[];
     };
 
     public formFiltro: FormGroup;
@@ -149,7 +150,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     finalize(() => {
                         this.loading = false;
 
-                        this._processarPoiLeiturasVeiculos();
+                        this._processarPoisLeiturasVeiculos();
                     })
                 )
                 .subscribe({
@@ -165,7 +166,50 @@ export class HomeComponent implements OnInit, OnDestroy {
         );
     }
 
-    private _processarPoiLeiturasVeiculos() {}
+    private _processarPoisLeiturasVeiculos() {
+        const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
+        const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
+
+        this.pois.forEach((poi: Poi, poiIndex) => {
+            poisVeiculosTotalizadores.push({
+                poi: poi,
+                veiculos: [],
+            });
+
+            this.leituraPosicao.forEach(leituraPosicao => {
+                const veiculoLeitura: VeiculoLeitura = {
+                    placa: leituraPosicao.placa,
+                    leiturasVeiculo: [],
+                };
+
+                let veiculoInPoiIndex = poisVeiculosTotalizadores[
+                    poiIndex
+                ].veiculos.findIndex(
+                    veiculo =>
+                        veiculo.placa.toUpperCase() ===
+                        leituraPosicao.placa.toUpperCase()
+                );
+
+                if (veiculoInPoiIndex === -1) {
+                    veiculoInPoiIndex =
+                        poisVeiculosTotalizadores[poiIndex].veiculos.push(
+                            veiculoLeitura
+                        ) - 1;
+                }
+
+                poisVeiculosTotalizadores[poiIndex].veiculos[
+                    veiculoInPoiIndex
+                ].leiturasVeiculo.push(leituraPosicao);
+            });
+        });
+
+        this._poisVeiculosTotalizadorData = {
+            poisVeiculosTotalizadores: poisVeiculosTotalizadores,
+            leiturasPosicaoveiculosPoi: leiturasPosicaoveiculosPoi,
+        };
+
+        console.log(this._poisVeiculosTotalizadorData);
+    }
 
     private _filterPoi(idPoi: number): Poi[] {
         return this.pois.filter(poi => poi.id === idPoi);
@@ -200,7 +244,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public visualizarPois() {
-        this._processarPoiLeiturasVeiculos();
+        this._processarPoisLeiturasVeiculos();
     }
 
     public redefinirFiltros() {
