@@ -9,6 +9,7 @@ import {
     delay,
     filter,
     finalize,
+    forkJoin,
     map,
     Observable,
     retry,
@@ -45,8 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         private _fb: FormBuilder,
         private _snackBar: MatSnackBar,
         private _gMapService: GMapService,
-        private _poiService: PoiService,
-        private _dateAdapter: DateAdapter<Date>
+        private _poiService: PoiService
     ) {}
 
     ngOnInit(): void {
@@ -73,6 +73,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _implementEvents() {
         this.formFiltro.get('poi').valueChanges.subscribe({
             next: (selectedPoi: Poi) => {
+                if (!selectedPoi) {
+                    this._gMapService.setMapcenter(null);
+                    return;
+                }
                 const center = {
                     lat: selectedPoi.latitude,
                     lng: selectedPoi.longitude,
@@ -127,35 +131,30 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _carregarDados() {
         this.loading = true;
 
+        const dadosSource$ = forkJoin({
+            pois: this._poiService.getPois(),
+            placas: this._poiService.getPlacas(),
+            leituraPosicao: this._poiService.getLeituraPosicao(),
+        });
+
         this._subscription.add(
-            this._poiService
-                .getPois()
-                .pipe(retry(3))
+            dadosSource$
+                .pipe(
+                    finalize(() => {
+                        this.loading = false;
+                    })
+                )
                 .subscribe({
-                    next: (pois: Poi[]) => {
-                        this.pois = pois;
+                    next: (dados: any) => {
+                        this.pois = dados?.pois || [];
+                        this.placas = dados?.placas || [];
+                        this.leituraPosicao = dados?.leituraPosicao || [];
                     },
-                    error: e => {
+                    error: (e: HttpErrorResponse) => {
                         this.exibirMensagemErro(e);
                     },
                 })
         );
-
-        this._subscription.add(
-            this._poiService
-                .getPlacas()
-                .pipe(retry(3))
-                .subscribe({
-                    next: (placas: string[]) => {
-                        this.placas = placas;
-                    },
-                    error: e => {
-                        this.exibirMensagemErro(e);
-                    },
-                })
-        );
-
-        this._carregarLeituraPosicao();
     }
 
     private _exibirMensagem(mensagem: string) {
