@@ -158,6 +158,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.pois = dados?.pois || [];
                         this.placas = dados?.placas || [];
                         this.leituraPosicao = dados?.leituraPosicao || [];
+
+                        // TODO: Remover no final
+                        this.pois = this.pois.slice(0, 1);
+                        this.leituraPosicao = this.leituraPosicao.slice(0, 3);
                     },
                     error: (e: HttpErrorResponse) => {
                         this.exibirMensagemErro(e);
@@ -176,7 +180,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 veiculos: [],
             });
 
-            this.leituraPosicao.forEach(leituraPosicao => {
+            this.leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
                 const veiculoLeitura: VeiculoLeitura = {
                     placa: leituraPosicao.placa,
                     leiturasVeiculo: [],
@@ -197,9 +201,31 @@ export class HomeComponent implements OnInit, OnDestroy {
                         ) - 1;
                 }
 
-                poisVeiculosTotalizadores[poiIndex].veiculos[
-                    veiculoInPoiIndex
-                ].leiturasVeiculo.push(leituraPosicao);
+                const poiCenter = {
+                    lat: poi.latitude,
+                    lng: poi.longitude,
+                };
+
+                const LeituraPosicaoCenter = {
+                    lat: leituraPosicao.latitude,
+                    lng: leituraPosicao.longitude,
+                };
+
+                leituraPosicao.distanciaParaPoi =
+                    google.maps.geometry.spherical.computeDistanceBetween(
+                        poiCenter,
+                        LeituraPosicaoCenter,
+                        poi.raio
+                    );
+
+                leituraPosicao.leituraPosicaoInPoiRadius =
+                    leituraPosicao.distanciaParaPoi <= poi.raio;
+
+                if (leituraPosicao.leituraPosicaoInPoiRadius) {
+                    poisVeiculosTotalizadores[poiIndex].veiculos[
+                        veiculoInPoiIndex
+                    ].leiturasVeiculo.push(leituraPosicao);
+                }
             });
         });
 
@@ -207,8 +233,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             poisVeiculosTotalizadores: poisVeiculosTotalizadores,
             leiturasPosicaoveiculosPoi: leiturasPosicaoveiculosPoi,
         };
-
-        console.log(this._poisVeiculosTotalizadorData);
     }
 
     private _filterPoi(idPoi: number): Poi[] {

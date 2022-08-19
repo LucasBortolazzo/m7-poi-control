@@ -9,6 +9,8 @@ export interface LeituraPosicao {
     longitude: number;
     ignicao: number;
     imageURL?: string;
+    distanciaParaPoi?: number;
+    leituraPosicaoInPoiRadius?: boolean;
     center?: { lat: number; lng: number };
     totalizadoresVeiculo: TotalizadorTempo;
 }
