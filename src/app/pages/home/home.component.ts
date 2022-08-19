@@ -20,6 +20,7 @@ import {
 import { FilterForm } from './model/filtro-form';
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
+import { PoisVeiculosTotalizador } from './model/pois-veiculos-totalizador';
 
 import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
@@ -34,6 +35,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _map: google.maps.Map;
 
     private _circle: google.maps.Circle;
+
+    private _poisVeiculosTotalizadorData: {
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador;
+        leiturasPosicaoveiculosPoi: LeituraPosicao;
+    };
 
     public formFiltro: FormGroup;
 
@@ -143,7 +149,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     finalize(() => {
                         this.loading = false;
 
-                        this._processarDados();
+                        this._processarPoiLeiturasVeiculos();
                     })
                 )
                 .subscribe({
@@ -159,38 +165,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         );
     }
 
-    private _processarDados() {
-        let poisProcess: Poi[] = this.pois;
-        let leituraPosicaoProcess: LeituraPosicao[] = this.leituraPosicao;
-
-        if (this._filtroForm?.poi) {
-            poisProcess = this._filterPoi(this._filtroForm.poi.id);
-        }
-
-        // TODO: Adicionar ||  para filtrar a data da leitura
-        if (this._filtroForm?.placa) {
-            leituraPosicaoProcess = this._filterLeituraPosicao(
-                this._filtroForm.placa
-            );
-        }
-
-        this._gMapService.resetMap();
-
-        poisProcess.forEach((poi, index) => {
-            const center = {
-                lat: poi.latitude,
-                lng: poi.longitude,
-            };
-
-            if (index === 0) {
-                this._gMapService.setMapcenter(center, {
-                    emitChangeEvent: false,
-                });
-            }
-
-            this._gMapService.createCircle(poi.raio, center);
-        });
-    }
+    private _processarPoiLeiturasVeiculos() {}
 
     private _filterPoi(idPoi: number): Poi[] {
         return this.pois.filter(poi => poi.id === idPoi);
@@ -225,7 +200,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public visualizarPois() {
-        this._processarDados();
+        this._processarPoiLeiturasVeiculos();
     }
 
     public redefinirFiltros() {
