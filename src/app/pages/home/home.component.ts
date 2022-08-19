@@ -15,20 +15,18 @@ import {
     startWith,
     Subscription,
 } from 'rxjs';
-import { CustomDateAdapter } from 'src/app/shared/custom-date-adapter';
-import { FilterForm } from './model/filtro-form';
 
+import { FilterForm } from './model/filtro-form';
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
-import { GMapService } from './services/gmap.service';
 
+import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    providers: [{ provide: DateAdapter, useClass: CustomDateAdapter }],
 })
 export class HomeComponent implements OnInit, OnDestroy {
     private _subscription: Subscription = new Subscription();
@@ -49,9 +47,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         private _gMapService: GMapService,
         private _poiService: PoiService,
         private _dateAdapter: DateAdapter<Date>
-    ) {
-        this._dateAdapter.setLocale('pt-BR');
-    }
+    ) {}
 
     ngOnInit(): void {
         this._initializeMap();

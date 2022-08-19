@@ -1,4 +1,9 @@
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
+import {
+    DateAdapter,
+    MatNativeDateModule,
+    MAT_DATE_LOCALE,
+} from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -17,11 +22,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HttpClientModule } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 
-import {
-    MatNativeDateModule,
-    MAT_DATE_FORMATS,
-    MAT_DATE_LOCALE,
-} from '@angular/material/core';
+import { CustomDateAdapter } from './custom-date-adapter';
 
 @NgModule({
     declarations: [],
@@ -50,6 +51,7 @@ import {
     providers: [
         MatDatepickerModule,
         { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
+        { provide: DateAdapter, useClass: CustomDateAdapter },
     ],
 })
 export class SharedModule {}
