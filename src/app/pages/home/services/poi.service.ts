@@ -34,8 +34,8 @@ export class PoiService {
             }
 
             if (filtro.dataLeitura) {
-                const dataEncoded = encodeURI(filtro.dataLeitura.toString());
-                params = params.append('data', dataEncoded);
+                // const dataEncoded = encodeURIComponent(filtro.dataLeitura.toString());
+                params = params.append('data', filtro.dataLeitura.toString());
             }
         }
 
