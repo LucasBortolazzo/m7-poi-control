@@ -279,21 +279,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         poisVeiculosTotalizadores.map(poiVeiculoTotalizador => {
             const dataInicialTotalizadores = moment().set({ "hour": 0, "minute": 0, "second": 0 });
             const dateTotalizadoresSomaTempoTotal = dataInicialTotalizadores.clone();
-            const dateTotalizadoresSomaTempoMovimento = dataInicialTotalizadores.clone();
-            const dateTotalizadoresSomaTempoParado = dataInicialTotalizadores.clone();
 
             poiVeiculoTotalizador.poi.veiculos.forEach(veiculo => {
                 dateTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_dia_veiculos, 'day');
                 dateTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_hora_veiculos, 'hour');
                 dateTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos, 'minutes');
-
-                dateTotalizadoresSomaTempoMovimento.add(veiculo.totalizadorTempoVeiculo.tempo_total_dia_veiculos_movimento, 'day');
-                dateTotalizadoresSomaTempoMovimento.add(veiculo.totalizadorTempoVeiculo.tempo_total_hora_veiculos_movimento, 'hour');
-                dateTotalizadoresSomaTempoMovimento.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos_movimento, 'minutes');
-
-                dateTotalizadoresSomaTempoParado.add(veiculo.totalizadorTempoVeiculo.tempo_total_dia_veiculos_parado, 'day');
-                dateTotalizadoresSomaTempoParado.add(veiculo.totalizadorTempoVeiculo.tempo_total_hora_veiculos_parado, 'hour');
-                dateTotalizadoresSomaTempoParado.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos_parado, 'minutes');
             });
 
             const diffLeituraGeral = this.diffYMDHMS(
@@ -301,32 +291,10 @@ export class HomeComponent implements OnInit, OnDestroy {
                 dateTotalizadoresSomaTempoTotal
             );
 
-            const diffLeituraMovimento = this.diffYMDHMS(
-                dataInicialTotalizadores,
-                dateTotalizadoresSomaTempoMovimento
-            );
-
-            const diffLeituraParado = this.diffYMDHMS(
-                dataInicialTotalizadores,
-                dateTotalizadoresSomaTempoParado
-            );
-
             poiVeiculoTotalizador.poi.totalizadorPoi = {
                 tempo_total_dia_veiculos: diffLeituraGeral.days,
                 tempo_total_hora_veiculos: diffLeituraGeral.hours,
                 tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
-
-                tempo_total_dia_veiculos_movimento:
-                    diffLeituraMovimento.days,
-                tempo_total_hora_veiculos_movimento:
-                    diffLeituraMovimento.hours,
-                tempo_total_minuto_veiculos_movimento:
-                    diffLeituraMovimento.minutes,
-
-                tempo_total_dia_veiculos_parado: diffLeituraParado.days,
-                tempo_total_hora_veiculos_parado: diffLeituraParado.hours,
-                tempo_total_minuto_veiculos_parado:
-                    diffLeituraParado.minutes,
             };
         });
     }
@@ -373,61 +341,15 @@ export class HomeComponent implements OnInit, OnDestroy {
                     ]?.data?.toString()
                 );
 
-                const leiturasVeiculoMovimento = veiculo.leiturasVeiculo.filter(
-                    leiturasVeiculo => leiturasVeiculo.ignicao === true
-                );
-                const dataPrimeiraLeituraMovimento = moment(
-                    leiturasVeiculoMovimento[0]?.data?.toString()
-                );
-                const dataUltimaLeituraMovimento = moment(
-                    leiturasVeiculoMovimento[
-                        leiturasVeiculoMovimento.length - 1
-                    ]?.data?.toString()
-                );
-
-                const leiturasVeiculoParado = veiculo.leiturasVeiculo.filter(
-                    leiturasVeiculo => leiturasVeiculo.ignicao === false
-                );
-                const dataPrimeiraLeituraParado = moment(
-                    leiturasVeiculoParado[0]?.data?.toString()
-                );
-                const dataUltimaLeituraParado = moment(
-                    leiturasVeiculoParado[
-                        leiturasVeiculoParado.length - 1
-                    ]?.data?.toString()
-                );
-
                 const diffLeituraGeral = this.diffYMDHMS(
                     dataPrimeiraLeituraGeral,
                     dataUltimaLeituraGeral
-                );
-
-                const diffLeituraMovimento = this.diffYMDHMS(
-                    dataPrimeiraLeituraMovimento,
-                    dataUltimaLeituraMovimento
-                );
-
-                const diffLeituraParado = this.diffYMDHMS(
-                    dataPrimeiraLeituraParado,
-                    dataUltimaLeituraParado
                 );
 
                 veiculo.totalizadorTempoVeiculo = {
                     tempo_total_dia_veiculos: diffLeituraGeral.days,
                     tempo_total_hora_veiculos: diffLeituraGeral.hours,
                     tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
-
-                    tempo_total_dia_veiculos_movimento:
-                        diffLeituraMovimento.days,
-                    tempo_total_hora_veiculos_movimento:
-                        diffLeituraMovimento.hours,
-                    tempo_total_minuto_veiculos_movimento:
-                        diffLeituraMovimento.minutes,
-
-                    tempo_total_dia_veiculos_parado: diffLeituraParado.days,
-                    tempo_total_hora_veiculos_parado: diffLeituraParado.hours,
-                    tempo_total_minuto_veiculos_parado:
-                        diffLeituraParado.minutes,
                 };
             });
         });
