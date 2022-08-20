@@ -204,6 +204,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         poisVeiculosTotalizadores.push({
                             poi: poi,
                             veiculos: [],
+                            totalizadorTempoPoi: null,
                         }) - 1;
                 }
 
@@ -214,6 +215,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                 const veiculoLeitura: VeiculoLeitura = {
                     placa: leituraPosicao.placa,
                     leiturasVeiculo: [],
+                    totalizadorTempoVeiculo: null,
+                    overlay: ['circle'],
                 };
 
                 let veiculoInPoiIndex = poisVeiculosTotalizadores[
@@ -243,17 +246,61 @@ export class HomeComponent implements OnInit, OnDestroy {
         };
 
         console.log(this._poisVeiculosTotalizadorData);
+
+        this._calcularPois();
     }
 
-    private _filterPoi(idPoi: number): Poi[] {
-        return this.pois.filter(poi => poi.id === idPoi);
+    private _calcularPois() {
+        const poisVeiculosTotalizadorFilterData =
+            this._poisVeiculosTotalizadorFilterData;
+
+        console.log(poisVeiculosTotalizadorFilterData);
     }
 
-    private _filterLeituraPosicao(placa: string): LeituraPosicao[] {
-        const filterPlaca = placa ? placa.toLowerCase() : '';
-        return this.leituraPosicao.filter(leituraPosicao =>
-            leituraPosicao.placa.trim().toLowerCase().includes(placa)
+    private _filterVeiculosTotalizadoresPlaca(
+        filter: string,
+        arrayFilter: PoisVeiculosTotalizador[]
+    ): any[] {
+        return arrayFilter
+            .map(h => h.veiculos)
+            .flatMap(h => h)
+            .filter(h => h.placa.toLowerCase().includes(filter.toLowerCase()));
+    }
+
+    private get _poisVeiculosTotalizadorFilterData() {
+        const poisVeiculosTotalizadorFilterData = Object.assign(
+            {},
+            this._poisVeiculosTotalizadorData
         );
+
+        if (this._filtroForm) {
+            if (this._filtroForm.poi) {
+                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
+                    poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
+                        poiVeiculoTotalizador =>
+                            poiVeiculoTotalizador.poi.id ===
+                            this._filtroForm.poi.id
+                    );
+            }
+
+            if (this._filtroForm.placa) {
+                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
+                    poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
+                        ({ veiculos }) =>
+                            veiculos.some(
+                                ({ placa }) =>
+                                    placa.toLowerCase() ===
+                                    this._filtroForm.placa.toLowerCase()
+                            )
+                    );
+            }
+        }
+
+        console.log(
+            'dados finais são: ' +
+                JSON.stringify(poisVeiculosTotalizadorFilterData)
+        );
+        return poisVeiculosTotalizadorFilterData;
     }
 
     private _exibirMensagem(mensagem: string) {
@@ -278,7 +325,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public visualizarPois() {
-        this._processarPoisLeiturasVeiculos();
+        this._calcularPois();
     }
 
     public redefinirFiltros() {
