@@ -254,20 +254,30 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private _calcularPois() {
-        const poisVeiculosTotalizadorFilterData =
+        let poisVeiculosTotalizadorFilterData =
             this._poisVeiculosTotalizadorFilterData;
+
+        this._ordenarPosicaoLeituraVeiculosPorDataLeitura(
+            poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
+        );
 
         console.log(poisVeiculosTotalizadorFilterData);
     }
 
-    private _filterVeiculosTotalizadoresPlaca(
-        filter: string,
-        arrayFilter: PoisVeiculosTotalizador[]
-    ): any[] {
-        return arrayFilter
-            .map(h => h.poi.veiculos)
-            .flatMap(h => h)
-            .filter(h => h.placa.toLowerCase().includes(filter.toLowerCase()));
+    private _ordenarPosicaoLeituraVeiculosPorDataLeitura(
+        poisVeiculosTotalizadorFilterData: PoisVeiculosTotalizador[]
+    ) {
+        const result = poisVeiculosTotalizadorFilterData.map(
+            poiVeiculoTotalizador => {
+                poiVeiculoTotalizador.poi.veiculos.map(veiculosPoi => {
+                    veiculosPoi.leiturasVeiculo.sort((a, b) => {
+                        if (a.data < b.data) return -1;
+                        if (a.data > b.data) return 1;
+                        return 0;
+                    });
+                });
+            }
+        );
     }
 
     private get _poisVeiculosTotalizadorFilterData() {
