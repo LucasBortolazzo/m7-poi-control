@@ -7,7 +7,7 @@ export interface LeituraPosicao {
     velocidade: number;
     latitude: number;
     longitude: number;
-    ignicao: number;
+    ignicao: boolean;
     imageURL?: string;
     distanciaParaPoi?: number;
     leituraPosicaoInPoiRadius?: boolean;

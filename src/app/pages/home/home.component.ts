@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import * as moment from 'moment';
 import {
     debounceTime,
     delay,
@@ -160,7 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.leituraPosicao = dados?.leituraPosicao || [];
 
                         // TODO: Remover no final
-                        // this.pois = this.pois.slice(2, 3);
+                        this.pois = this.pois.slice(23, 24);
                         this.leituraPosicao = this.leituraPosicao.slice(0, 3);
                     },
                     error: (e: HttpErrorResponse) => {
@@ -261,23 +262,111 @@ export class HomeComponent implements OnInit, OnDestroy {
             poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
         );
 
+        poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.forEach(
+            poiVeiculoTotalizador => {
+                poiVeiculoTotalizador.poi.veiculos.map(veiculo => {
+                    const dataPrimeiraLeituraGeral = moment(
+                        veiculo.leiturasVeiculo[0]?.data?.toString()
+                    );
+                    const dataUltimaLeituraGeral = moment(
+                        veiculo.leiturasVeiculo[
+                            veiculo.leiturasVeiculo.length - 1
+                        ]?.data?.toString()
+                    );
+
+                    const leiturasVeiculoMovimento =
+                        veiculo.leiturasVeiculo.filter(
+                            leiturasVeiculo => leiturasVeiculo.ignicao === true
+                        );
+                    const dataPrimeiraLeituraMovimento = moment(
+                        leiturasVeiculoMovimento[0]?.data?.toString()
+                    );
+                    const dataUltimaLeituraMovimento = moment(
+                        leiturasVeiculoMovimento[
+                            leiturasVeiculoMovimento.length - 1
+                        ]?.data?.toString()
+                    );
+
+                    const leiturasVeiculoParado =
+                        veiculo.leiturasVeiculo.filter(
+                            leiturasVeiculo => leiturasVeiculo.ignicao === false
+                        );
+                    const dataPrimeiraLeituraParado = moment(
+                        leiturasVeiculoParado[0]?.data?.toString()
+                    );
+                    const dataUltimaLeituraParado = moment(
+                        leiturasVeiculoParado[
+                            leiturasVeiculoParado.length - 1
+                        ]?.data?.toString()
+                    );
+
+                    veiculo.totalizadorTempoVeiculo = {
+                        tempo_total_dia_veiculos:
+                            dataPrimeiraLeituraGeral.diff(
+                                dataUltimaLeituraGeral,
+                                'days'
+                            ) || 0,
+                        tempo_total_hora_veiculos:
+                            dataPrimeiraLeituraGeral.diff(
+                                dataUltimaLeituraGeral,
+                                'hours'
+                            ) || 0,
+                        tempo_total_minuto_veiculos:
+                            dataPrimeiraLeituraGeral.diff(
+                                dataUltimaLeituraGeral,
+                                'minutes'
+                            ) || 0,
+
+                        tempo_total_dia_veiculos_movimento:
+                            dataPrimeiraLeituraMovimento.diff(
+                                dataUltimaLeituraMovimento,
+                                'days'
+                            ) || 0,
+                        tempo_total_hora_veiculos_movimento:
+                            dataPrimeiraLeituraMovimento.diff(
+                                dataUltimaLeituraMovimento,
+                                'hours'
+                            ) || 0,
+                        tempo_total_minuto_veiculos_movimento:
+                            dataPrimeiraLeituraMovimento.diff(
+                                dataUltimaLeituraMovimento,
+                                'minutes'
+                            ) || 0,
+
+                        tempo_total_dia_veiculos_parado:
+                            dataPrimeiraLeituraGeral.diff(
+                                dataUltimaLeituraParado,
+                                'days'
+                            ) || 0,
+                        tempo_total_hora_veiculos_parado:
+                            dataPrimeiraLeituraParado.diff(
+                                dataUltimaLeituraParado,
+                                'hours'
+                            ) || 0,
+                        tempo_total_minuto_veiculos_parado:
+                            dataPrimeiraLeituraParado.diff(
+                                dataUltimaLeituraParado,
+                                'minutes'
+                            ) || 0,
+                    };
+                });
+            }
+        );
         console.log(poisVeiculosTotalizadorFilterData);
     }
 
     private _ordenarPosicaoLeituraVeiculosPorDataLeitura(
         poisVeiculosTotalizadorFilterData: PoisVeiculosTotalizador[]
     ) {
-        const result = poisVeiculosTotalizadorFilterData.map(
-            poiVeiculoTotalizador => {
-                poiVeiculoTotalizador.poi.veiculos.map(veiculosPoi => {
-                    veiculosPoi.leiturasVeiculo.sort((a, b) => {
-                        if (a.data < b.data) return -1;
-                        if (a.data > b.data) return 1;
-                        return 0;
-                    });
+        poisVeiculosTotalizadorFilterData.map(poiVeiculoTotalizador => {
+            poiVeiculoTotalizador.poi.veiculos.map(veiculosPoi => {
+                veiculosPoi.leiturasVeiculo.sort((a, b) => {
+                    if (a.data < b.data) return -1;
+                    if (a.data > b.data) return 1;
+                    return 0;
                 });
-            }
-        );
+            });
+        });
     }
 
     private get _poisVeiculosTotalizadorFilterData() {
