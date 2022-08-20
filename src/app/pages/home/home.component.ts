@@ -387,16 +387,44 @@ export class HomeComponent implements OnInit, OnDestroy {
                     );
             }
 
-            if (this._filtroForm.placa) {
+            if (this._filtroForm.placa || this._filtroForm.dataLeitura) {
                 poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.map((poiVeiculoTotalizador) => {
+
                     for (let i = poiVeiculoTotalizador.poi.veiculos.length - 1; i >= 0; i--) {
-                        if (poiVeiculoTotalizador.poi.veiculos[i].placa.toUpperCase() !== this._filtroForm.placa.toUpperCase()) {
+                        if (this._filtroForm.placa) {
+                            if (poiVeiculoTotalizador.poi.veiculos[i].placa.toUpperCase() !== this._filtroForm.placa.toUpperCase()) {
+                                poiVeiculoTotalizador.poi.veiculos.splice(i, 1);
+                                return;
+                            }
+                        }
+
+                        if (this._filtroForm.dataLeitura) {
+                            for (let j = poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo.length - 1; j >= 0; j--) {
+                                const dataLeitura = formatDate(
+                                    poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo[j].data,
+                                    'dd/MM/yyyy',
+                                    'pt-BR',
+                                    '+00:00'
+                                );
+                                const dataFiltro = formatDate(
+                                    this._filtroForm.dataLeitura,
+                                    'dd/MM/yyyy',
+                                    'pt-BR',
+                                    '+00:00'
+                                );
+
+                                if (dataLeitura !== dataFiltro) {
+                                    poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo.splice(j, 1);
+                                }
+                            }
+                        }
+
+                        if (!poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo?.length) {
                             poiVeiculoTotalizador.poi.veiculos.splice(i, 1);
                         }
                     }
-                });
-
-                console.log(poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores);
+                }
+                );
             }
 
             if (this._filtroForm.dataLeitura) {
