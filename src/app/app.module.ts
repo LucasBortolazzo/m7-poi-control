@@ -13,8 +13,29 @@ import { SharedModule } from './shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
+import {
+    DateAdapter,
+    MAT_DATE_FORMATS,
+    MAT_DATE_LOCALE,
+} from '@angular/material/core';
+import {
+    MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+    MAT_MOMENT_DATE_FORMATS,
+    MomentDateAdapter,
+} from '@angular/material-moment-adapter';
 
 registerLocaleData(localePt);
+export const PT_BR_DATE_FORMAT = {
+    parse: {
+        dateInput: ['l', 'LL'],
+    },
+    display: {
+        dateInput: 'L',
+        monthYearLabel: 'MMM YYYY',
+        dateA11yLabel: 'LL',
+        monthYearA11yLabel: 'MMMM YYYY',
+    },
+};
 
 @NgModule({
     declarations: [AppComponent, HomeComponent],
@@ -27,6 +48,13 @@ registerLocaleData(localePt);
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         { provide: LOCALE_ID, useValue: 'pt-BR' },
+        { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
+        {
+            provide: DateAdapter,
+            useClass: MomentDateAdapter,
+            deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+        },
+        { provide: MAT_DATE_FORMATS, useValue: PT_BR_DATE_FORMAT },
     ],
     bootstrap: [AppComponent],
 })

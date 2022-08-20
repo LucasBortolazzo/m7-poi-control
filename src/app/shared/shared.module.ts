@@ -48,10 +48,6 @@ import { CustomDateAdapter } from './custom-date-adapter';
         MatExpansionModule,
         MatSelectModule,
     ],
-    providers: [
-        MatDatepickerModule,
-        { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
-        { provide: DateAdapter, useClass: CustomDateAdapter },
-    ],
+    providers: [MatDatepickerModule],
 })
 export class SharedModule {}
