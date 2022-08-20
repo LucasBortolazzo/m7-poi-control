@@ -262,97 +262,100 @@ export class HomeComponent implements OnInit, OnDestroy {
             poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
         );
 
-        poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.forEach(
-            poiVeiculoTotalizador => {
-                poiVeiculoTotalizador.poi.veiculos.map(veiculo => {
-                    const dataPrimeiraLeituraGeral = moment(
-                        veiculo.leiturasVeiculo[0]?.data?.toString()
-                    );
-                    const dataUltimaLeituraGeral = moment(
-                        veiculo.leiturasVeiculo[
-                            veiculo.leiturasVeiculo.length - 1
-                        ]?.data?.toString()
-                    );
-
-                    const leiturasVeiculoMovimento =
-                        veiculo.leiturasVeiculo.filter(
-                            leiturasVeiculo => leiturasVeiculo.ignicao === true
-                        );
-                    const dataPrimeiraLeituraMovimento = moment(
-                        leiturasVeiculoMovimento[0]?.data?.toString()
-                    );
-                    const dataUltimaLeituraMovimento = moment(
-                        leiturasVeiculoMovimento[
-                            leiturasVeiculoMovimento.length - 1
-                        ]?.data?.toString()
-                    );
-
-                    const leiturasVeiculoParado =
-                        veiculo.leiturasVeiculo.filter(
-                            leiturasVeiculo => leiturasVeiculo.ignicao === false
-                        );
-                    const dataPrimeiraLeituraParado = moment(
-                        leiturasVeiculoParado[0]?.data?.toString()
-                    );
-                    const dataUltimaLeituraParado = moment(
-                        leiturasVeiculoParado[
-                            leiturasVeiculoParado.length - 1
-                        ]?.data?.toString()
-                    );
-
-                    veiculo.totalizadorTempoVeiculo = {
-                        tempo_total_dia_veiculos:
-                            dataPrimeiraLeituraGeral.diff(
-                                dataUltimaLeituraGeral,
-                                'days'
-                            ) || 0,
-                        tempo_total_hora_veiculos:
-                            dataPrimeiraLeituraGeral.diff(
-                                dataUltimaLeituraGeral,
-                                'hours'
-                            ) || 0,
-                        tempo_total_minuto_veiculos:
-                            dataPrimeiraLeituraGeral.diff(
-                                dataUltimaLeituraGeral,
-                                'minutes'
-                            ) || 0,
-
-                        tempo_total_dia_veiculos_movimento:
-                            dataPrimeiraLeituraMovimento.diff(
-                                dataUltimaLeituraMovimento,
-                                'days'
-                            ) || 0,
-                        tempo_total_hora_veiculos_movimento:
-                            dataPrimeiraLeituraMovimento.diff(
-                                dataUltimaLeituraMovimento,
-                                'hours'
-                            ) || 0,
-                        tempo_total_minuto_veiculos_movimento:
-                            dataPrimeiraLeituraMovimento.diff(
-                                dataUltimaLeituraMovimento,
-                                'minutes'
-                            ) || 0,
-
-                        tempo_total_dia_veiculos_parado:
-                            dataPrimeiraLeituraGeral.diff(
-                                dataUltimaLeituraParado,
-                                'days'
-                            ) || 0,
-                        tempo_total_hora_veiculos_parado:
-                            dataPrimeiraLeituraParado.diff(
-                                dataUltimaLeituraParado,
-                                'hours'
-                            ) || 0,
-                        tempo_total_minuto_veiculos_parado:
-                            dataPrimeiraLeituraParado.diff(
-                                dataUltimaLeituraParado,
-                                'minutes'
-                            ) || 0,
-                    };
-                });
-            }
+        this._calcularTempoVeiculosInPoi(
+            poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
         );
-        console.log(poisVeiculosTotalizadorFilterData);
+    }
+
+    private _calcularTempoVeiculosInPoi(
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ) {
+        poisVeiculosTotalizadores.forEach(poiVeiculoTotalizador => {
+            poiVeiculoTotalizador.poi.veiculos.map(veiculo => {
+                const dataPrimeiraLeituraGeral = moment(
+                    veiculo.leiturasVeiculo[0]?.data?.toString()
+                );
+                const dataUltimaLeituraGeral = moment(
+                    veiculo.leiturasVeiculo[
+                        veiculo.leiturasVeiculo.length - 1
+                    ]?.data?.toString()
+                );
+
+                const leiturasVeiculoMovimento = veiculo.leiturasVeiculo.filter(
+                    leiturasVeiculo => leiturasVeiculo.ignicao === true
+                );
+                const dataPrimeiraLeituraMovimento = moment(
+                    leiturasVeiculoMovimento[0]?.data?.toString()
+                );
+                const dataUltimaLeituraMovimento = moment(
+                    leiturasVeiculoMovimento[
+                        leiturasVeiculoMovimento.length - 1
+                    ]?.data?.toString()
+                );
+
+                const leiturasVeiculoParado = veiculo.leiturasVeiculo.filter(
+                    leiturasVeiculo => leiturasVeiculo.ignicao === false
+                );
+                const dataPrimeiraLeituraParado = moment(
+                    leiturasVeiculoParado[0]?.data?.toString()
+                );
+                const dataUltimaLeituraParado = moment(
+                    leiturasVeiculoParado[
+                        leiturasVeiculoParado.length - 1
+                    ]?.data?.toString()
+                );
+
+                veiculo.totalizadorTempoVeiculo = {
+                    tempo_total_dia_veiculos:
+                        dataPrimeiraLeituraGeral.diff(
+                            dataUltimaLeituraGeral,
+                            'days'
+                        ) || 0,
+                    tempo_total_hora_veiculos:
+                        dataPrimeiraLeituraGeral.diff(
+                            dataUltimaLeituraGeral,
+                            'hours'
+                        ) || 0,
+                    tempo_total_minuto_veiculos:
+                        dataPrimeiraLeituraGeral.diff(
+                            dataUltimaLeituraGeral,
+                            'minutes'
+                        ) || 0,
+
+                    tempo_total_dia_veiculos_movimento:
+                        dataPrimeiraLeituraMovimento.diff(
+                            dataUltimaLeituraMovimento,
+                            'days'
+                        ) || 0,
+                    tempo_total_hora_veiculos_movimento:
+                        dataPrimeiraLeituraMovimento.diff(
+                            dataUltimaLeituraMovimento,
+                            'hours'
+                        ) || 0,
+                    tempo_total_minuto_veiculos_movimento:
+                        dataPrimeiraLeituraMovimento.diff(
+                            dataUltimaLeituraMovimento,
+                            'minutes'
+                        ) || 0,
+
+                    tempo_total_dia_veiculos_parado:
+                        dataPrimeiraLeituraGeral.diff(
+                            dataUltimaLeituraParado,
+                            'days'
+                        ) || 0,
+                    tempo_total_hora_veiculos_parado:
+                        dataPrimeiraLeituraParado.diff(
+                            dataUltimaLeituraParado,
+                            'hours'
+                        ) || 0,
+                    tempo_total_minuto_veiculos_parado:
+                        dataPrimeiraLeituraParado.diff(
+                            dataUltimaLeituraParado,
+                            'minutes'
+                        ) || 0,
+                };
+            });
+        });
     }
 
     private _ordenarPosicaoLeituraVeiculosPorDataLeitura(
