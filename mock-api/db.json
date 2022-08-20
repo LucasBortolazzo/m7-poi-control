@@ -203,11 +203,11 @@
         },
         {
             "id": 28,
-            "placa": "TESTE001",
+            "placa": "CAR0012",
             "data": "2018-12-12T03:34:12.000+00:00",
             "velocidade": 0,
-            "latitude": -25.3649138,
-            "longitude": -51.4698871,
+            "latitude": -25.3649175,
+            "longitude": -51.4699098,
             "ignicao": false
         },
         {
@@ -215,17 +215,17 @@
             "placa": "TESTE001",
             "data": "2018-12-12T04:04:15.000+00:00",
             "velocidade": 0,
-            "latitude": -25.364885,
-            "longitude": -51.4699223,
+            "latitude": -25.547778,
+            "longitude": -49.307222,
             "ignicao": false
         },
         {
             "id": 30,
             "placa": "TESTE001",
-            "data": "2018-12-12T04:34:18.000+00:00",
+            "data": "2018-12-12T06:34:18.000+00:00",
             "velocidade": 0,
-            "latitude": -25.364896,
-            "longitude": -51.4699111,
+            "latitude": -25.547778,
+            "longitude": -49.307222,
             "ignicao": false
         },
         {

@@ -1,10 +1,10 @@
-import { formatDate } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { DateAdapter } from '@angular/material/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import * as moment from 'moment';
+import { formatDate } from '@angular/common'
+import { HttpErrorResponse } from '@angular/common/http'
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { FormBuilder, FormGroup } from '@angular/forms'
+import { DateAdapter } from '@angular/material/core'
+import { MatSnackBar } from '@angular/material/snack-bar'
+import * as moment from 'moment'
 import {
     debounceTime,
     delay,
@@ -16,16 +16,16 @@ import {
     retry,
     startWith,
     Subscription,
-} from 'rxjs';
+} from 'rxjs'
 
-import { FilterForm } from './model/filtro-form';
-import { LeituraPosicao } from './model/leitura-posicao';
-import { Poi } from './model/poi';
-import { PoisVeiculosTotalizador } from './model/pois-veiculos-totalizador';
-import { VeiculoLeitura } from './model/veiculo-leitura';
+import { FilterForm } from './model/filtro-form'
+import { LeituraPosicao } from './model/leitura-posicao'
+import { Poi } from './model/poi'
+import { PoisVeiculosTotalizador } from './model/pois-veiculos-totalizador'
+import { VeiculoLeitura } from './model/veiculo-leitura'
 
-import { GMapService } from './services/gmap.service';
-import { PoiService } from './services/poi.service';
+import { GMapService } from './services/gmap.service'
+import { PoiService } from './services/poi.service'
 
 @Component({
     selector: 'app-home',
@@ -34,16 +34,16 @@ import { PoiService } from './services/poi.service';
 })
 export class HomeComponent implements OnInit, OnDestroy {
     private _subscription: Subscription = new Subscription();
-    private _map: google.maps.Map;
+    private _map: google.maps.Map
 
-    private _circle: google.maps.Circle;
+    private _circle: google.maps.Circle
 
     private _poisVeiculosTotalizadorData: {
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador[];
-        leiturasPosicaoveiculosPoi: LeituraPosicao[];
-    };
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+        leiturasPosicaoveiculosPoi: LeituraPosicao[]
+    }
 
-    public formFiltro: FormGroup;
+    public formFiltro: FormGroup
 
     public loading = false;
     public pois: Poi[] = [];
@@ -55,19 +55,19 @@ export class HomeComponent implements OnInit, OnDestroy {
         private _snackBar: MatSnackBar,
         private _gMapService: GMapService,
         private _poiService: PoiService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
-        this._initializeMap();
-        this._criarFormFiltro();
-        this._implementEvents();
-        this._carregarDados();
+        this._initializeMap()
+        this._criarFormFiltro()
+        this._implementEvents()
+        this._carregarDados()
     }
 
     private _initializeMap() {
         this._gMapService._initializeMap(
             document.querySelector('#map') as HTMLElement
-        );
+        )
     }
 
     private _criarFormFiltro() {
@@ -75,46 +75,46 @@ export class HomeComponent implements OnInit, OnDestroy {
             poi: [null],
             placa: [null],
             dataLeitura: [null],
-        });
+        })
     }
 
     private _implementEvents() {
         this.formFiltro.get('poi').valueChanges.subscribe({
             next: (selectedPoi: Poi) => {
                 if (!selectedPoi) {
-                    this._gMapService.setMapcenter(null);
-                    return;
+                    this._gMapService.setMapcenter(null)
+                    return
                 }
                 const center = {
                     lat: selectedPoi.latitude,
                     lng: selectedPoi.longitude,
-                };
-                this._gMapService.setMapcenter(center);
-                this._gMapService.createCircle(selectedPoi.raio);
+                }
+                this._gMapService.setMapcenter(center)
+                this._gMapService.createCircle(selectedPoi.raio)
             },
-        });
+        })
     }
 
     private get _filtroForm(): FilterForm {
-        const poi = this.formFiltro.get('poi').value || null;
-        const placa = this.formFiltro.get('placa').value || null;
-        let dataLeitura = this.formFiltro.get('dataLeitura').value || null;
+        const poi = this.formFiltro.get('poi').value || null
+        const placa = this.formFiltro.get('placa').value || null
+        let dataLeitura = this.formFiltro.get('dataLeitura').value || null
 
         dataLeitura = dataLeitura
             ? formatDate(dataLeitura, 'MM/dd/yyyy', 'en')
-            : dataLeitura;
+            : dataLeitura
 
         const objFiltro: FilterForm = {
             poi: poi,
             placa: placa,
             dataLeitura: dataLeitura,
-        };
+        }
 
-        return objFiltro;
+        return objFiltro
     }
 
     private _carregarLeituraPosicao() {
-        this.loading = true;
+        this.loading = true
 
         this._subscription.add(
             this._poiService
@@ -122,98 +122,97 @@ export class HomeComponent implements OnInit, OnDestroy {
                 .pipe(
                     retry(3),
                     finalize(() => {
-                        this.loading = false;
+                        this.loading = false
                     })
                 )
                 .subscribe({
                     next: (leituraPosicao: LeituraPosicao[]) => {
-                        this.leituraPosicao = leituraPosicao;
+                        this.leituraPosicao = leituraPosicao
                     },
                     error: e => {
-                        this.exibirMensagemErro(e);
+                        this.exibirMensagemErro(e)
                     },
                 })
-        );
+        )
     }
 
     private _carregarDados() {
-        this.loading = true;
+        this.loading = true
 
         const dadosSource$ = forkJoin({
             pois: this._poiService.getPois(),
             placas: this._poiService.getPlacas(),
             leituraPosicao: this._poiService.getLeituraPosicao(),
-        });
+        })
 
         this._subscription.add(
             dadosSource$
                 .pipe(
                     finalize(() => {
-                        this.loading = false;
+                        this.loading = false
 
-                        this._processarPoisLeiturasVeiculos();
+                        this._processarPoisLeiturasVeiculos()
                     })
                 )
                 .subscribe({
                     next: (dados: any) => {
-                        this.pois = dados?.pois || [];
-                        this.placas = dados?.placas || [];
-                        this.leituraPosicao = dados?.leituraPosicao || [];
+                        this.pois = dados?.pois || []
+                        this.placas = dados?.placas || []
+                        this.leituraPosicao = dados?.leituraPosicao || []
 
                         // TODO: Remover no final
-                        this.pois = this.pois.slice(23, 24);
-                        this.leituraPosicao = this.leituraPosicao.slice(0, 3);
+                        this.pois = this.pois.slice(22, 24)
+                        this.leituraPosicao = this.leituraPosicao.slice(0, 7)
                     },
                     error: (e: HttpErrorResponse) => {
-                        this.exibirMensagemErro(e);
+                        this.exibirMensagemErro(e)
                     },
                 })
-        );
+        )
     }
 
     private _processarPoisLeiturasVeiculos() {
-        const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
-        const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
+        const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = []
+        const leiturasPosicaoveiculosPoi: LeituraPosicao[] = []
 
         this.leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
             this.pois.forEach((poi: Poi) => {
                 if (!poi.veiculos) {
-                    poi.veiculos = [];
+                    poi.veiculos = []
                 }
 
                 const poiCenter = {
                     lat: poi.latitude,
                     lng: poi.longitude,
-                };
+                }
 
                 const LeituraPosicaoCenter = {
                     lat: leituraPosicao.latitude,
                     lng: leituraPosicao.longitude,
-                };
+                }
 
                 leituraPosicao.distanciaParaPoi =
                     google.maps.geometry.spherical.computeDistanceBetween(
                         poiCenter,
                         LeituraPosicaoCenter
-                    );
+                    )
 
                 leituraPosicao.leituraPosicaoInPoiRadius =
-                    leituraPosicao.distanciaParaPoi <= poi.raio;
+                    leituraPosicao.distanciaParaPoi <= poi.raio
 
                 let poiIndex = poisVeiculosTotalizadores.findIndex(
                     (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
-                );
+                )
 
                 if (poiIndex == -1) {
                     poiIndex =
                         poisVeiculosTotalizadores.push({
                             poi: poi,
-                            totalizadorTempoPoi: null,
-                        }) - 1;
+                        }) - 1
                 }
 
                 if (!leituraPosicao.leituraPosicaoInPoiRadius) {
-                    return;
+                    return
                 }
 
                 const veiculoLeitura: VeiculoLeitura = {
@@ -221,7 +220,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     leiturasVeiculo: [],
                     totalizadorTempoVeiculo: null,
                     overlay: ['circle'],
-                };
+                }
 
                 let veiculoInPoiIndex = poisVeiculosTotalizadores[
                     poiIndex
@@ -229,51 +228,107 @@ export class HomeComponent implements OnInit, OnDestroy {
                     veiculo =>
                         veiculo.placa.toUpperCase() ===
                         leituraPosicao.placa.toUpperCase()
-                );
+                )
 
                 if (veiculoInPoiIndex === -1) {
                     veiculoInPoiIndex =
                         poisVeiculosTotalizadores[poiIndex].poi.veiculos.push(
                             veiculoLeitura
-                        ) - 1;
+                        ) - 1
                 }
 
                 poisVeiculosTotalizadores[poiIndex].poi.veiculos[
                     veiculoInPoiIndex
-                ].leiturasVeiculo.push(leituraPosicao);
-            });
-        });
+                ].leiturasVeiculo.push(leituraPosicao)
+            })
+        })
 
         this._poisVeiculosTotalizadorData = {
             poisVeiculosTotalizadores: poisVeiculosTotalizadores,
             leiturasPosicaoveiculosPoi: leiturasPosicaoveiculosPoi,
-        };
+        }
 
-        console.log(this._poisVeiculosTotalizadorData);
+        console.log(this._poisVeiculosTotalizadorData)
 
-        this._calcularPois();
+        this._calcularPois()
     }
 
     private _calcularPois() {
         let poisVeiculosTotalizadorFilterData =
-            this._poisVeiculosTotalizadorFilterData;
+            this._poisVeiculosTotalizadorFilterData
 
         this._ordenarPosicaoLeituraVeiculosPorDataLeitura(
             poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
-        );
+        )
 
         this._calcularTempoVeiculosInPoi(
             poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
-        );
+        )
 
         this._calcularTempoTotalVeiculosInPoi(
             poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
-        );
+        )
     }
 
     private _calcularTempoTotalVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
-    ) {}
+    ) {
+        // return this.items
+        //     .map(itemAtual => itemAtual.value())
+        //     .reduce((acumulado, valoratual) => acumulado + valoratual, 0);
+        const teste = poisVeiculosTotalizadores
+
+        poisVeiculosTotalizadores.map(poiVeiculoTotalizador => {
+            let somaTotalMinuto = 0
+
+            poiVeiculoTotalizador.poi.veiculos.forEach(veiculo => {
+                somaTotalMinuto +=
+                    veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos
+            })
+
+            poiVeiculoTotalizador.poi.totalizadorPoi = {
+                tempo_total_dia_veiculos: 0,
+                tempo_total_hora_veiculos: 0,
+                tempo_total_minuto_veiculos: somaTotalMinuto,
+
+                tempo_total_dia_veiculos_movimento: 0,
+                tempo_total_hora_veiculos_movimento: 0,
+                tempo_total_minuto_veiculos_movimento: 0,
+
+                tempo_total_dia_veiculos_parado: 0,
+                tempo_total_hora_veiculos_parado: 0,
+                tempo_total_minuto_veiculos_parado: 0,
+            }
+        })
+    }
+
+    diffYMDHMS(date1: moment.Moment, date2: moment.Moment) {
+        let years = date1.diff(date2, 'year')
+        date2.add(years, 'years')
+
+        let months = date1.diff(date2, 'months')
+        date2.add(months, 'months')
+
+        let days = date1.diff(date2, 'days')
+        date2.add(days, 'days')
+
+        let hours = date1.diff(date2, 'hours')
+        date2.add(hours, 'hours')
+
+        let minutes = date1.diff(date2, 'minutes')
+        date2.add(minutes, 'minutes')
+
+        let seconds = date1.diff(date2, 'seconds')
+
+        years = Math.abs(years)
+        months = Math.abs(months)
+        days = Math.abs(days)
+        hours = Math.abs(hours)
+        minutes = Math.abs(minutes)
+        seconds = Math.abs(seconds)
+
+        return { years, months, days, hours, minutes, seconds }
+    }
 
     private _calcularTempoVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
@@ -282,97 +337,67 @@ export class HomeComponent implements OnInit, OnDestroy {
             poiVeiculoTotalizador.poi.veiculos.map(veiculo => {
                 const dataPrimeiraLeituraGeral = moment(
                     veiculo.leiturasVeiculo[0]?.data?.toString()
-                );
+                )
                 const dataUltimaLeituraGeral = moment(
                     veiculo.leiturasVeiculo[
                         veiculo.leiturasVeiculo.length - 1
                     ]?.data?.toString()
-                );
+                )
 
                 const leiturasVeiculoMovimento = veiculo.leiturasVeiculo.filter(
                     leiturasVeiculo => leiturasVeiculo.ignicao === true
-                );
+                )
                 const dataPrimeiraLeituraMovimento = moment(
                     leiturasVeiculoMovimento[0]?.data?.toString()
-                );
+                )
                 const dataUltimaLeituraMovimento = moment(
                     leiturasVeiculoMovimento[
                         leiturasVeiculoMovimento.length - 1
                     ]?.data?.toString()
-                );
+                )
 
                 const leiturasVeiculoParado = veiculo.leiturasVeiculo.filter(
                     leiturasVeiculo => leiturasVeiculo.ignicao === false
-                );
+                )
                 const dataPrimeiraLeituraParado = moment(
                     leiturasVeiculoParado[0]?.data?.toString()
-                );
+                )
                 const dataUltimaLeituraParado = moment(
                     leiturasVeiculoParado[
                         leiturasVeiculoParado.length - 1
                     ]?.data?.toString()
-                );
+                )
+
+                const diffLeituraGeral = this.diffYMDHMS(
+                    dataPrimeiraLeituraGeral,
+                    dataUltimaLeituraGeral
+                )
+
+                const diffLeituraMovimento = this.diffYMDHMS(
+                    dataPrimeiraLeituraMovimento,
+                    dataUltimaLeituraMovimento
+                )
+
+                const diffLeituraParado = this.diffYMDHMS(
+                    dataPrimeiraLeituraParado,
+                    dataUltimaLeituraParado
+                )
 
                 veiculo.totalizadorTempoVeiculo = {
-                    tempo_total_dia_veiculos: Math.abs(
-                        dataPrimeiraLeituraGeral.diff(
-                            dataUltimaLeituraGeral,
-                            'days'
-                        ) || 0
-                    ),
-                    tempo_total_hora_veiculos: Math.abs(
-                        dataPrimeiraLeituraGeral.diff(
-                            dataUltimaLeituraGeral,
-                            'hours'
-                        ) || 0
-                    ),
-                    tempo_total_minuto_veiculos: Math.abs(
-                        dataPrimeiraLeituraGeral.diff(
-                            dataUltimaLeituraGeral,
-                            'minutes'
-                        ) || 0
-                    ),
+                    tempo_total_dia_veiculos: diffLeituraGeral.days,
+                    tempo_total_hora_veiculos: diffLeituraGeral.hours,
+                    tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
 
-                    tempo_total_dia_veiculos_movimento: Math.abs(
-                        dataPrimeiraLeituraMovimento.diff(
-                            dataUltimaLeituraMovimento,
-                            'days'
-                        ) || 0
-                    ),
-                    tempo_total_hora_veiculos_movimento: Math.abs(
-                        dataPrimeiraLeituraMovimento.diff(
-                            dataUltimaLeituraMovimento,
-                            'hours'
-                        ) || 0
-                    ),
-                    tempo_total_minuto_veiculos_movimento: Math.abs(
-                        dataPrimeiraLeituraMovimento.diff(
-                            dataUltimaLeituraMovimento,
-                            'minutes'
-                        ) || 0
-                    ),
+                    tempo_total_dia_veiculos_movimento: diffLeituraMovimento.days,
+                    tempo_total_hora_veiculos_movimento: diffLeituraMovimento.hours,
+                    tempo_total_minuto_veiculos_movimento: diffLeituraMovimento.minutes,
 
-                    tempo_total_dia_veiculos_parado: Math.abs(
-                        dataPrimeiraLeituraGeral.diff(
-                            dataUltimaLeituraParado,
-                            'days'
-                        ) || 0
-                    ),
-                    tempo_total_hora_veiculos_parado: Math.abs(
-                        dataPrimeiraLeituraParado.diff(
-                            dataUltimaLeituraParado,
-                            'hours'
-                        ) || 0
-                    ),
-                    tempo_total_minuto_veiculos_parado: Math.abs(
-                        dataPrimeiraLeituraParado.diff(
-                            dataUltimaLeituraParado,
-                            'minutes'
-                        ) || 0
-                    ),
-                };
-            });
-        });
+                    tempo_total_dia_veiculos_parado: diffLeituraParado.days,
+                    tempo_total_hora_veiculos_parado: diffLeituraParado.hours,
+                    tempo_total_minuto_veiculos_parado: diffLeituraParado.minutes,
+                }
+            })
+        })
     }
 
     private _ordenarPosicaoLeituraVeiculosPorDataLeitura(
@@ -381,18 +406,18 @@ export class HomeComponent implements OnInit, OnDestroy {
         poisVeiculosTotalizadorFilterData.map(poiVeiculoTotalizador => {
             poiVeiculoTotalizador.poi.veiculos.map(veiculosPoi => {
                 veiculosPoi.leiturasVeiculo.sort((a, b) => {
-                    if (a.data < b.data) return -1;
-                    if (a.data > b.data) return 1;
-                    return 0;
-                });
-            });
-        });
+                    if (a.data < b.data) return -1
+                    if (a.data > b.data) return 1
+                    return 0
+                })
+            })
+        })
     }
 
     private get _poisVeiculosTotalizadorFilterData() {
         const poisVeiculosTotalizadorFilterData = {
             ...this._poisVeiculosTotalizadorData,
-        };
+        }
 
         if (this._filtroForm) {
             if (this._filtroForm.poi) {
@@ -401,7 +426,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         poiVeiculoTotalizador =>
                             poiVeiculoTotalizador.poi.id ===
                             this._filtroForm.poi.id
-                    );
+                    )
             }
 
             if (this._filtroForm.placa) {
@@ -415,7 +440,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                                         this._filtroForm.placa.toLowerCase()
                                 )
                             )
-                    );
+                    )
             }
 
             if (this._filtroForm.dataLeitura) {
@@ -429,22 +454,22 @@ export class HomeComponent implements OnInit, OnDestroy {
                                         'dd/MM/yyyy',
                                         'pt-BR',
                                         '+00:00'
-                                    );
+                                    )
                                     const dataFiltro = formatDate(
                                         this._filtroForm.dataLeitura,
                                         'dd/MM/yyyy',
                                         'pt-BR',
                                         '+00:00'
-                                    );
+                                    )
 
-                                    return dataLeitura === dataFiltro;
+                                    return dataLeitura === dataFiltro
                                 })
                             )
-                    );
+                    )
             }
         }
 
-        return poisVeiculosTotalizadorFilterData;
+        return poisVeiculosTotalizadorFilterData
     }
 
     private _exibirMensagem(mensagem: string) {
@@ -452,31 +477,30 @@ export class HomeComponent implements OnInit, OnDestroy {
             horizontalPosition: 'center',
             verticalPosition: 'top',
             duration: 2000,
-        });
+        })
     }
 
     public exibirMensagemErro(error: HttpErrorResponse) {
-        const detalhesError = `(Status: ${error.status}. ${
-            error.message ? ` Detalhes: ${error.message}` : ''
-        })`;
-        const message = `🌧 Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`;
+        const detalhesError = `(Status: ${error.status}. ${error.message ? ` Detalhes: ${error.message}` : ''
+            })`
+        const message = `🌧 Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`
 
         this._snackBar.open(message, 'OK', {
             horizontalPosition: 'center',
             verticalPosition: 'top',
             duration: 10000,
-        });
+        })
     }
 
     public visualizarPois() {
-        this._calcularPois();
+        this._calcularPois()
     }
 
     public redefinirFiltros() {
-        this.formFiltro.reset();
+        this.formFiltro.reset()
     }
 
     ngOnDestroy(): void {
-        this._subscription.unsubscribe();
+        this._subscription.unsubscribe()
     }
 }

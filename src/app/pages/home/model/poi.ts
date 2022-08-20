@@ -1,3 +1,4 @@
+import { OverlayType } from './overlay-type';
 import { TotalizadorTempo } from './totalizador-tempo';
 import { VeiculoLeitura } from './veiculo-leitura';
 
@@ -9,5 +10,6 @@ export interface Poi {
     longitude: number;
     center?: { lat: number; lng: number };
     veiculos?: VeiculoLeitura[];
-    totalizador?: TotalizadorTempo;
+    totalizadorPoi?: TotalizadorTempo;
+    overlay?: OverlayType;
 }

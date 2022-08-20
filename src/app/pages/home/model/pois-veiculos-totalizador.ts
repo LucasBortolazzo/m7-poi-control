@@ -5,6 +5,4 @@ import { TotalizadorTempo } from './totalizador-tempo';
 
 export interface PoisVeiculosTotalizador {
     poi: Poi;
-    totalizadorTempoPoi?: TotalizadorTempo;
-    overlay?: OverlayType;
 }

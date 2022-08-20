@@ -22,8 +22,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HttpClientModule } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 
-import { CustomDateAdapter } from './custom-date-adapter';
-
 @NgModule({
     declarations: [],
     imports: [CommonModule],
