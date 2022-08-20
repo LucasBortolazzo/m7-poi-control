@@ -287,10 +287,35 @@ export class HomeComponent implements OnInit, OnDestroy {
                 poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
                     poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
                         ({ veiculos }) =>
-                            veiculos.some(
-                                ({ placa }) =>
-                                    placa.toLowerCase() ===
-                                    this._filtroForm.placa.toLowerCase()
+                            veiculos.some(({ leiturasVeiculo }) =>
+                                leiturasVeiculo.some(
+                                    ({ placa }) =>
+                                        placa.toLocaleLowerCase() ===
+                                        this._filtroForm.placa.toLowerCase()
+                                )
+                            )
+                    );
+            }
+
+            if (this._filtroForm.dataLeitura) {
+                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
+                    poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
+                        ({ veiculos }) =>
+                            veiculos.some(({ leiturasVeiculo }) =>
+                                leiturasVeiculo.some(({ data }) => {
+                                    const dataLeitura = formatDate(
+                                        data,
+                                        'dd/MM/yyyy',
+                                        'pt-BR'
+                                    );
+                                    const dataFiltro = formatDate(
+                                        this._filtroForm.dataLeitura,
+                                        'dd/MM/yyyy',
+                                        'pt-BR'
+                                    );
+
+                                    dataLeitura === dataFiltro;
+                                })
                             )
                     );
             }
