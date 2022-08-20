@@ -1,0 +1,67 @@
+{
+    "pois": [
+        {
+            "id": 1,
+            "nome": "PONTO 1",
+            "raio": 300,
+            "latitude": -25.5674270,
+            "longitude": -51.4765336
+        },
+        {
+            "id": 2,
+            "nome": "PONTO 2",
+            "raio": 300,
+            "latitude": -25.5680562,
+            "longitude": -51.4802782
+        },
+        {
+            "id": 3,
+            "nome": "PONTO 3",
+            "raio": 250,
+            "latitude": -25.414167,
+            "longitude": -51.566944
+        }
+    ],
+    "placas": [
+        "CAR0012",
+        "TESTE001"
+    ],
+    "posicao": [
+        {
+            "id": 1,
+            "placa": "TESTE001",
+            "data": "2018-12-11T03:56:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5674270,
+            "longitude": -51.4765336,
+            "ignicao": true
+        },
+        {
+            "id": 2,
+            "placa": "CAR0012",
+            "data": "2018-12-12T04:08:13.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5674370,
+            "longitude": -51.4765436,
+            "ignicao": true
+        },
+        {
+            "id": 3,
+            "placa": "TESTE001",
+            "data": "2018-12-13T05:38:06.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5674470,
+            "longitude": -51.4765536,
+            "ignicao": false
+        },
+        {
+            "id": 2,
+            "placa": "CAR0012",
+            "data": "2018-12-12T06:08:13.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5674470,
+            "longitude": -51.4765536,
+            "ignicao": false
+        }
+    ]
+}

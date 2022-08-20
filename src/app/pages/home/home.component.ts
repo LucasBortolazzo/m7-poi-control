@@ -161,8 +161,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.leituraPosicao = dados?.leituraPosicao || [];
 
                         // TODO: Remover no final
-                        this.pois = this.pois.slice(22, 24);
-                        this.leituraPosicao = this.leituraPosicao.slice(0, 7);
+                        // this.pois = this.pois.slice(20, 24);
+                        // this.leituraPosicao = this.leituraPosicao.slice(0, 100);
                     },
                     error: (e: HttpErrorResponse) => {
                         this.exibirMensagemErro(e);
