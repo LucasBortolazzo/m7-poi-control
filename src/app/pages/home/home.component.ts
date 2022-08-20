@@ -268,10 +268,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private get _poisVeiculosTotalizadorFilterData() {
-        const poisVeiculosTotalizadorFilterData = Object.assign(
-            {},
-            this._poisVeiculosTotalizadorData
-        );
+        const poisVeiculosTotalizadorFilterData = {
+            ...this._poisVeiculosTotalizadorData,
+        };
 
         if (this._filtroForm) {
             if (this._filtroForm.poi) {

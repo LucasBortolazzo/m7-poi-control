@@ -186,19 +186,19 @@
         {
             "id": 26,
             "placa": "TESTE001",
-            "data": "2018-12-12T02:34:06.000+00:00",
+            "data": "2018-12-12T02:08:03.000+00:00",
             "velocidade": 0,
-            "latitude": -25.3649175,
-            "longitude": -51.4699098,
+            "latitude": -25.3649141,
+            "longitude": -51.469891,
             "ignicao": false
         },
         {
             "id": 27,
             "placa": "TESTE001",
-            "data": "2018-12-12T03:04:09.000+00:00",
+            "data": "2018-12-12T02:34:06.000+00:00",
             "velocidade": 0,
-            "latitude": -25.3649551,
-            "longitude": -51.4699588,
+            "latitude": -25.3649175,
+            "longitude": -51.4699098,
             "ignicao": false
         },
         {
