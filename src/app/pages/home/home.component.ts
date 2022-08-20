@@ -176,7 +176,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
             this.pois.forEach((poi: Poi) => {
-                poi.veiculos = [];
+                if (!poi.veiculos) {
+                    poi.veiculos = [];
+                }
 
                 const poiCenter = {
                     lat: poi.latitude,
