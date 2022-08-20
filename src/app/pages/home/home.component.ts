@@ -160,7 +160,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.leituraPosicao = dados?.leituraPosicao || [];
 
                         // TODO: Remover no final
-                        this.pois = this.pois.slice(0, 1);
+                        // this.pois = this.pois.slice(2, 3);
                         this.leituraPosicao = this.leituraPosicao.slice(0, 3);
                     },
                     error: (e: HttpErrorResponse) => {
@@ -174,13 +174,43 @@ export class HomeComponent implements OnInit, OnDestroy {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
         const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
 
-        this.pois.forEach((poi: Poi, poiIndex) => {
-            poisVeiculosTotalizadores.push({
-                poi: poi,
-                veiculos: [],
-            });
+        this.leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
+            this.pois.forEach((poi: Poi) => {
+                const poiCenter = {
+                    lat: poi.latitude,
+                    lng: poi.longitude,
+                };
 
-            this.leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
+                const LeituraPosicaoCenter = {
+                    lat: leituraPosicao.latitude,
+                    lng: leituraPosicao.longitude,
+                };
+
+                leituraPosicao.distanciaParaPoi =
+                    google.maps.geometry.spherical.computeDistanceBetween(
+                        poiCenter,
+                        LeituraPosicaoCenter
+                    );
+
+                leituraPosicao.leituraPosicaoInPoiRadius =
+                    leituraPosicao.distanciaParaPoi <= poi.raio;
+
+                let poiIndex = poisVeiculosTotalizadores.findIndex(
+                    (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
+                );
+
+                if (poiIndex == -1) {
+                    poiIndex =
+                        poisVeiculosTotalizadores.push({
+                            poi: poi,
+                            veiculos: [],
+                        }) - 1;
+                }
+
+                if (!leituraPosicao.leituraPosicaoInPoiRadius) {
+                    return;
+                }
+
                 const veiculoLeitura: VeiculoLeitura = {
                     placa: leituraPosicao.placa,
                     leiturasVeiculo: [],
@@ -201,31 +231,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                         ) - 1;
                 }
 
-                const poiCenter = {
-                    lat: poi.latitude,
-                    lng: poi.longitude,
-                };
-
-                const LeituraPosicaoCenter = {
-                    lat: leituraPosicao.latitude,
-                    lng: leituraPosicao.longitude,
-                };
-
-                leituraPosicao.distanciaParaPoi =
-                    google.maps.geometry.spherical.computeDistanceBetween(
-                        poiCenter,
-                        LeituraPosicaoCenter,
-                        poi.raio
-                    );
-
-                leituraPosicao.leituraPosicaoInPoiRadius =
-                    leituraPosicao.distanciaParaPoi <= poi.raio;
-
-                if (leituraPosicao.leituraPosicaoInPoiRadius) {
-                    poisVeiculosTotalizadores[poiIndex].veiculos[
-                        veiculoInPoiIndex
-                    ].leiturasVeiculo.push(leituraPosicao);
-                }
+                poisVeiculosTotalizadores[poiIndex].veiculos[
+                    veiculoInPoiIndex
+                ].leiturasVeiculo.push(leituraPosicao);
             });
         });
 
@@ -233,6 +241,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             poisVeiculosTotalizadores: poisVeiculosTotalizadores,
             leiturasPosicaoveiculosPoi: leiturasPosicaoveiculosPoi,
         };
+
+        console.log(this._poisVeiculosTotalizadorData);
     }
 
     private _filterPoi(idPoi: number): Poi[] {
