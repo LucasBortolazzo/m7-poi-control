@@ -1,5 +1,4 @@
-import { Component, Inject } from '@angular/core';
-import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-root',
@@ -8,13 +7,4 @@ import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
 })
 export class AppComponent {
     title = 'poi-control';
-
-    constructor(
-        private _adapter: DateAdapter<any>,
-        @Inject(MAT_DATE_LOCALE)
-        private _locale: string
-    ) {
-        this._locale = 'pt-BR';
-        this._adapter.setLocale(this._locale);
-    }
 }
