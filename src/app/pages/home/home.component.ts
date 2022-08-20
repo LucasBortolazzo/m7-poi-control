@@ -35,13 +35,10 @@ import { PoiService } from './services/poi.service';
 export class HomeComponent implements OnInit, OnDestroy {
     private _subscription: Subscription = new Subscription();
     private _map: google.maps.Map;
-
     private _circle: google.maps.Circle;
 
-    private _poisVeiculosTotalizadorData: {
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador[];
-        leiturasPosicaoveiculosPoi: LeituraPosicao[];
-    };
+    private _poisVeiculosTotalizadores: PoisVeiculosTotalizador[];
+    private _leiturasPosicaoveiculosPoi: LeituraPosicao[];
 
     public formFiltro: FormGroup;
 
@@ -243,12 +240,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             });
         });
 
-        this._poisVeiculosTotalizadorData = {
-            poisVeiculosTotalizadores: poisVeiculosTotalizadores,
-            leiturasPosicaoveiculosPoi: leiturasPosicaoveiculosPoi,
-        };
-
-        console.log(this._poisVeiculosTotalizadorData);
+        this._poisVeiculosTotalizadores = poisVeiculosTotalizadores;
 
         this._calcularPois();
     }
@@ -258,15 +250,15 @@ export class HomeComponent implements OnInit, OnDestroy {
             this._poisVeiculosTotalizadorFilterData;
 
         this._ordenarPosicaoLeituraVeiculosPorDataLeitura(
-            poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
+            poisVeiculosTotalizadorFilterData
         );
 
         this._calcularTempoVeiculosInPoi(
-            poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
+            poisVeiculosTotalizadorFilterData
         );
 
         this._calcularTempoTotalVeiculosInPoi(
-            poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
+            poisVeiculosTotalizadorFilterData
         );
 
         console.log(poisVeiculosTotalizadorFilterData);
@@ -372,15 +364,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private get _poisVeiculosTotalizadorFilterData() {
-        const poisVeiculosTotalizadorFilterData: {
-            poisVeiculosTotalizadores: PoisVeiculosTotalizador[];
-            leiturasPosicaoveiculosPoi: LeituraPosicao[];
-        } = JSON.parse(JSON.stringify(this._poisVeiculosTotalizadorData));
+        let poisVeiculosTotalizadorFilterData: PoisVeiculosTotalizador[] = JSON.parse(JSON.stringify(this._poisVeiculosTotalizadores));
 
         if (this._filtroForm) {
             if (this._filtroForm.poi) {
-                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
-                    poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
+                poisVeiculosTotalizadorFilterData =
+                    poisVeiculosTotalizadorFilterData.filter(
                         poiVeiculoTotalizador =>
                             poiVeiculoTotalizador.poi.id ===
                             this._filtroForm.poi.id
@@ -388,7 +377,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
 
             if (this._filtroForm.placa || this._filtroForm.dataLeitura) {
-                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.map((poiVeiculoTotalizador) => {
+                poisVeiculosTotalizadorFilterData.map((poiVeiculoTotalizador) => {
 
                     for (let i = poiVeiculoTotalizador.poi.veiculos.length - 1; i >= 0; i--) {
                         if (this._filtroForm.placa) {
@@ -428,8 +417,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
 
             if (this._filtroForm.dataLeitura) {
-                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
-                    poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
+                poisVeiculosTotalizadorFilterData =
+                    poisVeiculosTotalizadorFilterData.filter(
                         ({ poi }) =>
                             poi.veiculos.some(({ leiturasVeiculo }) =>
                                 leiturasVeiculo.some(({ data }) => {
