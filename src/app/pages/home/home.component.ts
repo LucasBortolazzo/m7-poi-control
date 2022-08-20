@@ -265,7 +265,15 @@ export class HomeComponent implements OnInit, OnDestroy {
         this._calcularTempoVeiculosInPoi(
             poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
         );
+
+        this._calcularTempoTotalVeiculosInPoi(
+            poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
+        );
     }
+
+    private _calcularTempoTotalVeiculosInPoi(
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ) {}
 
     private _calcularTempoVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
@@ -306,53 +314,62 @@ export class HomeComponent implements OnInit, OnDestroy {
                 );
 
                 veiculo.totalizadorTempoVeiculo = {
-                    tempo_total_dia_veiculos:
+                    tempo_total_dia_veiculos: Math.abs(
                         dataPrimeiraLeituraGeral.diff(
                             dataUltimaLeituraGeral,
                             'days'
-                        ) || 0,
-                    tempo_total_hora_veiculos:
+                        ) || 0
+                    ),
+                    tempo_total_hora_veiculos: Math.abs(
                         dataPrimeiraLeituraGeral.diff(
                             dataUltimaLeituraGeral,
                             'hours'
-                        ) || 0,
-                    tempo_total_minuto_veiculos:
+                        ) || 0
+                    ),
+                    tempo_total_minuto_veiculos: Math.abs(
                         dataPrimeiraLeituraGeral.diff(
                             dataUltimaLeituraGeral,
                             'minutes'
-                        ) || 0,
+                        ) || 0
+                    ),
 
-                    tempo_total_dia_veiculos_movimento:
+                    tempo_total_dia_veiculos_movimento: Math.abs(
                         dataPrimeiraLeituraMovimento.diff(
                             dataUltimaLeituraMovimento,
                             'days'
-                        ) || 0,
-                    tempo_total_hora_veiculos_movimento:
+                        ) || 0
+                    ),
+                    tempo_total_hora_veiculos_movimento: Math.abs(
                         dataPrimeiraLeituraMovimento.diff(
                             dataUltimaLeituraMovimento,
                             'hours'
-                        ) || 0,
-                    tempo_total_minuto_veiculos_movimento:
+                        ) || 0
+                    ),
+                    tempo_total_minuto_veiculos_movimento: Math.abs(
                         dataPrimeiraLeituraMovimento.diff(
                             dataUltimaLeituraMovimento,
                             'minutes'
-                        ) || 0,
+                        ) || 0
+                    ),
 
-                    tempo_total_dia_veiculos_parado:
+                    tempo_total_dia_veiculos_parado: Math.abs(
                         dataPrimeiraLeituraGeral.diff(
                             dataUltimaLeituraParado,
                             'days'
-                        ) || 0,
-                    tempo_total_hora_veiculos_parado:
+                        ) || 0
+                    ),
+                    tempo_total_hora_veiculos_parado: Math.abs(
                         dataPrimeiraLeituraParado.diff(
                             dataUltimaLeituraParado,
                             'hours'
-                        ) || 0,
-                    tempo_total_minuto_veiculos_parado:
+                        ) || 0
+                    ),
+                    tempo_total_minuto_veiculos_parado: Math.abs(
                         dataPrimeiraLeituraParado.diff(
                             dataUltimaLeituraParado,
                             'minutes'
-                        ) || 0,
+                        ) || 0
+                    ),
                 };
             });
         });
