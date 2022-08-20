@@ -268,6 +268,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this._calcularTempoTotalVeiculosInPoi(
             poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores
         );
+
+        console.log(poisVeiculosTotalizadorFilterData);
     }
 
     private _calcularTempoTotalVeiculosInPoi(
@@ -370,9 +372,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private get _poisVeiculosTotalizadorFilterData() {
-        const poisVeiculosTotalizadorFilterData = {
-            ...this._poisVeiculosTotalizadorData,
-        };
+        const poisVeiculosTotalizadorFilterData: {
+            poisVeiculosTotalizadores: PoisVeiculosTotalizador[];
+            leiturasPosicaoveiculosPoi: LeituraPosicao[];
+        } = JSON.parse(JSON.stringify(this._poisVeiculosTotalizadorData));
 
         if (this._filtroForm) {
             if (this._filtroForm.poi) {
@@ -385,17 +388,15 @@ export class HomeComponent implements OnInit, OnDestroy {
             }
 
             if (this._filtroForm.placa) {
-                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
-                    poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
-                        ({ poi }) =>
-                            poi.veiculos.some(({ leiturasVeiculo }) =>
-                                leiturasVeiculo.some(
-                                    ({ placa }) =>
-                                        placa.toLocaleLowerCase() ===
-                                        this._filtroForm.placa.toLowerCase()
-                                )
-                            )
-                    );
+                poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.map((poiVeiculoTotalizador) => {
+                    for (let i = poiVeiculoTotalizador.poi.veiculos.length - 1; i >= 0; i--) {
+                        if (poiVeiculoTotalizador.poi.veiculos[i].placa.toUpperCase() !== this._filtroForm.placa.toUpperCase()) {
+                            poiVeiculoTotalizador.poi.veiculos.splice(i, 1);
+                        }
+                    }
+                });
+
+                console.log(poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores);
             }
 
             if (this._filtroForm.dataLeitura) {

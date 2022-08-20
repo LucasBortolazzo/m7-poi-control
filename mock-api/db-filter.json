@@ -55,12 +55,102 @@
             "ignicao": false
         },
         {
-            "id": 2,
+            "id": 4,
             "placa": "CAR0012",
-            "data": "2018-12-12T06:08:13.000+00:00",
+            "data": "2018-12-12T07:18:13.000+00:00",
             "velocidade": 0,
             "latitude": -25.5674470,
             "longitude": -51.4765536,
+            "ignicao": false
+        },
+        {
+            "id": 5,
+            "placa": "CAR0012",
+            "data": "2022-12-12T06:08:13.000+00:00",
+            "velocidade": 0,
+            "latitude": -32.234324,
+            "longitude": -99.4765536,
+            "ignicao": false
+        },
+        {
+            "id": 10,
+            "placa": "TESTE001",
+            "data": "2018-12-11T03:56:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5680562,
+            "longitude": -51.4802782,
+            "ignicao": true
+        },
+        {
+            "id": 11,
+            "placa": "CAR0012",
+            "data": "2018-12-12T04:08:13.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5680572,
+            "longitude": -51.4802792,
+            "ignicao": true
+        },
+        {
+            "id": 12,
+            "placa": "TESTE001",
+            "data": "2018-12-13T05:38:06.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5680562,
+            "longitude": -51.4802882,
+            "ignicao": false
+        },
+        {
+            "id": 13,
+            "placa": "CAR0012",
+            "data": "2018-12-14T08:28:13.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5680562,
+            "longitude": -51.4802982,
+            "ignicao": false
+        },
+        {
+            "id": 20,
+            "placa": "TESTE001",
+            "data": "2018-12-11T03:56:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.414167,
+            "longitude": -51.566944,
+            "ignicao": true
+        },
+        {
+            "id": 21,
+            "placa": "CAR0012",
+            "data": "2018-12-12T04:08:13.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.414267,
+            "longitude": -51.566844,
+            "ignicao": true
+        },
+        {
+            "id": 22,
+            "placa": "TESTE001",
+            "data": "2018-12-13T05:38:06.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.414367,
+            "longitude": -51.566544,
+            "ignicao": false
+        },
+        {
+            "id": 23,
+            "placa": "CAR0012",
+            "data": "2018-12-14T07:20:23.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.414467,
+            "longitude": -51.564944,
+            "ignicao": false
+        },
+        {
+            "id": 24,
+            "placa": "CAR0012",
+            "data": "2022-12-12T06:08:13.000+00:00",
+            "velocidade": 0,
+            "latitude": -32.234324,
+            "longitude": -99.4765536,
             "ignicao": false
         }
     ]
