@@ -306,25 +306,23 @@ export class HomeComponent implements OnInit, OnDestroy {
                                     const dataLeitura = formatDate(
                                         data,
                                         'dd/MM/yyyy',
-                                        'pt-BR'
+                                        'pt-BR',
+                                        '+00:00'
                                     );
                                     const dataFiltro = formatDate(
                                         this._filtroForm.dataLeitura,
                                         'dd/MM/yyyy',
-                                        'pt-BR'
+                                        'pt-BR',
+                                        '+00:00'
                                     );
 
-                                    dataLeitura === dataFiltro;
+                                    return dataLeitura === dataFiltro;
                                 })
                             )
                     );
             }
         }
 
-        console.log(
-            'dados finais são: ' +
-                JSON.stringify(poisVeiculosTotalizadorFilterData)
-        );
         return poisVeiculosTotalizadorFilterData;
     }
 
