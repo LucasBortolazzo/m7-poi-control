@@ -176,6 +176,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
             this.pois.forEach((poi: Poi) => {
+                poi.veiculos = [];
+
                 const poiCenter = {
                     lat: poi.latitude,
                     lng: poi.longitude,
@@ -203,7 +205,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                     poiIndex =
                         poisVeiculosTotalizadores.push({
                             poi: poi,
-                            veiculos: [],
                             totalizadorTempoPoi: null,
                         }) - 1;
                 }
@@ -221,7 +222,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 let veiculoInPoiIndex = poisVeiculosTotalizadores[
                     poiIndex
-                ].veiculos.findIndex(
+                ].poi.veiculos.findIndex(
                     veiculo =>
                         veiculo.placa.toUpperCase() ===
                         leituraPosicao.placa.toUpperCase()
@@ -229,12 +230,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 if (veiculoInPoiIndex === -1) {
                     veiculoInPoiIndex =
-                        poisVeiculosTotalizadores[poiIndex].veiculos.push(
+                        poisVeiculosTotalizadores[poiIndex].poi.veiculos.push(
                             veiculoLeitura
                         ) - 1;
                 }
 
-                poisVeiculosTotalizadores[poiIndex].veiculos[
+                poisVeiculosTotalizadores[poiIndex].poi.veiculos[
                     veiculoInPoiIndex
                 ].leiturasVeiculo.push(leituraPosicao);
             });
@@ -262,7 +263,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         arrayFilter: PoisVeiculosTotalizador[]
     ): any[] {
         return arrayFilter
-            .map(h => h.veiculos)
+            .map(h => h.poi.veiculos)
             .flatMap(h => h)
             .filter(h => h.placa.toLowerCase().includes(filter.toLowerCase()));
     }
@@ -285,8 +286,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             if (this._filtroForm.placa) {
                 poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
                     poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
-                        ({ veiculos }) =>
-                            veiculos.some(({ leiturasVeiculo }) =>
+                        ({ poi }) =>
+                            poi.veiculos.some(({ leiturasVeiculo }) =>
                                 leiturasVeiculo.some(
                                     ({ placa }) =>
                                         placa.toLocaleLowerCase() ===
@@ -299,8 +300,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             if (this._filtroForm.dataLeitura) {
                 poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores =
                     poisVeiculosTotalizadorFilterData.poisVeiculosTotalizadores.filter(
-                        ({ veiculos }) =>
-                            veiculos.some(({ leiturasVeiculo }) =>
+                        ({ poi }) =>
+                            poi.veiculos.some(({ leiturasVeiculo }) =>
                                 leiturasVeiculo.some(({ data }) => {
                                     const dataLeitura = formatDate(
                                         data,
