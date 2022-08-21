@@ -78,20 +78,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private _implementEvents() {
-        this.formFiltro.get('poi').valueChanges.subscribe({
-            next: (selectedPoi: Poi) => {
-                if (!selectedPoi) {
-                    this._gMapService.setMapcenter(null);
-                    return;
-                }
-                const center = {
-                    lat: selectedPoi.latitude,
-                    lng: selectedPoi.longitude,
-                };
-                this._gMapService.setMapcenter(center);
-                this._gMapService.createCircle(selectedPoi.raio);
-            },
-        });
     }
 
     private get _filtroForm(): FilterForm {
@@ -184,6 +170,12 @@ export class HomeComponent implements OnInit, OnDestroy {
                     poi.veiculos = [];
                 }
 
+                poi.overlay = ['circle'];
+                poi.center = {
+                    lat: poi.latitude,
+                    lng: poi.longitude
+                };
+
                 const poiCenter = {
                     lat: poi.latitude,
                     lng: poi.longitude,
@@ -209,7 +201,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
                 );
 
-                if (poiIndex == -1) {
+                if (poiIndex === -1) {
                     poiIndex =
                         poisVeiculosTotalizadores.push({
                             poi: poi,
@@ -258,7 +250,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private _calcularPois() {
-        let poisVeiculosTotalizadorFilterData =
+        let poisVeiculosTotalizadorFilterData: PoisVeiculosTotalizador[] =
             this._poisVeiculosTotalizadorFilterData;
 
         this._ordenarPosicaoLeituraVeiculosPorDataLeitura(
@@ -274,10 +266,43 @@ export class HomeComponent implements OnInit, OnDestroy {
         );
 
         console.log(poisVeiculosTotalizadorFilterData);
-        this.__gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizadorFilterData);
+        this._gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizadorFilterData);
+
+        this._gerarGerarOvelays(poisVeiculosTotalizadorFilterData);
     }
 
-    private __gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
+    private _gerarOvelayPoi(poi: Poi) {
+        this._gMapService.setMapcenter(poi.center);
+        this._gMapService.createCircle(poi.raio);
+    }
+
+    private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
+
+    }
+
+    private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
+        this._gMapService.resetMap();
+
+        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
+            if (poiVeiculoTotalizador.poi.overlay) {
+                this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
+            }
+
+            poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
+                if (veiculoInPoi.overlay) {
+                    this._gerarOverlayLeituraVeiculo(veiculoInPoi);
+                }
+            });
+        });
+
+        this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
+            if (veiculoOutPoi.overlay) {
+                this._gerarOverlayLeituraVeiculo(veiculoOutPoi);
+            }
+        });
+    }
+
+    private _gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
         let leituraPosicaoFilterData: LeituraPosicao[] = JSON.parse(JSON.stringify(this.leituraPosicao));
         this._leiturasPosicaoveiculosOutPoi = [];
         const veiculosLeiturasPois: LeituraPosicao[] = [];
@@ -291,39 +316,43 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
 
         leituraPosicaoFilterData.forEach((leituraPosicao) => {
+            const newLeituraPosicao: LeituraPosicao = Object.assign({}, leituraPosicao);
+            newLeituraPosicao.inPoiRadius = false;
+            newLeituraPosicao.distanciaParaPoi = null;
+
             const leituraProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
-                return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase() &&
-                    veiculoLeitura.id === leituraPosicao.id &&
-                    veiculoLeitura.latitude === leituraPosicao.latitude &&
-                    veiculoLeitura.longitude === leituraPosicao.longitude;
+                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase() &&
+                    veiculoLeitura.id === newLeituraPosicao.id &&
+                    veiculoLeitura.latitude === newLeituraPosicao.latitude &&
+                    veiculoLeitura.longitude === newLeituraPosicao.longitude;
             }) || false;
 
             const placaProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
-                return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
             }) || false;
 
             if (!leituraProcessadaInPoi && placaProcessadaInPoi) {
 
                 const dadosFicticiosVeiculo = this._dadosVeiculo
-                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === leituraPosicao.placa);
+                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa);
 
                 const dadosVeiculoOutPoi: VeiculoLeitura = {
-                    placa: leituraPosicao.placa.toUpperCase(),
-                    leiturasVeiculo: [leituraPosicao],
+                    placa: newLeituraPosicao.placa.toUpperCase(),
+                    leiturasVeiculo: [newLeituraPosicao],
                     totalizadorTempoVeiculo: null,
                     dadosFicticiosVeiculo: dadosFicticiosVeiculo || null,
                     overlay: ['circle'],
                 };
 
                 const indexVeiculoOutPoiList = this._leiturasPosicaoveiculosOutPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {
-                    return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                    return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
                 });
 
                 if (indexVeiculoOutPoiList === -1) {
                     this._leiturasPosicaoveiculosOutPoi.push(dadosVeiculoOutPoi);
                 } else {
                     this._leiturasPosicaoveiculosOutPoi[indexVeiculoOutPoiList].leiturasVeiculo
-                        .push(leituraPosicao);
+                        .push(newLeituraPosicao);
                 }
             }
 

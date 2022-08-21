@@ -8,7 +8,7 @@ export class GMapService {
 
     private _onChangeMapCenterEvent = new EventEmitter<void>();
 
-    constructor() {}
+    constructor() { }
 
     public _initializeMap(mapContainer: HTMLElement) {
         let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
@@ -29,6 +29,7 @@ export class GMapService {
 
     public resetMap() {
         this.setMapcenter(null);
+        this.deleteOverlays();
     }
 
     public get map(): google.maps.Map {
@@ -41,7 +42,7 @@ export class GMapService {
 
     public setMapcenter(
         center: google.maps.LatLng | google.maps.LatLngLiteral,
-        config?: { emitChangeEvent: boolean }
+        config?: { emitChangeEvent: boolean; }
     ) {
         this.map.setCenter(center);
 
@@ -49,7 +50,7 @@ export class GMapService {
             return;
         }
 
-        this._onChangeMapCenterEvent.next();
+        // this._onChangeMapCenterEvent.next();
     }
 
     public createCircle(

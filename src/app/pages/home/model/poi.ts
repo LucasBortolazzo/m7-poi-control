@@ -8,8 +8,8 @@ export interface Poi {
     raio: number;
     latitude: number;
     longitude: number;
-    center?: { lat: number; lng: number };
+    center?: { lat: number; lng: number; };
     veiculos?: VeiculoLeitura[];
     totalizadorPoi?: TotalizadorTempo;
-    overlay?: OverlayType;
+    overlay: string[];
 }
