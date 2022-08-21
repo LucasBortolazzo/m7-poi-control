@@ -10,7 +10,7 @@ export interface LeituraPosicao {
     ignicao: boolean;
     distanciaParaPoi?: number;
     inPoiRadius?: boolean;
-    center?: { lat: number; lng: number; };
+    center?: google.maps.LatLng | google.maps.LatLngLiteral | null;
     totalizadorTempoVeiculo?: TotalizadorTempo;
     poiDescri?: string;
 }

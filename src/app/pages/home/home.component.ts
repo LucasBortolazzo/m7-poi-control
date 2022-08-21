@@ -166,11 +166,12 @@ export class HomeComponent implements OnInit, OnDestroy {
                     poi.veiculos = [];
                 }
 
-                poi.overlay = ['circle'];
+                poi.overlay = 'circle';
                 poi.center = {
                     lat: poi.latitude,
                     lng: poi.longitude
                 };
+                poi.icon = 'parking_lot_maps.png';
 
                 const poiCenter = {
                     lat: poi.latitude,
@@ -217,7 +218,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     placa: newLeituraPosicao.placa,
                     leiturasVeiculo: [],
                     totalizadorTempoVeiculo: null,
-                    overlay: ['circle'],
+                    overlay: 'infoWindow',
                     dadosFicticiosVeiculo: dadosFicticiosVeiculo || null
                 };
 
@@ -277,7 +278,37 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
 
         leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
-            this._gMapService.createMarker(leitura.center);
+            switch (leituraVeiculo.overlay) {
+                case 'infoWindow': {
+                    const content = '<div id="content">' +
+                        '<div id="siteNotice">' +
+                        "</div>" +
+                        '<h1 id="firstHeading" class="firstHeading">Uluru</h1>' +
+                        '<div id="bodyContent">' +
+                        "<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large " +
+                        "sandstone rock formation in the southern part of the " +
+                        "Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) " +
+                        "south west of the nearest large town, Alice Springs; 450&#160;km " +
+                        "(280&#160;mi) by road. Kata Tjuta and Uluru are the two major " +
+                        "features of the Uluru - Kata Tjuta National Park. Uluru is " +
+                        "sacred to the Pitjantjatjara and Yankunytjatjara, the " +
+                        "Aboriginal people of the area. It has many springs, waterholes, " +
+                        "rock caves and ancient paintings. Uluru is listed as a World " +
+                        "Heritage Site.</p>" +
+                        '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">' +
+                        "https://en.wikipedia.org/w/index.php?title=Uluru</a> " +
+                        "(last visited June 22, 2009).</p>" +
+                        "</div>" +
+                        "</div>";
+                    this._gMapService.createInfoWindow(leitura.center, content);
+                    return;
+                }
+
+                case 'marker': {
+                    this._gMapService.createMarker(leitura.center, 'parking_lot_maps.png');
+                    return;
+                }
+            }
         });
     }
 
@@ -285,14 +316,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         this._gMapService.resetMap();
 
         poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
-            if (poiVeiculoTotalizador.poi.overlay) {
-                this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
-            }
+            this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
 
             poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
-                if (veiculoInPoi.overlay) {
-                    this._gerarOverlayLeituraVeiculo(veiculoInPoi);
-                }
+                this._gerarOverlayLeituraVeiculo(veiculoInPoi);
             });
         });
 
@@ -342,7 +369,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     leiturasVeiculo: [newLeituraPosicao],
                     totalizadorTempoVeiculo: null,
                     dadosFicticiosVeiculo: dadosFicticiosVeiculo || null,
-                    overlay: ['circle'],
+                    overlay: 'infoWindow',
                 };
 
                 const indexVeiculoOutPoiList = this._leiturasPosicaoveiculosOutPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {

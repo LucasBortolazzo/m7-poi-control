@@ -8,5 +8,5 @@ export interface VeiculoLeitura {
     leiturasVeiculo?: LeituraPosicao[];
     totalizadorTempoVeiculo?: TotalizadorTempo;
     dadosFicticiosVeiculo: Veiculo;
-    overlay: string[],
+    overlay: string;
 }

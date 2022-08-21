@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { ImgTest } from '../../../../assets/img/img-test';
 
 @Injectable({ providedIn: 'root' })
 export class GMapService {
@@ -30,7 +31,7 @@ export class GMapService {
     }
 
     public setMapcenter(
-        center: google.maps.LatLng | google.maps.LatLngLiteral,
+        center: google.maps.LatLng | google.maps.LatLngLiteral | null,
         config?: { emitChangeEvent: boolean; }
     ) {
         this.map.setCenter(center);
@@ -42,7 +43,7 @@ export class GMapService {
 
     public createCircle(
         radius?: number,
-        center?: google.maps.LatLng | google.maps.LatLngLiteral
+        center?: google.maps.LatLng | google.maps.LatLngLiteral | null,
     ) {
         const circle = new google.maps.Circle({
             strokeColor: 'transparent',
@@ -60,17 +61,45 @@ export class GMapService {
     }
 
     public createMarker(
-        position?: google.maps.LatLng | google.maps.LatLngLiteral
+        position: google.maps.LatLng | google.maps.LatLngLiteral | null,
+        imgIconName: string,
+        label: string = 'Poi',
     ) {
+        const imageIcon = {
+            url: `../../../../assets/img/${imgIconName}`,
+            size: new google.maps.Size(64, 64),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(0, 32),
+        };
+
         const marker = new google.maps.Marker({
             position: position ? position : this.map.getCenter(),
+            label: label,
+            animation: google.maps.Animation.DROP,
+            icon: imageIcon
         });
 
         marker.setMap(this.map);
 
         this._overlaysArray.push(marker);
+
+        return marker;
     }
 
+    public createInfoWindow(
+        position: google.maps.LatLng | google.maps.LatLngLiteral | null,
+        content: string
+    ) {
+        const marker = this.createMarker(position, 'car-test.png', 'Pos');
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: content,
+        });
+
+        this._overlaysArray.push(infoWindow);
+
+        infoWindow.open(this.map, marker);
+    }
 
     private deleteOverlays() {
         if (this._overlaysArray) {

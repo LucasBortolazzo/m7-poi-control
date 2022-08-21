@@ -8,8 +8,9 @@ export interface Poi {
     raio: number;
     latitude: number;
     longitude: number;
-    center?: { lat: number; lng: number; };
+    center?: google.maps.LatLng | google.maps.LatLngLiteral | null;
     veiculos?: VeiculoLeitura[];
     totalizadorPoi?: TotalizadorTempo;
-    overlay: string[];
+    overlay?: string;
+    icon?: string;
 }
