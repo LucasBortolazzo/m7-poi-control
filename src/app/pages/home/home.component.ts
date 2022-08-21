@@ -172,8 +172,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
         const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
 
-        this.leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
-            this.pois.forEach((poi: Poi) => {
+        this.leituraPosicao.map((leituraPosicao: LeituraPosicao) => {
+            this.pois.map((poi: Poi) => {
                 if (!poi.veiculos) {
                     poi.veiculos = [];
                 }
@@ -197,7 +197,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 leituraPosicao.inPoiRadius =
                     leituraPosicao.distanciaParaPoi <= poi.raio;
 
-                leituraPosicao.poiDescri = `$Poi ID: ${poi.id} - Poi Nome: ${poi.nome}(lat: ${poi.latitude} lng: ${poi.longitude})`;
+                leituraPosicao.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
 
                 let poiIndex = poisVeiculosTotalizadores.findIndex(
                     (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
@@ -238,7 +238,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 poisVeiculosTotalizadores[poiIndex].poi.veiculos[
                     veiculoInPoiIndex
-                ].leiturasVeiculo.push(leituraPosicao);
+                ].leiturasVeiculo.push(Object.assign({}, leituraPosicao));
             });
         });
 
@@ -263,6 +263,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             poisVeiculosTotalizadorFilterData
         );
 
+        console.log(poisVeiculosTotalizadorFilterData);
         this.__gerarLeiturasPosicaoVeiculosInOutPoi(poisVeiculosTotalizadorFilterData);
     }
 
@@ -295,6 +296,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                             this._leiturasPosicaoveiculosPoi.push({
                                 placa: leituraFind.placa.toUpperCase(),
                                 leiturasVeiculo: [leituraFind],
+                                totalizadorTempoVeiculo: veiculoPoi.totalizadorTempoVeiculo,
                                 corMarcador: 'blue',
                             });
                         } else {
@@ -307,8 +309,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
             });
 
-            console.log(this._leiturasPosicaoveiculosPoi);
         });
+
+        console.log(this._leiturasPosicaoveiculosPoi);
     }
 
     private _calcularTempoTotalVeiculosInPoi(
