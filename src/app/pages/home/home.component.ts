@@ -271,8 +271,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private _gerarOvelayPoi(poi: Poi) {
-        this._gMapService.setMapcenter(poi.center);
-        this._gMapService.createCircle(poi.raio);
+        this._gMapService.createCircle(poi.raio, poi.center);
+        this._gMapService.createMarkerInfoWindow(poi.center, poi.id + ' - ' + poi.nome, 'opened');
+
+        setTimeout(() => {
+            this._gMapService.setMapcenter(poi.center);
+        }, 500);
     }
 
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
@@ -300,12 +304,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         "(last visited June 22, 2009).</p>" +
                         "</div>" +
                         "</div>";
-                    this._gMapService.createInfoWindow(leitura.center, content);
-                    return;
-                }
-
-                case 'marker': {
-                    this._gMapService.createMarker(leitura.center, 'parking_lot_maps.png');
+                    this._gMapService.createMarkerInfoWindow(leitura.center, content, 'closed', 'car-test.png');
                     return;
                 }
             }

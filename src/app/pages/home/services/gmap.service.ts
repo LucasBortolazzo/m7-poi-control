@@ -18,8 +18,8 @@ export class GMapService {
     }
 
     public resetMap() {
-        //  this.setMapcenter(null);
-        //  this.deleteOverlays();
+        this.setMapcenter(null);
+        this.deleteOverlays();
     }
 
     public get map(): google.maps.Map {
@@ -31,14 +31,10 @@ export class GMapService {
     }
 
     public setMapcenter(
-        center: google.maps.LatLng | google.maps.LatLngLiteral | null,
-        config?: { emitChangeEvent: boolean; }
+        center: google.maps.LatLng | google.maps.LatLngLiteral | null
     ) {
         this.map.setCenter(center);
-
-        if (config && !config.emitChangeEvent) {
-            return;
-        }
+        this.map.setZoom(16);
     }
 
     public createCircle(
@@ -62,8 +58,7 @@ export class GMapService {
 
     public createMarker(
         position: google.maps.LatLng | google.maps.LatLngLiteral | null,
-        imgIconName: string,
-        label: string = 'Poi',
+        imgIconName?: string,
     ) {
         const imageIcon = {
             url: `../../../../assets/img/${imgIconName}`,
@@ -74,9 +69,8 @@ export class GMapService {
 
         const marker = new google.maps.Marker({
             position: position ? position : this.map.getCenter(),
-            label: label,
             animation: google.maps.Animation.DROP,
-            icon: imageIcon
+            icon: imgIconName ? imageIcon : null
         });
 
         marker.setMap(this.map);
@@ -86,11 +80,13 @@ export class GMapService {
         return marker;
     }
 
-    public createInfoWindow(
+    public createMarkerInfoWindow(
         position: google.maps.LatLng | google.maps.LatLngLiteral | null,
-        content: string
+        content: string,
+        state: 'opened' | 'closed' = 'closed',
+        imgIconName?: string,
     ) {
-        const marker = this.createMarker(position, 'car-test.png', 'Pos');
+        const marker = this.createMarker(position, imgIconName);
 
         const infoWindow = new google.maps.InfoWindow({
             content: content,
@@ -98,7 +94,13 @@ export class GMapService {
 
         this._overlaysArray.push(infoWindow);
 
-        infoWindow.open(this.map, marker);
+        if (state === 'opened') {
+            infoWindow.open(this.map, marker);
+        }
+
+        marker.addListener("click", () => {
+            infoWindow.open(this.map, marker);
+        });
     }
 
     private deleteOverlays() {
