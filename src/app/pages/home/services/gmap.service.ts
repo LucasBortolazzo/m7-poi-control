@@ -99,8 +99,22 @@ export class GMapService {
         }
 
         marker.addListener("click", () => {
+            this.closeAllInfoWindow();
             infoWindow.open(this.map, marker);
         });
+    }
+
+    private closeAllInfoWindow() {
+        for (let i in this._overlaysArray) {
+            try {
+                if (this._overlaysArray[i] instanceof google.maps.InfoWindow) {
+                    this._overlaysArray[i].close();
+                };
+
+            } catch (error) {
+
+            }
+        }
     }
 
     private deleteOverlays() {

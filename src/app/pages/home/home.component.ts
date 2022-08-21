@@ -272,11 +272,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     private _gerarOvelayPoi(poi: Poi) {
         this._gMapService.createCircle(poi.raio, poi.center);
-        this._gMapService.createMarkerInfoWindow(poi.center, poi.id + ' - ' + poi.nome, 'opened');
+        const contentTest = '<div class="content">' +
+            '<div class="poi-content" > ' +
+            '<p class="poi-title"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
+            '<p class="poi-subtitle"> lat: ' + poi.latitude + ' lng: ' + poi.longitude + ', raio: ' + poi.raio + ' Metros </p>' +
+            '<p class="poi-totalizador" > Tempo total POI: <span>' + poi.totalizadorPoi.tempo_total_dia_veiculos +
+            ' dia(s), ' + poi.totalizadorPoi.tempo_total_hora_veiculos + ' hora(s) e ' + poi.totalizadorPoi.tempo_total_minuto_veiculos + ' minuto(s) </span></p > ' +
+            '<p class="poi-totalizador" > Total veículos POI: <span>2 </span></p> ' +
+            '</div>' +
+            '</div>';
+        this._gMapService.createMarkerInfoWindow(poi.center, contentTest, 'opened');
 
         setTimeout(() => {
             this._gMapService.setMapcenter(poi.center);
-        }, 500);
+        }, 800);
     }
 
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
