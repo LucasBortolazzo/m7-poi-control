@@ -280,9 +280,52 @@ export class HomeComponent implements OnInit, OnDestroy {
     private __gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
         let leituraPosicaoFilterData: LeituraPosicao[] = JSON.parse(JSON.stringify(this.leituraPosicao));
         this._leiturasPosicaoveiculosOutPoi = [];
+        const veiculosLeiturasPois: LeituraPosicao[] = [];
+
+        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
+            poiVeiculoTotalizador.poi.veiculos.forEach((veiculoPoi) => {
+                veiculoPoi.leiturasVeiculo.forEach((leituraPosicao) => {
+                    veiculosLeiturasPois.push(leituraPosicao);
+                });
+            });
+        });
 
         leituraPosicaoFilterData.forEach((leituraPosicao) => {
+            const leituraProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
+                return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase() &&
+                    veiculoLeitura.id === leituraPosicao.id &&
+                    veiculoLeitura.latitude === leituraPosicao.latitude &&
+                    veiculoLeitura.longitude === leituraPosicao.longitude;
+            }) || false;
 
+            const placaProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
+                return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+            }) || false;
+
+            if (!leituraProcessadaInPoi && placaProcessadaInPoi) {
+
+                const dadosFicticiosVeiculo = this._dadosVeiculo
+                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === leituraPosicao.placa);
+
+                const dadosVeiculoOutPoi: VeiculoLeitura = {
+                    placa: leituraPosicao.placa.toUpperCase(),
+                    leiturasVeiculo: [leituraPosicao],
+                    totalizadorTempoVeiculo: null,
+                    dadosFicticiosVeiculo: dadosFicticiosVeiculo || null,
+                    overlay: ['circle'],
+                };
+
+                const indexVeiculoOutPoiList = this._leiturasPosicaoveiculosOutPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {
+                    return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                });
+
+                if (indexVeiculoOutPoiList === -1) {
+                    this._leiturasPosicaoveiculosOutPoi.push(dadosVeiculoOutPoi);
+                } else {
+                    this._leiturasPosicaoveiculosOutPoi[indexVeiculoOutPoiList].leiturasVeiculo
+                        .push(leituraPosicao);
+                }
+            }
 
         });
 
