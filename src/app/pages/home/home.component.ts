@@ -173,7 +173,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
 
         this.leituraPosicao.map((leituraPosicao: LeituraPosicao) => {
+
             this.pois.map((poi: Poi) => {
+
+                const newLeituraPosicao = Object.assign({}, leituraPosicao);
+
                 if (!poi.veiculos) {
                     poi.veiculos = [];
                 }
@@ -184,20 +188,20 @@ export class HomeComponent implements OnInit, OnDestroy {
                 };
 
                 const LeituraPosicaoCenter = {
-                    lat: leituraPosicao.latitude,
-                    lng: leituraPosicao.longitude,
+                    lat: newLeituraPosicao.latitude,
+                    lng: newLeituraPosicao.longitude,
                 };
 
-                leituraPosicao.distanciaParaPoi =
+                newLeituraPosicao.distanciaParaPoi =
                     google.maps.geometry.spherical.computeDistanceBetween(
                         poiCenter,
                         LeituraPosicaoCenter
                     );
 
-                leituraPosicao.inPoiRadius =
-                    leituraPosicao.distanciaParaPoi <= poi.raio;
+                newLeituraPosicao.inPoiRadius =
+                    newLeituraPosicao.distanciaParaPoi <= poi.raio;
 
-                leituraPosicao.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
+                newLeituraPosicao.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
 
                 let poiIndex = poisVeiculosTotalizadores.findIndex(
                     (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
@@ -210,12 +214,12 @@ export class HomeComponent implements OnInit, OnDestroy {
                         }) - 1;
                 }
 
-                if (!leituraPosicao.inPoiRadius) {
+                if (!newLeituraPosicao.inPoiRadius) {
                     return;
                 }
 
                 const veiculoLeitura: VeiculoLeitura = {
-                    placa: leituraPosicao.placa,
+                    placa: newLeituraPosicao.placa,
                     leiturasVeiculo: [],
                     totalizadorTempoVeiculo: null,
                     overlay: ['circle'],
@@ -226,7 +230,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 ].poi.veiculos.findIndex(
                     veiculo =>
                         veiculo.placa.toUpperCase() ===
-                        leituraPosicao.placa.toUpperCase()
+                        newLeituraPosicao.placa.toUpperCase()
                 );
 
                 if (veiculoInPoiIndex === -1) {
@@ -238,7 +242,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 poisVeiculosTotalizadores[poiIndex].poi.veiculos[
                     veiculoInPoiIndex
-                ].leiturasVeiculo.push(Object.assign({}, leituraPosicao));
+                ].leiturasVeiculo.push(Object.assign(newLeituraPosicao));
             });
         });
 
