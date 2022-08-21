@@ -201,8 +201,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                 newLeituraPosicao.inPoiRadius =
                     newLeituraPosicao.distanciaParaPoi <= poi.raio;
 
-                newLeituraPosicao.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
-
                 let poiIndex = poisVeiculosTotalizadores.findIndex(
                     (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
                 );
@@ -278,41 +276,53 @@ export class HomeComponent implements OnInit, OnDestroy {
         leituraPosicaoFilterData.forEach((leituraPosicao) => {
 
             poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
-                let leituraFind: LeituraPosicao = null;
+                let placaProcessadaAnyPoi: LeituraPosicao = null;
+                let placaProcessadaOnlyPoi: LeituraPosicao = null;
 
                 poiVeiculoTotalizador.poi.veiculos.forEach((veiculoPoi) => {
-                    if (leituraFind) {
+                    if (placaProcessadaAnyPoi) {
                         return;
                     }
 
-                    leituraFind = veiculoPoi.leiturasVeiculo.find((leitura) => {
+                    placaProcessadaAnyPoi = veiculoPoi.leiturasVeiculo.find((leitura) => {
+                        return leitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                    });
+
+                    placaProcessadaOnlyPoi = veiculoPoi.leiturasVeiculo.find((leitura) => {
                         return (leitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase() &&
                             leitura.latitude === leituraPosicao.latitude &&
                             leitura.longitude === leituraPosicao.longitude);
 
                     });
-                    if (leituraFind) {
-                        const indexVeiculoMarcacao = this._leiturasPosicaoveiculosPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {
-                            return veiculoLeitura.placa.toUpperCase() === leituraFind.placa.toUpperCase();
+
+                    if (placaProcessadaAnyPoi) {
+                        const indexLeituraPosicaoVeiculoInPoi = this._leiturasPosicaoveiculosPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {
+                            return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase() &&
+                                veiculoLeitura.leiturasVeiculo.find((leitura) => {
+                                    return (leitura.latitude === leituraPosicao.latitude &&
+                                        leitura.longitude === leituraPosicao.longitude);
+                                });
                         });
 
-                        if (indexVeiculoMarcacao === -1) {
+                        const indexLeituraPosicaoVeiculoAnyPoi = this._leiturasPosicaoveiculosPoi.find((veiculoLeitura: VeiculoLeitura) => {
+                            return veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                        });
+
+                        if (indexLeituraPosicaoVeiculoInPoi === -1) {
                             this._leiturasPosicaoveiculosPoi.push({
-                                placa: leituraFind.placa.toUpperCase(),
-                                leiturasVeiculo: [leituraFind],
-                                totalizadorTempoVeiculo: veiculoPoi.totalizadorTempoVeiculo,
-                                corMarcador: 'blue',
+                                placa: leituraPosicao.placa.toUpperCase(),
+                                leiturasVeiculo: [placaProcessadaOnlyPoi ? placaProcessadaOnlyPoi : leituraPosicao],
+                                totalizadorTempoVeiculo: placaProcessadaOnlyPoi ? veiculoPoi.totalizadorTempoVeiculo : null,
+                                corMarcador: indexLeituraPosicaoVeiculoAnyPoi && indexLeituraPosicaoVeiculoAnyPoi.corMarcador ?
+                                    indexLeituraPosicaoVeiculoAnyPoi.corMarcador : 'blue'
                             });
                         } else {
-                            this._leiturasPosicaoveiculosPoi[indexVeiculoMarcacao].leiturasVeiculo.push(leituraFind);
+                            this._leiturasPosicaoveiculosPoi[indexLeituraPosicaoVeiculoInPoi].leiturasVeiculo
+                                .push(placaProcessadaOnlyPoi ? placaProcessadaOnlyPoi : leituraPosicao);
                         }
-
                     }
                 });
-
-
             });
-
         });
 
         console.log(this._leiturasPosicaoveiculosPoi);
@@ -322,7 +332,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
     ) {
         const currentDate = moment().set({ "hour": 0, "minute": 0, "second": 0 });
-
 
         poisVeiculosTotalizadores.map(poiVeiculoTotalizador => {
             const dataInicialTotalizadores = moment().set({ "hour": 0, "minute": 0, "second": 0 });

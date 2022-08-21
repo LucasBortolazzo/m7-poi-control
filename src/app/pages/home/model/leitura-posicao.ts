@@ -11,6 +11,5 @@ export interface LeituraPosicao {
     distanciaParaPoi?: number;
     inPoiRadius?: boolean;
     center?: { lat: number; lng: number; };
-    totalizadorTempoVeiculo?: TotalizadorTempo;
-    poiDescri?: string;
+
 }
