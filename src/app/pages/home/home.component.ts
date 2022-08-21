@@ -59,7 +59,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this._initializeMap();
         this._criarFormFiltro();
-        this._implementEvents();
         this._carregarDados();
     }
 
@@ -75,9 +74,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             placa: [null],
             dataLeitura: [null],
         });
-    }
-
-    private _implementEvents() {
     }
 
     private get _filtroForm(): FilterForm {
@@ -181,7 +177,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     lng: poi.longitude,
                 };
 
-                const LeituraPosicaoCenter = {
+                const leituraPosicaoCenter = {
                     lat: newLeituraPosicao.latitude,
                     lng: newLeituraPosicao.longitude,
                 };
@@ -189,13 +185,15 @@ export class HomeComponent implements OnInit, OnDestroy {
                 newLeituraPosicao.distanciaParaPoi =
                     google.maps.geometry.spherical.computeDistanceBetween(
                         poiCenter,
-                        LeituraPosicaoCenter
+                        leituraPosicaoCenter
                     );
 
                 newLeituraPosicao.inPoiRadius =
                     newLeituraPosicao.distanciaParaPoi <= poi.raio;
 
                 newLeituraPosicao.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
+
+                newLeituraPosicao.center = leituraPosicaoCenter;
 
                 let poiIndex = poisVeiculosTotalizadores.findIndex(
                     (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
@@ -278,6 +276,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
 
+        leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
+            this._gMapService.createMarker(leitura.center);
+        });
     }
 
     private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {

@@ -3,10 +3,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class GMapService {
     private _map: google.maps.Map;
-    private _circle: google.maps.Circle;
     private _overlaysArray: any[] = [];
-
-    private _onChangeMapCenterEvent = new EventEmitter<void>();
 
     constructor() { }
 
@@ -17,19 +14,11 @@ export class GMapService {
             center: startPoint,
             zoom: 16,
         });
-
-        this._implementEvents();
-    }
-
-    private _implementEvents() {
-        this._onChangeMapCenterEvent.subscribe(() => {
-            this.deleteOverlays();
-        });
     }
 
     public resetMap() {
-        this.setMapcenter(null);
-        this.deleteOverlays();
+        //  this.setMapcenter(null);
+        //  this.deleteOverlays();
     }
 
     public get map(): google.maps.Map {
@@ -49,15 +38,13 @@ export class GMapService {
         if (config && !config.emitChangeEvent) {
             return;
         }
-
-        // this._onChangeMapCenterEvent.next();
     }
 
     public createCircle(
         radius?: number,
         center?: google.maps.LatLng | google.maps.LatLngLiteral
     ) {
-        this._circle = new google.maps.Circle({
+        const circle = new google.maps.Circle({
             strokeColor: 'transparent',
             strokeOpacity: 0.8,
             strokeWeight: 2,
@@ -67,10 +54,23 @@ export class GMapService {
             radius: radius ? radius : null,
         });
 
-        this._circle.setMap(this.map);
+        circle.setMap(this.map);
 
-        this._overlaysArray.push(this._circle);
+        this._overlaysArray.push(circle);
     }
+
+    public createMarker(
+        position?: google.maps.LatLng | google.maps.LatLngLiteral
+    ) {
+        const marker = new google.maps.Marker({
+            position: position ? position : this.map.getCenter(),
+        });
+
+        marker.setMap(this.map);
+
+        this._overlaysArray.push(marker);
+    }
+
 
     private deleteOverlays() {
         if (this._overlaysArray) {
