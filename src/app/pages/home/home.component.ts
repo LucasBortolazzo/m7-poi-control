@@ -298,18 +298,32 @@ export class HomeComponent implements OnInit, OnDestroy {
         this._gerarGerarOvelays(poisVeiculosTotalizadorFilterData);
     }
 
-    private _gerarOvelayPoi(poi: Poi) {
-        this._gMapService.createCircle(poi.raio, poi.center);
-        const contentTest = '<div class="content">' +
+    private _poiInfoWindowTemplate(poi: Poi): string {
+        const poiRaio = (Math.round(poi.raio * 100) / 100).toFixed(2);
+        let totalLeiturasPoi = 0;
+
+        poi.veiculos.map((poiVeiculo) => poiVeiculo)
+            .map((veiculoLeitura) => {
+                totalLeiturasPoi += veiculoLeitura.leiturasVeiculo.length;
+            });
+
+        const content = '<div class="content">' +
             '<div class="poi-content" > ' +
             '<p class="poi-title"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
-            '<p class="poi-subtitle"> lat: ' + poi.latitude + ' lng: ' + poi.longitude + ', raio: ' + poi.raio + ' Metros </p>' +
-            '<p class="poi-totalizador" > Tempo total POI: <span>' + poi.totalizadorPoi.tempo_total_dia_veiculos +
+            '<p class="poi-subtitle"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
+            '<p class="poi-totalizador" > Tempo total de veículos no POI: <span>' + poi.totalizadorPoi.tempo_total_dia_veiculos +
             ' dia(s), ' + poi.totalizadorPoi.tempo_total_hora_veiculos + ' hora(s) e ' + poi.totalizadorPoi.tempo_total_minuto_veiculos + ' minuto(s) </span></p > ' +
-            '<p class="poi-totalizador" > Total veículos POI: <span>2 </span></p> ' +
+            '<p class="poi-totalizador" > Total de veículos distintos no POI: <span> ' + poi.veiculos.length + ' </span></p> ' +
+            '<p class="poi-totalizador" > Total de leituras de veículos no POI: <span> ' + totalLeiturasPoi + ' </span></p> ' +
             '</div>' +
             '</div>';
-        this._gMapService.createMarkerInfoWindow(poi.center, contentTest, 'opened');
+
+        return content;
+    }
+
+    private _gerarOvelayPoi(poi: Poi) {
+        this._gMapService.createCircle(poi.raio, poi.center);
+        this._gMapService.createMarkerInfoWindow(poi.center, this._poiInfoWindowTemplate(poi), 'opened');
 
         setTimeout(() => {
             this._gMapService.setMapcenter(poi.center);
