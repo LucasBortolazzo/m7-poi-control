@@ -22,6 +22,7 @@ import { FilterForm } from './model/filtro-form';
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
 import { PoisVeiculosTotalizador } from './model/pois-veiculos-totalizador';
+import { TotalizadorTempo } from './model/totalizador-tempo';
 import { dadosFicticiosVeiculos, Veiculo } from './model/veiculo';
 import { VeiculoLeitura } from './model/veiculo-leitura';
 
@@ -307,14 +308,53 @@ export class HomeComponent implements OnInit, OnDestroy {
                 totalLeiturasPoi += veiculoLeitura.leiturasVeiculo.length;
             });
 
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' +
-            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
+        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
+            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
             '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
             '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
             '<p class="poi-totalizador"> Tempo total de veículos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + poi.totalizadorPoi.tempo_total_dia_veiculos +
             ' dia(s), ' + poi.totalizadorPoi.tempo_total_hora_veiculos + ' hora(s) e ' + poi.totalizadorPoi.tempo_total_minuto_veiculos + ' minuto(s) </span></p > ' +
             '<p class="poi-totalizador" > Total de veículos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
             '<p class="poi-totalizador" > Total de leituras de veículos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
+            '</div>' +
+            '</div>';
+
+        return content;
+    }
+
+    private _veiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, totalizadorTempoVeiculo: TotalizadorTempo): string {
+        const dadosExibicao = {
+            nome: dadosVeiculo.nome,
+            placa: dadosVeiculo.placa,
+            chassi: dadosVeiculo.chassi,
+            renavan: dadosVeiculo.renavan,
+            modelo: dadosVeiculo.modelo,
+            cor: dadosVeiculo.cor,
+            anoFabicacao: dadosVeiculo.anoFabicacao,
+            tempoTotalVeiculoInPoi: totalizadorTempoVeiculo ? totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s), ' +
+                totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) ' +
+                totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : 'N/A',
+            emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Não',
+            latitude: leituraPosicao.latitude,
+            longitude: leituraPosicao.longitude,
+            velocidade: leituraPosicao.velocidade || 0,
+            data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy hh:MM:ss', 'pt-BR') : 'N/A',
+            distanciaParaPoi: leituraPosicao.distanciaParaPoi || 0,
+            inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Não',
+            leituraPosicao: leituraPosicao.inPoiRadius,
+            poiDescri: leituraPosicao.poiDescri
+        };
+
+        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
+            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
+            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' </p>' +
+            '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
+            '<p class="poi-subtitle" style=""> Modelo: ' + dadosExibicao.modelo + ', Cor: ' + dadosExibicao.cor + ', Ano Fab.: ' + dadosExibicao.anoFabicacao + '</p>' +
+            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H </p>' +
+            '<p class="poi-totalizador"> Data leitura: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.data + '</span> <span>, Movimento: ' + dadosExibicao.emMovimento + '</span>' +
+            '<p>Tempo total do veículo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
+            '<p class="poi-totalizador">Distância para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: ' + dadosExibicao.inPoiRadius + '</span> </p> ' +
+            '<p class="poi-totalizador" > POI Referência: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
             '</div>' +
             '</div>';
 
@@ -335,27 +375,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
             switch (leituraVeiculo.overlay) {
                 case 'infoWindow': {
-                    const content = '<div id="content">' +
-                        '<div id="siteNotice">' +
-                        "</div>" +
-                        '<h1 id="firstHeading" class="firstHeading">Uluru</h1>' +
-                        '<div id="bodyContent">' +
-                        "<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large " +
-                        "sandstone rock formation in the southern part of the " +
-                        "Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) " +
-                        "south west of the nearest large town, Alice Springs; 450&#160;km " +
-                        "(280&#160;mi) by road. Kata Tjuta and Uluru are the two major " +
-                        "features of the Uluru - Kata Tjuta National Park. Uluru is " +
-                        "sacred to the Pitjantjatjara and Yankunytjatjara, the " +
-                        "Aboriginal people of the area. It has many springs, waterholes, " +
-                        "rock caves and ancient paintings. Uluru is listed as a World " +
-                        "Heritage Site.</p>" +
-                        '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">' +
-                        "https://en.wikipedia.org/w/index.php?title=Uluru</a> " +
-                        "(last visited June 22, 2009).</p>" +
-                        "</div>" +
-                        "</div>";
-                    this._gMapService.createMarkerInfoWindow(leitura.center, content, 'closed', 'car-test.png');
+                    this._gMapService.createMarkerInfoWindow(leitura.center, this._veiculoLeituraWindowTemplate(leitura,
+                        leituraVeiculo.dadosFicticiosVeiculo, leituraVeiculo.totalizadorTempoVeiculo), 'closed', 'car-test.png');
                     return;
                 }
             }
