@@ -65,7 +65,7 @@ export class GMapService {
 
             const newPoiCalculate: Poi = {
                 id: +id,
-                nome: 'Dynamic POI(Temporario)',
+                nome: 'Dynamic POI(Temporário)',
                 latitude: circle.getCenter().lat(),
                 longitude: circle.getCenter().lng(),
                 raio: circle.getRadius(),

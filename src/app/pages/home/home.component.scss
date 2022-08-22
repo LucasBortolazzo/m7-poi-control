@@ -17,13 +17,15 @@ main {
     margin-top: 1rem;
     width: 100%;
 
-    h2 {
-      color: $primary;
-      text-align: center;
+    mat-expansion-panel-header {
+      mat-panel-title {
+        color: $primary;
+        font-size: 2rem;
+      }
     }
+
     table {
       width: 100%;
-      z-index: 10;
     }
   }
 
