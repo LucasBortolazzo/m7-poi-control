@@ -307,14 +307,14 @@ export class HomeComponent implements OnInit, OnDestroy {
                 totalLeiturasPoi += veiculoLeitura.leiturasVeiculo.length;
             });
 
-        const content = '<div class="content">' +
-            '<div class="poi-content" > ' +
-            '<p class="poi-title"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
-            '<p class="poi-subtitle"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
-            '<p class="poi-totalizador" > Tempo total de veículos no POI: <span>' + poi.totalizadorPoi.tempo_total_dia_veiculos +
+        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' +
+            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
+            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
+            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
+            '<p class="poi-totalizador"> Tempo total de veículos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + poi.totalizadorPoi.tempo_total_dia_veiculos +
             ' dia(s), ' + poi.totalizadorPoi.tempo_total_hora_veiculos + ' hora(s) e ' + poi.totalizadorPoi.tempo_total_minuto_veiculos + ' minuto(s) </span></p > ' +
-            '<p class="poi-totalizador" > Total de veículos distintos no POI: <span> ' + poi.veiculos.length + ' </span></p> ' +
-            '<p class="poi-totalizador" > Total de leituras de veículos no POI: <span> ' + totalLeiturasPoi + ' </span></p> ' +
+            '<p class="poi-totalizador" > Total de veículos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
+            '<p class="poi-totalizador" > Total de leituras de veículos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
             '</div>' +
             '</div>';
 
