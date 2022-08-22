@@ -23,6 +23,7 @@ import {
     MAT_MOMENT_DATE_FORMATS,
     MomentDateAdapter,
 } from '@angular/material-moment-adapter';
+import { DialogMemoriaCalculoComponent } from './pages/dialog-memoria-calculo/dialog-memoria-calculo.component';
 
 registerLocaleData(localePt);
 export const PT_BR_DATE_FORMAT = {
@@ -38,7 +39,7 @@ export const PT_BR_DATE_FORMAT = {
 };
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent],
+    declarations: [AppComponent, HomeComponent, DialogMemoriaCalculoComponent],
     imports: [
         BrowserModule,
         AppRoutingModule,

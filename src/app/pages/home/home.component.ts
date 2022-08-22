@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as moment from 'moment';
@@ -18,6 +19,7 @@ import {
     startWith,
     Subscription,
 } from 'rxjs';
+import { DialogMemoriaCalculoComponent } from '../dialog-memoria-calculo/dialog-memoria-calculo.component';
 
 import { FilterForm } from './model/filtro-form';
 import { LeituraPosicao } from './model/leitura-posicao';
@@ -58,7 +60,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fb: FormBuilder,
         private _snackBar: MatSnackBar,
         private _gMapService: GMapService,
-        private _poiService: PoiService
+        private _poiService: PoiService,
+        private _dialog: MatDialog
     ) { }
 
     ngOnInit(): void {
@@ -675,6 +678,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public abrirLocalizacaoMapa(center: google.maps.LatLng | google.maps.LatLngLiteral | null) {
         this._gMapService.setMapcenter(center);
+    }
+
+    public abrirDialogMemoriaCalculo(poi: Poi) {
+        this._dialog.open(DialogMemoriaCalculoComponent, {
+            data: {
+                poi: poi
+            },
+        });
     }
 
     ngOnDestroy(): void {

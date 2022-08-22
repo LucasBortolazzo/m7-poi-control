@@ -22,6 +22,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HttpClientModule } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
+import { MatDialogModule } from '@angular/material/dialog';
+import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 @NgModule({
     declarations: [],
@@ -30,6 +32,7 @@ import { MatTableModule } from '@angular/material/table';
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
+        NgxJsonViewerModule,
         MatToolbarModule,
         MatCardModule,
         MatTabsModule,
@@ -46,7 +49,8 @@ import { MatTableModule } from '@angular/material/table';
         MatDatepickerModule,
         MatExpansionModule,
         MatSelectModule,
-        MatTableModule
+        MatTableModule,
+        MatDialogModule,
     ],
     providers: [MatDatepickerModule],
 })
