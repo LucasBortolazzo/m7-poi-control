@@ -1,73 +1,133 @@
 @import '../../../styles/01-settings/settings-dir';
 @import '../../../styles/02-tools/tools-dir';
 
-#map {
-  height: 60rem;
-  background-color: #ccc;
-}
+main {
+  height: 100vh;
+  width: 100vw;
+  @include flex(column, flex-start, flex-start);
 
-.content-form {
-  width: 35rem;
-  max-height: 60rem;
-  position: absolute;
-  overflow: hidden;
-  top: 7.8rem;
-  right: 7rem;
-  padding: 0;
-  @include flex(row, center, center);
-  box-shadow: 0px 1px 17px 0px #aaa;
-  border-radius: 6px;
-  background-color: $gray-600;
+  #map {
+    min-height: 60rem;
+    width: 100%;
+    background-color: #ccc;
+    flex-grow: 1;
+  }
 
-  mat-card {
-    height: 100%;
-    position: relative;
+  .poi-table {
+    margin-top: 1rem;
+    width: 100%;
 
-    .mat-card-title {
-      text-align: center;
-      font-weight: bold;
-      font-style: italic;
-      text-align: center;
+    h2 {
       color: $primary;
-      margin-bottom: 2rem;
+      text-align: center;
     }
-
-    .mat-card-subtitle {
-      font-size: 1.5rem;
-
-      span {
-        &:last-child {
-          font-weight: bold;
-          font-style: italic;
-        }
-      }
-    }
-
-    .card-overlay {
+    table {
       width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      position: absolute;
-      z-index: 999999;
-      background-color: rgba($color: #fff, $alpha: 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      z-index: 10;
     }
+  }
 
-    form {
-      .fields {
-        @include flex(column, center, center);
-        margin-bottom: 1rem;
+  .content-form {
+    width: 35rem;
+    max-height: 60rem;
+    position: absolute;
+    overflow: hidden;
+    top: 7.8rem;
+    right: 7rem;
+    padding: 0;
+    @include flex(row, center, center);
+    box-shadow: 0px 1px 17px 0px #aaa;
+    border-radius: 6px;
+    background-color: $gray-600;
+    z-index: 5;
+    flex-shrink: 0;
 
-        .mat-form-field {
+    mat-expansion-panel {
+      height: 100%;
+      width: 100%;
+      position: relative;
+
+      mat-expansion-panel-header {
+        ::ng-deep .mat-expansion-panel-header-text {
           width: 100%;
         }
+
+        mat-panel-title {
+          color: $primary;
+          font-size: 2rem;
+          text-transform: uppercase;
+        }
       }
 
-      .buttons {
-        @include flex(center, flex-start, space-between);
+      .subtitle {
+        font-size: 1.5rem;
+
+        span {
+          &:last-child {
+            font-weight: bold;
+            font-style: italic;
+          }
+        }
+      }
+
+      .card-overlay {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        position: absolute;
+        z-index: 999999;
+        background-color: rgba($color: #fff, $alpha: 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      form {
+        .fields {
+          @include flex(column, center, center);
+          margin-bottom: 1rem;
+
+          .mat-form-field {
+            width: 100%;
+          }
+        }
+
+        .buttons {
+          @include flex(row, flex-start, space-between);
+        }
+      }
+    }
+  }
+
+  @include responsive(1150px) {
+    .content-form {
+      position: static;
+      width: 100%;
+      border-radius: 0;
+      margin-bottom: 0.2rem;
+
+      mat-expansion-panel {
+        width: 100%;
+
+        .welcome {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @include responsive(991px) {
+    .poi-table {
+      table {
+        .mat-column-latitude,
+        .mat-column-longitude,
+        .mat-column-raio,
+        .mat-column-veiculos,
+        .mat-column-verNoMapa,
+        .mat-column-verDadosCalculo {
+          display: none;
+        }
       }
     }
   }

@@ -65,7 +65,7 @@ export class GMapService {
 
             const newPoiCalculate: Poi = {
                 id: +id,
-                nome: 'Dynamic POI(Temporário)',
+                nome: 'Dynamic POI(Temporario)',
                 latitude: circle.getCenter().lat(),
                 longitude: circle.getCenter().lng(),
                 raio: circle.getRadius(),
@@ -131,7 +131,7 @@ export class GMapService {
         });
     }
 
-    private closeAllInfoWindow() {
+    public closeAllInfoWindow() {
         for (let i in this._overlaysArray) {
             try {
                 if (this._overlaysArray[i] instanceof google.maps.InfoWindow) {

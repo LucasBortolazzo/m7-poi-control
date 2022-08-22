@@ -1,8 +1,9 @@
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
+import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as moment from 'moment';
 import {
@@ -29,20 +30,43 @@ import { VeiculoLeitura } from './model/veiculo-leitura';
 import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
 
+export interface PeriodicElement {
+    name: string;
+    position: number;
+    weight: number;
+    symbol: string;
+}
+
+const ELEMENT_DATA: PeriodicElement[] = [
+    { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
+    { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
+    { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
+    { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
+    { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
+    { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
+    { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
+    { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
+    { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
+    { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
+];
+
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+    displayedColumns: string[] = ['id', 'nome', 'latitude', 'longitude', 'raio', 'veiculos', 'totalizadorPoi', 'verNoMapa', 'verDadosCalculo'];
+
+    @ViewChild(MatExpansionPanel) private _matExpansionPanelFiltros: MatExpansionPanel;
+
     private _subscription: Subscription = new Subscription();
-    private _map: google.maps.Map;
-    private _circle: google.maps.Circle;
 
     private _poisVeiculosTotalizadoresOriginal: PoisVeiculosTotalizador[] = [];
     private _leiturasPosicaoveiculosOutPoi: VeiculoLeitura[] = [];
     private _dadosVeiculo: Veiculo[] = dadosFicticiosVeiculos;
 
+    public dataPoiTable: Poi[] = [];
     public formFiltro: FormGroup;
 
     public loading = false;
@@ -64,6 +88,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         this._carregarDados();
     }
 
+    ngAfterViewInit(): void {
+        if (this._matExpansionPanelFiltros) {
+            this._subscription.add(
+                this._matExpansionPanelFiltros.opened.subscribe(() => this._gMapService.closeAllInfoWindow())
+            );
+        }
+    }
+
     private _implementEvents() {
         this._subscription.add(
             this._gMapService.$processarCalcularPoisEvent.subscribe({
@@ -73,8 +105,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this._processarPoisLeiturasVeiculos(newPoi);
                         this.formFiltro.get('poi').setValue(newPoi);
 
-                        this._exibirMensagem('O POI selecionado não foi encontrado na lista de POIs pré-cadastrados, portanto ele '
-                            .concat('será calculado temporariamente, considerando o novo raio, e ficará disponível somente até a página ser recarregada.'), 10000);
+                        this._exibirMensagem('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
+                            .concat('sera calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 10000);
                     };
 
                     if (!this._poisVeiculosTotalizadoresOriginal.length) {
@@ -84,7 +116,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                     this._gMapService.resetMap();
 
                     this._calcularPois();
-
                 },
                 error: (e: any) => {
                     console.error('Ocorreu um erro inesperado. ' + e);
@@ -207,6 +238,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                 };
                 poi.icon = null;
 
+                poi.raio = +(Math.round(poi.raio * 100) / 100).toFixed(2);
+
                 const poiCenter = {
                     lat: poi.latitude,
                     lng: poi.longitude,
@@ -315,10 +348,10 @@ export class HomeComponent implements OnInit, OnDestroy {
             '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
             '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
             '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
-            '<p class="poi-totalizador"> Tempo total de veículos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + poi.totalizadorPoi.tempo_total_dia_veiculos +
+            '<p class="poi-totalizador"> Tempo total de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + poi.totalizadorPoi.tempo_total_dia_veiculos +
             ' dia(s), ' + poi.totalizadorPoi.tempo_total_hora_veiculos + ' hora(s) e ' + poi.totalizadorPoi.tempo_total_minuto_veiculos + ' minuto(s) </span></p > ' +
-            '<p class="poi-totalizador" > Total de veículos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
-            '<p class="poi-totalizador" > Total de leituras de veículos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
+            '<p class="poi-totalizador" > Total de veiculos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
+            '<p class="poi-totalizador" > Total de leituras de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
             '</div>' +
             '</div>';
 
@@ -338,25 +371,25 @@ export class HomeComponent implements OnInit, OnDestroy {
                 totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) ' +
                 totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : 'N/A',
             idLeitura: leituraPosicao.id,
-            emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Não',
+            emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Nao',
             latitude: leituraPosicao.latitude,
             longitude: leituraPosicao.longitude,
             velocidade: leituraPosicao.velocidade || 0,
             data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy hh:MM:ss', 'pt-BR') : 'N/A',
             distanciaParaPoi: leituraPosicao.distanciaParaPoi || 0,
-            inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Não',
+            inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
             leituraPosicao: leituraPosicao.inPoiRadius,
             poiDescri: leituraPosicao.poiDescri
         };
 
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
+        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;z-index: 99999">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
             '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
-            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' - ' + dadosExibicao.data + ' | ' + dadosExibicao.idLeitura + ' </p>' +
+            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' - ' + dadosExibicao.data + ' | ID:' + dadosExibicao.idLeitura + ' </p>' +
             '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span>  </p>' +
-            '<p>Tempo <strong><i>Total</i></strong> do veículo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
-            '<p class="poi-totalizador">Distância para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: ' + dadosExibicao.inPoiRadius + '</span> </p> ' +
-            '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referência: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
+            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span> </p>' +
+            '<p>Tempo <strong><i>Total</i></strong> do veiculo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
+            '<p class="poi-totalizador">Distancia para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: ' + dadosExibicao.inPoiRadius + '</span> </p> ' +
+            '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referencia: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
             '</div>' +
             '</div>';
 
@@ -369,7 +402,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         setTimeout(() => {
             this._gMapService.setMapcenter(poi.center);
-        }, 600);
+        }, 1000);
     }
 
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
@@ -486,6 +519,14 @@ export class HomeComponent implements OnInit, OnDestroy {
                 tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
             };
         });
+
+        poisVeiculosTotalizadores.forEach((poiVeiculoTotalizador) => {
+            if (!this.dataPoiTable.find((poi) => poi.id === poiVeiculoTotalizador.poi.id)) {
+                this.dataPoiTable.push(poiVeiculoTotalizador.poi);
+            }
+        });
+
+        this.dataPoiTable = [...this.dataPoiTable];
     }
 
     diffYMDHMS(date1: moment.Moment, date2: moment.Moment) {
@@ -616,7 +657,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private _exibirMensagem(mensagem: string, duracao?: number,) {
-        this._snackBar.open(mensagem, 'OK', {
+        this._snackBar.open(mensagem, 'Ok', {
             horizontalPosition: 'center',
             verticalPosition: 'top',
             duration: duracao ? duracao : 5000,
@@ -626,7 +667,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public _exibirMensagemErro(error: HttpErrorResponse) {
         const detalhesError = `(Status: ${error.status}. ${error.message ? ` Detalhes: ${error.message}` : ''
             })`;
-        const message = `🌧 Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`;
+        const message = ` Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`;
 
         this._snackBar.open(message, 'OK', {
             horizontalPosition: 'center',
@@ -635,8 +676,17 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
     }
 
+    private _esconderFiltros() {
+        if (!this._matExpansionPanelFiltros) {
+            return;
+        }
+
+        this._matExpansionPanelFiltros.close();
+    }
+
     public visualizarPois() {
         this._gMapService.$processarCalcularPoisEvent.next();
+        this._esconderFiltros();
     }
 
     public redefinirFiltros() {

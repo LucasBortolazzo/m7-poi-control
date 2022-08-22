@@ -21,6 +21,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HttpClientModule } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
     declarations: [],
@@ -45,7 +46,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
         MatDatepickerModule,
         MatExpansionModule,
         MatSelectModule,
+        MatTableModule
     ],
     providers: [MatDatepickerModule],
 })
-export class SharedModule {}
+export class SharedModule { }
