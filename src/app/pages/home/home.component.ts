@@ -59,7 +59,34 @@ export class HomeComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this._initializeMap();
         this._criarFormFiltro();
+        this._implementEvents();
         this._carregarDados();
+    }
+
+    private _implementEvents() {
+        this._subscription.add(
+            this._gMapService.$processarCalcularPoisEvent.subscribe({
+                next: (newPoi: Poi) => {
+                    if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
+                        this.pois.push(newPoi);
+                        this._processarPoisLeiturasVeiculos(newPoi);
+                        this.formFiltro.get('poi').setValue(newPoi);
+                    };
+
+                    if (!this._poisVeiculosTotalizadoresOriginal.length) {
+                        this._processarPoisLeiturasVeiculos();
+                    };
+
+                    this._gMapService.resetMap();
+
+                    this._calcularPois();
+
+                },
+                error: (e: any) => {
+                    console.error('Ocorreu um erro inesperado. ' + e);
+                },
+            })
+        );
     }
 
     private _initializeMap() {
@@ -131,8 +158,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 .pipe(
                     finalize(() => {
                         this.loading = false;
-
-                        this._processarPoisLeiturasVeiculos();
+                        this._gMapService.$processarCalcularPoisEvent.next();
                     })
                 )
                 .subscribe({
@@ -152,13 +178,17 @@ export class HomeComponent implements OnInit, OnDestroy {
         );
     }
 
-    private _processarPoisLeiturasVeiculos() {
+    private _processarPoisLeiturasVeiculos(poiFilter?: Poi) {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
         const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
 
         this.leituraPosicao.map((leituraPosicao: LeituraPosicao) => {
 
-            this.pois.map((poi: Poi) => {
+            this.pois.forEach((poi: Poi) => {
+
+                if (poiFilter && poi.id !== poiFilter.id) {
+                    return;
+                }
 
                 const newLeituraPosicao = Object.assign({}, leituraPosicao);
 
@@ -171,7 +201,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     lat: poi.latitude,
                     lng: poi.longitude
                 };
-                poi.icon = 'parking_lot_maps.png';
+                poi.icon = null;
 
                 const poiCenter = {
                     lat: poi.latitude,
@@ -243,9 +273,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             });
         });
 
-        this._poisVeiculosTotalizadoresOriginal = poisVeiculosTotalizadores;
-
-        this._calcularPois();
+        this._poisVeiculosTotalizadoresOriginal = [...this._poisVeiculosTotalizadoresOriginal, ...poisVeiculosTotalizadores];
     }
 
     private _calcularPois() {
@@ -285,7 +313,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         setTimeout(() => {
             this._gMapService.setMapcenter(poi.center);
-        }, 800);
+        }, 600);
     }
 
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
@@ -321,8 +349,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
-        this._gMapService.resetMap();
-
         poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
             this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
 
@@ -598,7 +624,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     public visualizarPois() {
-        this._calcularPois();
+        this._gMapService.$processarCalcularPoisEvent.next();
     }
 
     public redefinirFiltros() {

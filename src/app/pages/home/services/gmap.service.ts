@@ -1,10 +1,14 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { ImgTest } from '../../../../assets/img/img-test';
+import { Poi } from '../model/poi';
 
 @Injectable({ providedIn: 'root' })
 export class GMapService {
     private _map: google.maps.Map;
     private _overlaysArray: any[] = [];
+
+    public $processarCalcularPoisEvent: EventEmitter<Poi | void> = new EventEmitter();
 
     constructor() { }
 
@@ -49,9 +53,32 @@ export class GMapService {
             fillOpacity: 0.1,
             center: center ? center : this.map.getCenter(),
             radius: radius ? radius : null,
+            editable: true
         });
 
         circle.setMap(this.map);
+        console.log(circle.getRadius());
+        circle.addListener("radius_changed", () => {
+            console.log('POI radius changed!. Recalculando POI..');
+            let id = Math.abs(circle.getCenter().lng() + circle.getRadius()).toString();
+            id = id.split('.').join("");
+
+            const newPoiCalculate: Poi = {
+                id: +id,
+                nome: 'Dynamic POI(Temporário)',
+                latitude: circle.getCenter().lat(),
+                longitude: circle.getCenter().lng(),
+                raio: circle.getRadius(),
+                center: {
+                    lat: circle.getCenter().lat(), lng: circle.getCenter().lng()
+                },
+                overlay: 'circle',
+                totalizadorPoi: null,
+                veiculos: []
+            };
+
+            this.$processarCalcularPoisEvent.next(newPoiCalculate);
+        });
 
         this._overlaysArray.push(circle);
     }
