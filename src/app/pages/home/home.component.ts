@@ -72,6 +72,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.pois.push(newPoi);
                         this._processarPoisLeiturasVeiculos(newPoi);
                         this.formFiltro.get('poi').setValue(newPoi);
+
+                        this._exibirMensagem('O POI selecionado não foi encontrado na lista de POIs pré-cadastrados, portanto ele '
+                            .concat('será calculado temporariamente, considerando o novo raio, e ficará disponível somente até a página ser recarregada.'), 10000);
                     };
 
                     if (!this._poisVeiculosTotalizadoresOriginal.length) {
@@ -139,7 +142,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         this.leituraPosicao = leituraPosicao;
                     },
                     error: e => {
-                        this.exibirMensagemErro(e);
+                        this._exibirMensagemErro(e);
                     },
                 })
         );
@@ -173,7 +176,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                         // this.leituraPosicao = this.leituraPosicao.slice(0, 100);
                     },
                     error: (e: HttpErrorResponse) => {
-                        this.exibirMensagemErro(e);
+                        this._exibirMensagemErro(e);
                     },
                 })
         );
@@ -611,15 +614,15 @@ export class HomeComponent implements OnInit, OnDestroy {
         return poisVeiculosTotalizadorFilterData;
     }
 
-    private _exibirMensagem(mensagem: string) {
+    private _exibirMensagem(mensagem: string, duracao?: number,) {
         this._snackBar.open(mensagem, 'OK', {
             horizontalPosition: 'center',
             verticalPosition: 'top',
-            duration: 2000,
+            duration: duracao ? duracao : 5000,
         });
     }
 
-    public exibirMensagemErro(error: HttpErrorResponse) {
+    public _exibirMensagemErro(error: HttpErrorResponse) {
         const detalhesError = `(Status: ${error.status}. ${error.message ? ` Detalhes: ${error.message}` : ''
             })`;
         const message = `🌧 Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`;
