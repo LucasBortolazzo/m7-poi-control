@@ -347,14 +347,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
             '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
-            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' </p>' +
+            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' - ' + dadosExibicao.data + ' </p>' +
             '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
-            '<p class="poi-subtitle" style=""> Modelo: ' + dadosExibicao.modelo + ', Cor: ' + dadosExibicao.cor + ', Ano Fab.: ' + dadosExibicao.anoFabicacao + '</p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H </p>' +
-            '<p class="poi-totalizador"> Data leitura: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.data + '</span> <span>, Movimento: ' + dadosExibicao.emMovimento + '</span>' +
+            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span>  </p>' +
             '<p>Tempo total do veículo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
             '<p class="poi-totalizador">Distância para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: ' + dadosExibicao.inPoiRadius + '</span> </p> ' +
-            '<p class="poi-totalizador" > POI Referência: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
+            '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referência: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
             '</div>' +
             '</div>';
 
