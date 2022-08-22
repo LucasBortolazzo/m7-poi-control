@@ -608,31 +608,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                 }
                 );
             }
-
-            if (this._filtroForm.dataLeitura) {
-                poisVeiculosTotalizadorFilterData =
-                    poisVeiculosTotalizadorFilterData.filter(
-                        ({ poi }) =>
-                            poi.veiculos.some(({ leiturasVeiculo }) =>
-                                leiturasVeiculo.some(({ data }) => {
-                                    const dataLeitura = formatDate(
-                                        data,
-                                        'dd/MM/yyyy',
-                                        'pt-BR',
-                                        '+00:00'
-                                    );
-                                    const dataFiltro = formatDate(
-                                        this._filtroForm.dataLeitura,
-                                        'dd/MM/yyyy',
-                                        'pt-BR',
-                                        '+00:00'
-                                    );
-
-                                    return dataLeitura === dataFiltro;
-                                })
-                            )
-                    );
-            }
         }
 
         return poisVeiculosTotalizadorFilterData;
