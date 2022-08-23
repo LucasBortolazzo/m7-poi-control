@@ -6,7 +6,6 @@ import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as moment from 'moment';
 import {
     debounceTime,
     delay,
@@ -19,8 +18,10 @@ import {
     startWith,
     Subscription,
 } from 'rxjs';
-import { DialogMemoriaCalculoComponent } from '../dialog-memoria-calculo/dialog-memoria-calculo.component';
 
+import * as moment from 'moment';
+
+import { DialogMemoriaCalculoComponent } from '../dialog-memoria-calculo/dialog-memoria-calculo.component';
 import { FilterForm } from './model/filtro-form';
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
@@ -28,7 +29,6 @@ import { PoisVeiculosTotalizador } from './model/pois-veiculos-totalizador';
 import { TotalizadorTempo } from './model/totalizador-tempo';
 import { dadosFicticiosVeiculos, Veiculo } from './model/veiculo';
 import { VeiculoLeitura } from './model/veiculo-leitura';
-
 import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
 
@@ -38,23 +38,21 @@ import { PoiService } from './services/poi.service';
     styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
-    displayedColumns: string[] = ['id', 'nome', 'latitude', 'longitude', 'raio', 'veiculos', 'totalizadorPoi', 'verNoMapa', 'verDadosMemoriaCalculo'];
 
     @ViewChild('MatExpansionPanelFiltro') private _matExpansionPanelFiltros: MatExpansionPanel;
 
     private _subscription: Subscription = new Subscription();
-
     private _poisVeiculosTotalizadoresOriginal: PoisVeiculosTotalizador[] = [];
     private _leiturasPosicaoveiculosOutPoi: VeiculoLeitura[] = [];
     private _dadosVeiculo: Veiculo[] = dadosFicticiosVeiculos;
 
     public dataPoiTable: Poi[] = [];
     public formFiltro: FormGroup;
-
     public loading = false;
     public pois: Poi[] = [];
     public placas: string[] = [];
     public leituraPosicao: LeituraPosicao[] = [];
+    public displayedColumns: string[] = ['id', 'nome', 'latitude', 'longitude', 'raio', 'veiculos', 'totalizadorPoi', 'verNoMapa', 'verDadosMemoriaCalculo'];
 
     constructor(
         private _fb: FormBuilder,
@@ -313,7 +311,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             poisVeiculosTotalizadorFilterData
         );
 
-        console.log(poisVeiculosTotalizadorFilterData);
         this._gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizadorFilterData);
 
         this._gerarGerarOvelays(poisVeiculosTotalizadorFilterData);
@@ -473,8 +470,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
         });
-
-        console.log(this._leiturasPosicaoveiculosOutPoi);
     }
 
     private _calcularTempoTotalVeiculosInPoi(
@@ -648,7 +643,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    public _exibirMensagemErro(error: HttpErrorResponse) {
+    private _exibirMensagemErro(error: HttpErrorResponse) {
         const detalhesError = `(Status: ${error.status}. ${error.message ? ` Detalhes: ${error.message}` : ''
             })`;
         const message = ` Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`;
@@ -665,7 +660,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        //  this._matExpansionPanelFiltros.close();
+        this._matExpansionPanelFiltros.close();
     }
 
     public visualizarPois() {
