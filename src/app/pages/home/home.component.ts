@@ -271,7 +271,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private _calcularTempoTotalVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
     ) {
-        this.dataPoiTable = calculoPoiUtils.calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadores, this.dataPoiTable);
+        const totalizadorPoi: PoisVeiculosTotalizador[] = calculoPoiUtils.calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadores);
+
+        this.dataPoiTable = calculoPoiUtils.gerarDadosTotalizadoresTabela(totalizadorPoi, this.dataPoiTable);
     }
 
     private _calcularTempoVeiculosInPoi(

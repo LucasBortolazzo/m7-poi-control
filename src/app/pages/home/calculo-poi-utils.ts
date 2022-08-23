@@ -171,9 +171,8 @@ export default class calculoPoiUtils {
     }
 
     static calcularTempoTotalVeiculosInPoi(
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador[],
-        dataPoiTable: Poi[]
-    ) {
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ): PoisVeiculosTotalizador[] {
         const currentDate = moment().set({ "hour": 0, "minute": 0, "second": 0 });
 
         poisVeiculosTotalizadores.forEach(poiVeiculoTotalizador => {
@@ -198,6 +197,10 @@ export default class calculoPoiUtils {
             };
         });
 
+        return poisVeiculosTotalizadores;
+    }
+
+    static gerarDadosTotalizadoresTabela(poisVeiculosTotalizadores: PoisVeiculosTotalizador[], dataPoiTable: Poi[]): Poi[] {
         poisVeiculosTotalizadores.forEach((poiVeiculoTotalizador) => {
             if (!dataPoiTable.find((poi) => poi.id === poiVeiculoTotalizador.poi.id)) {
                 dataPoiTable.push(poiVeiculoTotalizador.poi);
