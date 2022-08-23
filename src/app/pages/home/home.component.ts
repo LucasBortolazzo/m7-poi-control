@@ -33,6 +33,7 @@ import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
 import TemplateUtils from 'src/app/shared/template-utils';
 import calculoPoiUtils from './calculo-poi-utils';
+import { DateUtils } from 'src/app/shared/date-utils';
 
 @Component({
     selector: 'app-home',
@@ -335,7 +336,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 dateTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos, 'minutes');
             });
 
-            const diffLeituraGeral = this.diffYMDHMS(
+            const diffLeituraGeral = DateUtils.diffYMDHMS(
                 dataInicialTotalizadores,
                 dateTotalizadoresSomaTempoTotal
             );
@@ -356,34 +357,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataPoiTable = [...this.dataPoiTable];
     }
 
-    diffYMDHMS(date1: moment.Moment, date2: moment.Moment) {
-        let years = date1.diff(date2, 'year');
-        date2.add(years, 'years');
-
-        let months = date1.diff(date2, 'months');
-        date2.add(months, 'months');
-
-        let days = date1.diff(date2, 'days');
-        date2.add(days, 'days');
-
-        let hours = date1.diff(date2, 'hours');
-        date2.add(hours, 'hours');
-
-        let minutes = date1.diff(date2, 'minutes');
-        date2.add(minutes, 'minutes');
-
-        let seconds = date1.diff(date2, 'seconds');
-
-        years = Math.abs(years);
-        months = Math.abs(months);
-        days = Math.abs(days);
-        hours = Math.abs(hours);
-        minutes = Math.abs(minutes);
-        seconds = Math.abs(seconds);
-
-        return { years, months, days, hours, minutes, seconds };
-    }
-
     private _calcularTempoVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
     ) {
@@ -398,7 +371,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                     ]?.data?.toString()
                 );
 
-                const diffLeituraGeral = this.diffYMDHMS(
+                const diffLeituraGeral = DateUtils.diffYMDHMS(
                     dataPrimeiraLeituraGeral,
                     dataUltimaLeituraGeral
                 );
@@ -453,16 +426,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                         if (this._filtroForm.dataLeitura) {
                             for (let j = poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo.length - 1; j >= 0; j--) {
                                 const dataLeitura = formatDate(
-                                    poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo[j].data,
-                                    'dd/MM/yyyy',
-                                    'pt-BR',
-                                    '+00:00'
+                                    poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo[j].data, 'dd/MM/yyyy', 'pt-BR', '+00:00'
                                 );
                                 const dataFiltro = formatDate(
-                                    this._filtroForm.dataLeitura,
-                                    'dd/MM/yyyy',
-                                    'pt-BR',
-                                    '+00:00'
+                                    this._filtroForm.dataLeitura, 'dd/MM/yyyy', 'pt-BR', '+00:00'
                                 );
 
                                 if (dataLeitura !== dataFiltro) {
