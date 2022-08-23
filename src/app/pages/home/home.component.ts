@@ -281,6 +281,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             const newLeituraPosicao: LeituraPosicao = Object.assign({}, leituraPosicao);
             newLeituraPosicao.inPoiRadius = false;
             newLeituraPosicao.distanciaParaPoi = null;
+            newLeituraPosicao.center = { lat: newLeituraPosicao.latitude, lng: newLeituraPosicao.longitude };
 
             const leituraProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
                 return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase() &&

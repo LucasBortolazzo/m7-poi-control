@@ -51,7 +51,7 @@ export default class TemplateUtils {
             distanciaParaPoi: leituraPosicao.distanciaParaPoi || 0,
             inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
             leituraPosicao: leituraPosicao.inPoiRadius,
-            poiDescri: leituraPosicao.poiDescri
+            poiDescri: leituraPosicao.poiDescri || 'N/A'
         };
 
         const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;z-index: 99999">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
