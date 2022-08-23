@@ -200,6 +200,34 @@ export default class calculoPoiUtils {
         return poisVeiculosTotalizadores;
     }
 
+    static calcularTempoVeiculosInPoi(
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ) {
+        poisVeiculosTotalizadores.forEach(poiVeiculoTotalizador => {
+            poiVeiculoTotalizador.poi.veiculos.map(veiculo => {
+                const dataPrimeiraLeituraGeral = moment(
+                    veiculo.leiturasVeiculo[0]?.data?.toString()
+                );
+                const dataUltimaLeituraGeral = moment(
+                    veiculo.leiturasVeiculo[
+                        veiculo.leiturasVeiculo.length - 1
+                    ]?.data?.toString()
+                );
+
+                const diffLeituraGeral = DateUtils.diffYMDHMS(
+                    dataPrimeiraLeituraGeral,
+                    dataUltimaLeituraGeral
+                );
+
+                veiculo.totalizadorTempoVeiculo = {
+                    tempo_total_dia_veiculos: diffLeituraGeral.days,
+                    tempo_total_hora_veiculos: diffLeituraGeral.hours,
+                    tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
+                };
+            });
+        });
+    }
+
     static gerarDadosTotalizadoresTabela(poisVeiculosTotalizadores: PoisVeiculosTotalizador[], dataPoiTable: Poi[]): Poi[] {
         poisVeiculosTotalizadores.forEach((poiVeiculoTotalizador) => {
             if (!dataPoiTable.find((poi) => poi.id === poiVeiculoTotalizador.poi.id)) {
