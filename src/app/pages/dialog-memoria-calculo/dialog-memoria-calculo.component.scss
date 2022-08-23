@@ -1,0 +1,15 @@
+@import '../../../styles/01-settings/settings-dir';
+
+h2 {
+  span {
+    color: $primary;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+}
+
+.poi-observacao {
+  font-size: 1.2rem;
+  color: $gray-300;
+  max-width: 80rem;
+}

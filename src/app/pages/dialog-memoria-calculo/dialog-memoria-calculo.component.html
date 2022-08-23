@@ -1,8 +1,19 @@
 <mat-dialog-content>
-    <h1 mat-dialog-title>Memória de cálculo </h1>
+    <h2>Memória de cálculo:
+        <span>{{data.poi.id}} - {{ data.poi.nome }} | Latitude: {{ data.poi.latitude }} Longitude: {{ data.poi.longitude
+            }}</span>
+    </h2>
+    <p class="poi-descricao">Abaixo será demonstrado quais dados o <strong>Poi Control</strong> considerou para calcular
+        o POI.</p>
+    <p class="poi-observacao">Obs: O tempo calculado dos veículos no POI é estimado considerando as leituras
+        sincronizadas até o momento, que geralmente são enviadas para os nossos servidores a cada 30 minutos, sendo
+        assim, pode existir uma diferença de tempo entre o <strong>tempo calculado</strong> e o <strong>tempo
+            real</strong> que o veículo permaneceu
+        no POI, de acordo com a configuração de sincronização de tempo do aparelho instalado no veículo(geralmente é de
+        30 minutos).
+    </p>
+
     <ngx-json-viewer [json]="data.poi" [expanded]="true"></ngx-json-viewer>
-
-
 </mat-dialog-content>
 <div mat-dialog-actions align="end">
     <button tabindex="-1" mat-button mat-dialog-close>Fechar</button>

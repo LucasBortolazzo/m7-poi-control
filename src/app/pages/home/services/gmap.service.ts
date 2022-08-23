@@ -53,34 +53,33 @@ export class GMapService {
             fillOpacity: 0.1,
             center: center ? center : this.map.getCenter(),
             radius: radius ? radius : null,
-            editable: true
+            editable: true,
+            draggable: true
         });
 
         circle.setMap(this.map);
-        console.log(circle.getRadius());
-        circle.addListener("radius_changed", () => {
-            console.log('POI radius changed!. Recalculando POI..');
-            let id = Math.abs(circle.getCenter().lng() + circle.getRadius()).toString();
-            id = id.split('.').join("");
-
-            const newPoiCalculate: Poi = {
-                id: +id,
-                nome: 'Dynamic POI(Temporário)',
-                latitude: circle.getCenter().lat(),
-                longitude: circle.getCenter().lng(),
-                raio: circle.getRadius(),
-                center: {
-                    lat: circle.getCenter().lat(), lng: circle.getCenter().lng()
-                },
-                overlay: 'circle',
-                totalizadorPoi: null,
-                veiculos: []
-            };
-
-            this.$processarCalcularPoisEvent.next(newPoiCalculate);
-        });
+        circle.addListener("radius_changed", () => this._criarPoiDinamico(circle));
+        circle.addListener("dragend", () => this._criarPoiDinamico(circle));
 
         this._overlaysArray.push(circle);
+    }
+
+    private _criarPoiDinamico(circle: google.maps.Circle) {
+        const newPoiCalculate: Poi = {
+            id: new Date().getTime(),
+            nome: 'Dynamic POI(Temporário)',
+            latitude: circle.getCenter().lat(),
+            longitude: circle.getCenter().lng(),
+            raio: circle.getRadius(),
+            center: {
+                lat: circle.getCenter().lat(), lng: circle.getCenter().lng()
+            },
+            overlay: 'circle',
+            totalizadorPoi: null,
+            veiculos: []
+        };
+
+        this.$processarCalcularPoisEvent.next(newPoiCalculate);
     }
 
     public createMarker(

@@ -19,7 +19,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Ponto de interesse</mat-label>
                         <mat-select formControlName="poi" name="poi">
-                            <mat-option *ngFor="let poi of pois" [value]="poi"> {{ poi.id }} - {{ poi.nome }}
+                            <mat-option *ngFor="let poi of pois" [value]="poi.id"> {{ poi.id }} - {{ poi.nome }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -62,7 +62,7 @@
         <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header>
                 <mat-panel-title>
-                    <strong>Totalizadores dos POI's</strong>
+                    <strong>Resumo dos POI's</strong>
                 </mat-panel-title>
                 <mat-panel-description>
 
@@ -120,7 +120,7 @@
                 <ng-container matColumnDef="verNoMapa">
                     <th mat-header-cell *matHeaderCellDef>Posicionar no mapa</th>
                     <td mat-cell *matCellDef="let element">
-                        <button mat-mini-fab color="primary" (click)="abrirLocalizacaoMapa(element.center)">
+                        <button mat-mini-fab color="primary" (click)="abrirLocalizacaoMapa(element)">
                             <mat-icon>my_location</mat-icon>
                         </button>
                     </td>

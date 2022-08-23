@@ -86,10 +86,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
                         this.pois.push(newPoi);
                         this._processarPoisLeiturasVeiculos(newPoi);
-                        this.formFiltro.get('poi').setValue(newPoi);
+                        this.formFiltro.get('poi').setValue(newPoi.id);
 
                         this._exibirMensagem('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
-                            .concat('sera calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 10000);
+                            .concat('sera calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
                     };
 
                     if (!this._poisVeiculosTotalizadoresOriginal.length) {
@@ -122,7 +122,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private get _filtroForm(): FilterForm {
-        const poi = this.formFiltro.get('poi').value || null;
+        const poiId = this.formFiltro.get('poi').value || null;
+        const poi: Poi = poiId ? this.pois.find((poi) => poi.id === poiId) : null;
         const placa = this.formFiltro.get('placa').value || null;
         let dataLeitura = this.formFiltro.get('dataLeitura').value || null;
 
@@ -203,29 +204,29 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.leituraPosicao.map((leituraPosicao: LeituraPosicao) => {
 
             this.pois.forEach((poi: Poi) => {
-
                 if (poiFilter && poi.id !== poiFilter.id) {
                     return;
                 }
 
+                const newPoi = Object.assign({}, poi);
                 const newLeituraPosicao = Object.assign({}, leituraPosicao);
 
-                if (!poi.veiculos) {
-                    poi.veiculos = [];
+                if (!newPoi.veiculos) {
+                    newPoi.veiculos = [];
                 }
 
-                poi.overlay = 'circle';
-                poi.center = {
-                    lat: poi.latitude,
-                    lng: poi.longitude
+                newPoi.overlay = 'circle';
+                newPoi.center = {
+                    lat: newPoi.latitude,
+                    lng: newPoi.longitude
                 };
-                poi.icon = null;
+                newPoi.icon = null;
 
-                poi.raio = +(Math.round(poi.raio * 100) / 100).toFixed(2);
+                newPoi.raio = +(Math.round(newPoi.raio * 100) / 100).toFixed(2);
 
                 const poiCenter = {
-                    lat: poi.latitude,
-                    lng: poi.longitude,
+                    lat: newPoi.latitude,
+                    lng: newPoi.longitude,
                 };
 
                 const leituraPosicaoCenter = {
@@ -240,20 +241,20 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                     );
 
                 newLeituraPosicao.inPoiRadius =
-                    newLeituraPosicao.distanciaParaPoi <= poi.raio;
+                    newLeituraPosicao.distanciaParaPoi <= newPoi.raio;
 
-                newLeituraPosicao.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
+                newLeituraPosicao.poiDescri = `Poi: ${newPoi.id} - ${newPoi.nome} - (lat: ${newPoi.latitude} lng: ${newPoi.longitude})`;
 
                 newLeituraPosicao.center = leituraPosicaoCenter;
 
                 let poiIndex = poisVeiculosTotalizadores.findIndex(
-                    (value: PoisVeiculosTotalizador) => value.poi.id === poi.id
+                    (value: PoisVeiculosTotalizador) => value.poi.id === newPoi.id
                 );
 
                 if (poiIndex === -1) {
                     poiIndex =
                         poisVeiculosTotalizadores.push({
-                            poi: poi,
+                            poi: newPoi,
                         }) - 1;
                 }
 
@@ -664,7 +665,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        this._matExpansionPanelFiltros.close();
+        //  this._matExpansionPanelFiltros.close();
     }
 
     public visualizarPois() {
@@ -676,8 +677,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.formFiltro.reset();
     }
 
-    public abrirLocalizacaoMapa(center: google.maps.LatLng | google.maps.LatLngLiteral | null) {
-        this._gMapService.setMapcenter(center);
+    public abrirLocalizacaoMapa(poi: Poi) {
+        this.formFiltro.get('poi').setValue(poi.id);
+        this.visualizarPois();
     }
 
     public abrirDialogMemoriaCalculo(poi: Poi) {
