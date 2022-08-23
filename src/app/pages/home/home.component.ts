@@ -266,60 +266,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
         let leituraPosicaoFilterData: LeituraPosicao[] = JSON.parse(JSON.stringify(this.leituraPosicao));
-        this._leiturasPosicaoveiculosOutPoi = [];
-        const veiculosLeiturasPois: LeituraPosicao[] = [];
-
-        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
-            poiVeiculoTotalizador.poi.veiculos.forEach((veiculoPoi) => {
-                veiculoPoi.leiturasVeiculo.forEach((leituraPosicao) => {
-                    veiculosLeiturasPois.push(leituraPosicao);
-                });
-            });
-        });
-
-        leituraPosicaoFilterData.forEach((leituraPosicao) => {
-            const newLeituraPosicao: LeituraPosicao = Object.assign({}, leituraPosicao);
-            newLeituraPosicao.inPoiRadius = false;
-            newLeituraPosicao.distanciaParaPoi = null;
-            newLeituraPosicao.center = { lat: newLeituraPosicao.latitude, lng: newLeituraPosicao.longitude };
-
-            const leituraProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
-                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase() &&
-                    veiculoLeitura.id === newLeituraPosicao.id &&
-                    veiculoLeitura.latitude === newLeituraPosicao.latitude &&
-                    veiculoLeitura.longitude === newLeituraPosicao.longitude;
-            }) || false;
-
-            const placaProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
-                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
-            }) || false;
-
-            if (!leituraProcessadaInPoi && placaProcessadaInPoi) {
-
-                const dadosFicticiosVeiculo = this._dadosVeiculo
-                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa);
-
-                const dadosVeiculoOutPoi: VeiculoLeitura = {
-                    placa: newLeituraPosicao.placa.toUpperCase(),
-                    leiturasVeiculo: [newLeituraPosicao],
-                    totalizadorTempoVeiculo: null,
-                    dadosFicticiosVeiculo: dadosFicticiosVeiculo || null,
-                    overlay: 'infoWindow',
-                };
-
-                const indexVeiculoOutPoiList = this._leiturasPosicaoveiculosOutPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {
-                    return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
-                });
-
-                if (indexVeiculoOutPoiList === -1) {
-                    this._leiturasPosicaoveiculosOutPoi.push(dadosVeiculoOutPoi);
-                } else {
-                    this._leiturasPosicaoveiculosOutPoi[indexVeiculoOutPoiList].leiturasVeiculo
-                        .push(newLeituraPosicao);
-                }
-            }
-
-        });
+        this._leiturasPosicaoveiculosOutPoi = calculoPoiUtils.gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador, this.leituraPosicao);
     }
 
     private _calcularTempoTotalVeiculosInPoi(

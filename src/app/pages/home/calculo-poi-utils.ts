@@ -108,4 +108,64 @@ export default class calculoPoiUtils {
         return poisVeiculosTotalizadores;
     }
 
+    static gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[], leituraPosicao: LeituraPosicao[]) {
+        let leituraPosicaoFilterData: LeituraPosicao[] = JSON.parse(JSON.stringify(leituraPosicao));
+        const leiturasPosicaoveiculosOutPoi: VeiculoLeitura[] = [];
+        const veiculosLeiturasPois: LeituraPosicao[] = [];
+
+        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
+            poiVeiculoTotalizador.poi.veiculos.forEach((veiculoPoi) => {
+                veiculoPoi.leiturasVeiculo.forEach((leituraPosicao) => {
+                    veiculosLeiturasPois.push(leituraPosicao);
+                });
+            });
+        });
+
+        leituraPosicaoFilterData.forEach((leituraPosicao) => {
+            const newLeituraPosicao: LeituraPosicao = Object.assign({}, leituraPosicao);
+            newLeituraPosicao.inPoiRadius = false;
+            newLeituraPosicao.distanciaParaPoi = null;
+            newLeituraPosicao.center = { lat: newLeituraPosicao.latitude, lng: newLeituraPosicao.longitude };
+
+            const leituraProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
+                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase() &&
+                    veiculoLeitura.id === newLeituraPosicao.id &&
+                    veiculoLeitura.latitude === newLeituraPosicao.latitude &&
+                    veiculoLeitura.longitude === newLeituraPosicao.longitude;
+            }) || false;
+
+            const placaProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
+                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
+            }) || false;
+
+            if (!leituraProcessadaInPoi && placaProcessadaInPoi) {
+
+                const dadosFicticiosVeiculo = this.dadosVeiculo
+                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa);
+
+                const dadosVeiculoOutPoi: VeiculoLeitura = {
+                    placa: newLeituraPosicao.placa.toUpperCase(),
+                    leiturasVeiculo: [newLeituraPosicao],
+                    totalizadorTempoVeiculo: null,
+                    dadosFicticiosVeiculo: dadosFicticiosVeiculo || null,
+                    overlay: 'infoWindow',
+                };
+
+                const indexVeiculoOutPoiList = leiturasPosicaoveiculosOutPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {
+                    return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
+                });
+
+                if (indexVeiculoOutPoiList === -1) {
+                    leiturasPosicaoveiculosOutPoi.push(dadosVeiculoOutPoi);
+                } else {
+                    leiturasPosicaoveiculosOutPoi[indexVeiculoOutPoiList].leiturasVeiculo
+                        .push(newLeituraPosicao);
+                }
+            }
+
+        });
+
+        return leiturasPosicaoveiculosOutPoi;
+    }
+
 }
