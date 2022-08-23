@@ -1,11 +1,12 @@
 <main>
     <div class="content-form">
         <mat-expansion-panel #MatExpansionPanelFiltro [expanded]="true">
+
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     <strong>Poi Control</strong>
                 </mat-panel-title>
-                <mat-panel-description> Filtros </mat-panel-description>
+                <mat-panel-description>Filtros</mat-panel-description>
             </mat-expansion-panel-header>
 
             <p class="welcome">
@@ -16,6 +17,8 @@
 
             <form [formGroup]="formFiltro">
                 <section class="fields">
+
+                    <!-- poi -->
                     <mat-form-field appearance="outline">
                         <mat-label>Ponto de interesse</mat-label>
                         <mat-select formControlName="poiId" name="poiId">
@@ -24,6 +27,7 @@
                         </mat-select>
                     </mat-form-field>
 
+                    <!-- placa -->
                     <mat-form-field appearance="outline">
                         <mat-label>Placa</mat-label>
                         <mat-select formControlName="placa" name="placa">
@@ -33,6 +37,7 @@
                         </mat-select>
                     </mat-form-field>
 
+                    <!-- data da leitura -->
                     <mat-form-field appearance="outline">
                         <mat-label>Data da leitura</mat-label>
                         <input matInput [matDatepicker]="picker" placeholder="Data da leitura"
@@ -42,12 +47,14 @@
                     </mat-form-field>
                 </section>
 
+                <!-- botões de ação -->
                 <div class="buttons">
                     <button mat-button color="primary" (click)="redefinirFiltros()">Redefinir filtros</button>
                     <button mat-flat-button color="primary" (click)="visualizarPois()">Visualizar</button>
                 </div>
             </form>
 
+            <!-- overlay -->
             <div class="card-overlay" *ngIf="loading">
                 <mat-spinner strokeWidth="2" diameter="50"></mat-spinner>
             </div>
@@ -57,79 +64,83 @@
     <!-- Map container -->
     <div id="map"></div>
 
-    <!-- Tabela de totalizados do POI -->
+    <!-- totalizadores dos POIs -->
     <div class="poi-table">
         <mat-expansion-panel [expanded]="true">
+
             <mat-expansion-panel-header>
                 <mat-panel-title>
                     <strong>Resumo dos POI's</strong>
                 </mat-panel-title>
-                <mat-panel-description>
 
+                <mat-panel-description>
                 </mat-panel-description>
             </mat-expansion-panel-header>
 
-
+            <!-- tabela -->
             <table mat-table [dataSource]="dataPoiTable" *ngIf="dataPoiTable.length > 0" class="mat-elevation-z8">
-                <!-- Position Column -->
+
+                <!-- id -->
                 <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef>ID POI</th>
-                    <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+                    <td mat-cell *matCellDef="let poi">{{ poi.id }}</td>
                 </ng-container>
 
-                <!-- Name Column -->
+                <!-- nome -->
                 <ng-container matColumnDef="nome">
                     <th mat-header-cell *matHeaderCellDef>Nome</th>
-                    <td mat-cell *matCellDef="let element">{{ element.nome }}</td>
+                    <td mat-cell *matCellDef="let poi">{{ poi.nome }}</td>
                 </ng-container>
 
-                <!-- Weight Column -->
+                <!-- latitude -->
                 <ng-container matColumnDef="latitude">
                     <th mat-header-cell *matHeaderCellDef>Latitude</th>
-                    <td mat-cell *matCellDef="let element">{{ element.latitude }}</td>
+                    <td mat-cell *matCellDef="let poi">{{ poi.latitude }}</td>
                 </ng-container>
 
-                <!-- Symbol Column -->
+                <!-- longitude -->
                 <ng-container matColumnDef="longitude">
                     <th mat-header-cell *matHeaderCellDef>Longitude</th>
-                    <td mat-cell *matCellDef="let element">{{ element.longitude }}</td>
+                    <td mat-cell *matCellDef="let poi">{{ poi.longitude }}</td>
                 </ng-container>
 
-                <!-- Symbol Column -->
+                <!-- raio -->
                 <ng-container matColumnDef="raio">
                     <th mat-header-cell *matHeaderCellDef>Raio em metros</th>
-                    <td mat-cell *matCellDef="let element">{{ element.raio }}</td>
+                    <td mat-cell *matCellDef="let poi">{{ poi.raio }}</td>
                 </ng-container>
 
-                <!-- Symbol Column -->
+                <!-- veículos distintos no POI -->
                 <ng-container matColumnDef="veiculos">
                     <th mat-header-cell *matHeaderCellDef>Veiculos distintos no POI</th>
-                    <td mat-cell *matCellDef="let element">{{ element.veiculos.length }}</td>
+                    <td mat-cell *matCellDef="let poi">{{ poi.veiculos.length }}</td>
                 </ng-container>
 
-                <!-- Symbol Column -->
+                <!-- tempo total dos veículos -->
                 <ng-container matColumnDef="totalizadorPoi">
                     <th mat-header-cell *matHeaderCellDef>Tempo total dos veiculos no POI</th>
-                    <td mat-cell *matCellDef="let element">
-                        {{ element.totalizadorPoi.tempo_total_dia_veiculos }} dia(s),
-                        {{ element.totalizadorPoi.tempo_total_hora_veiculos }} hora(s) e
-                        {{ element.totalizadorPoi.tempo_total_minuto_veiculos }} minuto(s)
+                    <td mat-cell *matCellDef="let poi">
+                        {{ poi.totalizadorPoi.tempo_total_dia_veiculos }} dia(s),
+                        {{ poi.totalizadorPoi.tempo_total_hora_veiculos }} hora(s) e
+                        {{ poi.totalizadorPoi.tempo_total_minuto_veiculos }} minuto(s)
                     </td>
                 </ng-container>
 
+                <!-- posicionar no mapa -->
                 <ng-container matColumnDef="verNoMapa">
                     <th mat-header-cell *matHeaderCellDef>Posicionar no mapa</th>
-                    <td mat-cell *matCellDef="let element">
-                        <button mat-mini-fab color="primary" (click)="abrirLocalizacaoMapa(element)">
+                    <td mat-cell *matCellDef="let poi">
+                        <button mat-mini-fab color="primary" (click)="abrirLocalizacaoMapa(poi)">
                             <mat-icon>my_location</mat-icon>
                         </button>
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="verDadosCalculo">
+                <!-- memória de cálculo -->
+                <ng-container matColumnDef="verDadosMemoriaCalculo">
                     <th mat-header-cell *matHeaderCellDef>Memória de calculo</th>
-                    <td mat-cell *matCellDef="let element">
-                        <button mat-mini-fab color="accent" (click)="abrirDialogMemoriaCalculo(element)">
+                    <td mat-cell *matCellDef="let poi">
+                        <button mat-mini-fab color="accent" (click)="abrirDialogMemoriaCalculo(poi)">
                             <mat-icon>restore</mat-icon>
                         </button>
                     </td>

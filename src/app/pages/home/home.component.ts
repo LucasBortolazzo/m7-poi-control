@@ -38,7 +38,7 @@ import { PoiService } from './services/poi.service';
     styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
-    displayedColumns: string[] = ['id', 'nome', 'latitude', 'longitude', 'raio', 'veiculos', 'totalizadorPoi', 'verNoMapa', 'verDadosCalculo'];
+    displayedColumns: string[] = ['id', 'nome', 'latitude', 'longitude', 'raio', 'veiculos', 'totalizadorPoi', 'verNoMapa', 'verDadosMemoriaCalculo'];
 
     @ViewChild('MatExpansionPanelFiltro') private _matExpansionPanelFiltros: MatExpansionPanel;
 
@@ -643,7 +643,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private _exibirMensagem(mensagem: string, duracao?: number,) {
         this._snackBar.open(mensagem, 'Ok', {
             horizontalPosition: 'center',
-            verticalPosition: 'top',
+            verticalPosition: 'bottom',
             duration: duracao ? duracao : 5000,
         });
     }
@@ -655,7 +655,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._snackBar.open(message, 'OK', {
             horizontalPosition: 'center',
-            verticalPosition: 'top',
+            verticalPosition: 'bottom',
             duration: 10000,
         });
     }
