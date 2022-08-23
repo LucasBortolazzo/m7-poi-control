@@ -32,6 +32,7 @@ import { VeiculoLeitura } from './model/veiculo-leitura';
 import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
 import TemplateUtils from 'src/app/shared/template-utils';
+import calculoPoiUtils from './calculo-poi-utils';
 
 @Component({
     selector: 'app-home',
@@ -197,101 +198,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _processarPoisLeiturasVeiculos(poiFilter?: Poi) {
-        const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
-        const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
-
-        this.leituraPosicao.map((leituraPosicao: LeituraPosicao) => {
-
-            this.pois.forEach((poi: Poi) => {
-                if (poiFilter && poi.id !== poiFilter.id) {
-                    return;
-                }
-
-                const newPoi = Object.assign({}, poi);
-                const newLeituraPosicao = Object.assign({}, leituraPosicao);
-
-                if (!newPoi.veiculos) {
-                    newPoi.veiculos = [];
-                }
-
-                newPoi.overlay = 'circle';
-                newPoi.center = {
-                    lat: newPoi.latitude,
-                    lng: newPoi.longitude
-                };
-                newPoi.icon = null;
-
-                newPoi.raio = +(Math.round(newPoi.raio * 100) / 100).toFixed(2);
-
-                const poiCenter = {
-                    lat: newPoi.latitude,
-                    lng: newPoi.longitude,
-                };
-
-                const leituraPosicaoCenter = {
-                    lat: newLeituraPosicao.latitude,
-                    lng: newLeituraPosicao.longitude,
-                };
-
-                newLeituraPosicao.distanciaParaPoi =
-                    google.maps.geometry.spherical.computeDistanceBetween(
-                        poiCenter,
-                        leituraPosicaoCenter
-                    );
-
-                newLeituraPosicao.inPoiRadius =
-                    newLeituraPosicao.distanciaParaPoi <= newPoi.raio;
-
-                newLeituraPosicao.poiDescri = `Poi: ${newPoi.id} - ${newPoi.nome} - (lat: ${newPoi.latitude} lng: ${newPoi.longitude})`;
-
-                newLeituraPosicao.center = leituraPosicaoCenter;
-
-                let poiIndex = poisVeiculosTotalizadores.findIndex(
-                    (value: PoisVeiculosTotalizador) => value.poi.id === newPoi.id
-                );
-
-                if (poiIndex === -1) {
-                    poiIndex =
-                        poisVeiculosTotalizadores.push({
-                            poi: newPoi,
-                        }) - 1;
-                }
-
-                if (!newLeituraPosicao.inPoiRadius) {
-                    return;
-                }
-
-                const dadosFicticiosVeiculo = this._dadosVeiculo
-                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa);
-
-                const veiculoLeitura: VeiculoLeitura = {
-                    placa: newLeituraPosicao.placa,
-                    leiturasVeiculo: [],
-                    totalizadorTempoVeiculo: null,
-                    overlay: 'infoWindow',
-                    dadosFicticiosVeiculo: dadosFicticiosVeiculo || null
-                };
-
-                let veiculoInPoiIndex = poisVeiculosTotalizadores[
-                    poiIndex
-                ].poi.veiculos.findIndex(
-                    veiculo =>
-                        veiculo.placa.toUpperCase() ===
-                        newLeituraPosicao.placa.toUpperCase()
-                );
-
-                if (veiculoInPoiIndex === -1) {
-                    veiculoInPoiIndex =
-                        poisVeiculosTotalizadores[poiIndex].poi.veiculos.push(
-                            veiculoLeitura
-                        ) - 1;
-                }
-
-                poisVeiculosTotalizadores[poiIndex].poi.veiculos[
-                    veiculoInPoiIndex
-                ].leiturasVeiculo.push(Object.assign(newLeituraPosicao));
-            });
-        });
+        const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = calculoPoiUtils
+            .processarPoisLeiturasVeiculos(this.leituraPosicao, this.pois, poiFilter);
 
         this._poisVeiculosTotalizadoresOriginal = [...this._poisVeiculosTotalizadoresOriginal, ...poisVeiculosTotalizadores];
     }
