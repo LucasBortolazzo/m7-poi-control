@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
                         this.pois.push(newPoi);
                         this._processarPoisLeiturasVeiculos(newPoi);
-                        this.formFiltro.get('poi').setValue(newPoi.id);
+                        this.formFiltro.get('poiId').setValue(newPoi.id);
 
                         this._exibirMensagem('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
                             .concat('sera calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
@@ -115,14 +115,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _criarFormFiltro() {
         this.formFiltro = this._fb.group({
-            poi: [null],
+            poiId: [null],
             placa: [null],
             dataLeitura: [null],
         });
     }
 
     private get _filtroForm(): FilterForm {
-        const poiId = this.formFiltro.get('poi').value || null;
+        const poiId = this.formFiltro.get('poiId').value || null;
         const poi: Poi = poiId ? this.pois.find((poi) => poi.id === poiId) : null;
         const placa = this.formFiltro.get('placa').value || null;
         let dataLeitura = this.formFiltro.get('dataLeitura').value || null;
@@ -678,7 +678,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public abrirLocalizacaoMapa(poi: Poi) {
-        this.formFiltro.get('poi').setValue(poi.id);
+        this.formFiltro.get('poiId').setValue(poi.id);
         this.visualizarPois();
     }
 

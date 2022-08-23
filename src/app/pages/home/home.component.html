@@ -18,7 +18,7 @@
                 <section class="fields">
                     <mat-form-field appearance="outline">
                         <mat-label>Ponto de interesse</mat-label>
-                        <mat-select formControlName="poi" name="poi">
+                        <mat-select formControlName="poiId" name="poiId">
                             <mat-option *ngFor="let poi of pois" [value]="poi.id"> {{ poi.id }} - {{ poi.nome }}
                             </mat-option>
                         </mat-select>
