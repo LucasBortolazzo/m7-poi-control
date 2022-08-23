@@ -88,9 +88,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.pois.push(newPoi);
                         this._processarPoisLeiturasVeiculos(newPoi);
                         this.formFiltro.get('poiId').setValue(newPoi.id);
+                        this._esconderFiltros();
 
                         this._exibirMensagem('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
                             .concat('sera calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
+
                     };
 
                     if (!this._poisVeiculosTotalizadoresOriginal.length) {
@@ -98,7 +100,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                     };
 
                     this._gMapService.resetMap();
-
                     this._calcularPois();
                 },
                 error: (e: any) => {
@@ -202,7 +203,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = calculoPoiUtils
             .processarPoisLeiturasVeiculos(this.leituraPosicao, this.pois, poiFilter);
 
-        this._poisVeiculosTotalizadoresOriginal = [...this._poisVeiculosTotalizadoresOriginal, ...poisVeiculosTotalizadores];
+        this._poisVeiculosTotalizadoresOriginal = [...this._poisVeiculosTotalizadoresOriginal, ...Array.from(poisVeiculosTotalizadores)];
     }
 
     private _calcularPois() {
@@ -229,10 +230,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private _gerarOvelayPoi(poi: Poi) {
         this._gMapService.createCircle(poi.raio, poi.center);
         this._gMapService.createMarkerInfoWindow(poi.center, TemplateUtils.poiInfoWindowTemplate(poi), 'opened');
-
-        setTimeout(() => {
-            this._gMapService.setMapcenter(poi.center);
-        }, 1000);
     }
 
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
@@ -249,8 +246,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
-        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
+        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
             this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
+
+            if (index === poisVeiculosTotalizador.length - 1) {
+                setTimeout(() => {
+                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
+                }, 500);
+            }
 
             poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
                 this._gerarOverlayLeituraVeiculo(veiculoInPoi);
@@ -271,9 +274,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private _calcularTempoTotalVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
     ) {
-        const totalizadorPoi: PoisVeiculosTotalizador[] = calculoPoiUtils.calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadores);
+        calculoPoiUtils.calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadores);
 
-        this.dataPoiTable = calculoPoiUtils.gerarDadosTotalizadoresTabela(totalizadorPoi, this.dataPoiTable);
+        this.dataPoiTable = calculoPoiUtils.gerarDadosTotalizadoresTabela(poisVeiculosTotalizadores, this.dataPoiTable);
     }
 
     private _calcularTempoVeiculosInPoi(

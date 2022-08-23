@@ -37,8 +37,8 @@ export class GMapService {
     public setMapcenter(
         center: google.maps.LatLng | google.maps.LatLngLiteral | null
     ) {
-        this.map.setCenter(center);
         this.map.setZoom(16);
+        this.map.setCenter(center);
     }
 
     public createCircle(

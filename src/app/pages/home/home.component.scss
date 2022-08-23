@@ -17,15 +17,22 @@ main {
     margin-top: 1rem;
     width: 100%;
 
-    mat-expansion-panel-header {
-      mat-panel-title {
-        color: $primary;
-        font-size: 2rem;
-      }
-    }
+    .mat-expansion-panel {
+      max-height: 30rem;
+      height: 100%;
+      overflow: auto;
+      margin-bottom: 1rem;
 
-    table {
-      width: 100%;
+      mat-expansion-panel-header {
+        mat-panel-title {
+          color: $primary;
+          font-size: 2rem;
+        }
+      }
+
+      table {
+        width: 100%;
+      }
     }
   }
 

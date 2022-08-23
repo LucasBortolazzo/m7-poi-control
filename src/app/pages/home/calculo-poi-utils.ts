@@ -10,172 +10,141 @@ export default class calculoPoiUtils {
 
     private static dadosVeiculo: Veiculo[] = dadosFicticiosVeiculos;
 
-    static processarPoisLeiturasVeiculos(leituraPosicao: LeituraPosicao[], pois: Poi[], poiFilter?: Poi) {
+    static processarPoisLeiturasVeiculos(leituras: LeituraPosicao[], pois: Poi[], poiFilter?: Poi) {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
-        const leiturasPosicaoveiculosPoi: LeituraPosicao[] = [];
 
-        leituraPosicao.forEach((leituraPosicao: LeituraPosicao) => {
+        for (let leitura of leituras) {
+            pois.map((poi) => {
+                poi.veiculos = poi.veiculos ? poi.veiculos : [];
+                poi.overlay = 'circle';
+                poi.center = {
+                    lat: poi.latitude,
+                    lng: poi.longitude
+                };
+                poi.raio = +(Math.round(poi.raio * 100) / 100).toFixed(2);
 
-            pois.forEach((poi: Poi) => {
+                return poi;
+            }).map((poi) => {
+
                 if (poiFilter && poi.id !== poiFilter.id) {
                     return;
                 }
 
-                const newPoi = Object.assign({}, poi);
-                const newLeituraPosicao = Object.assign({}, leituraPosicao);
-
-                if (!newPoi.veiculos) {
-                    newPoi.veiculos = [];
-                }
-
-                newPoi.overlay = 'circle';
-                newPoi.center = {
-                    lat: newPoi.latitude,
-                    lng: newPoi.longitude
-                };
-                newPoi.icon = null;
-
-                newPoi.raio = +(Math.round(newPoi.raio * 100) / 100).toFixed(2);
-
-                const poiCenter = {
-                    lat: newPoi.latitude,
-                    lng: newPoi.longitude,
-                };
-
-                const leituraPosicaoCenter = {
-                    lat: newLeituraPosicao.latitude,
-                    lng: newLeituraPosicao.longitude,
-                };
-
-                newLeituraPosicao.distanciaParaPoi =
+                leitura.distanciaParaPoi =
                     google.maps.geometry.spherical.computeDistanceBetween(
-                        poiCenter,
-                        leituraPosicaoCenter
+                        { lat: poi.latitude, lng: poi.longitude },
+                        { lat: leitura.latitude, lng: leitura.longitude }
                     );
 
-                newLeituraPosicao.inPoiRadius =
-                    newLeituraPosicao.distanciaParaPoi <= newPoi.raio;
+                leitura.inPoiRadius = leitura.distanciaParaPoi <= poi.raio;
+                leitura.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
+                leitura.center = { lat: leitura.latitude, lng: leitura.longitude };
 
-                newLeituraPosicao.poiDescri = `Poi: ${newPoi.id} - ${newPoi.nome} - (lat: ${newPoi.latitude} lng: ${newPoi.longitude})`;
+                let leiturasVeiculoInPoi = poisVeiculosTotalizadores.map((a) => a.poi).map((b) => {
 
-                newLeituraPosicao.center = leituraPosicaoCenter;
+                    return b.veiculos.filter((v) => {
 
-                let poiIndex = poisVeiculosTotalizadores.findIndex(
-                    (value: PoisVeiculosTotalizador) => value.poi.id === newPoi.id
-                );
+                        if (v.placa === leitura.placa && poi.id === b.id) {
+                            poi.veiculos = b.veiculos;
+                            return true;
+                        }
 
-                if (poiIndex === -1) {
-                    poiIndex =
-                        poisVeiculosTotalizadores.push({
-                            poi: newPoi,
-                        }) - 1;
+                        return false;
+                    }
+                    );
+                }).map((l) => l.map((m) => m.leiturasVeiculo)).flat(2);
+
+                const indexPoiDel = poisVeiculosTotalizadores.findIndex((p) => p.poi.id === poi.id);
+
+                if (indexPoiDel > -1) {
+                    poisVeiculosTotalizadores.splice(indexPoiDel, 1);
                 }
 
-                if (!newLeituraPosicao.inPoiRadius) {
-                    return;
-                }
-
-                const dadosFicticiosVeiculo = this.dadosVeiculo
-                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa);
+                leiturasVeiculoInPoi.push(leitura);
+                leiturasVeiculoInPoi = [...leiturasVeiculoInPoi];
 
                 const veiculoLeitura: VeiculoLeitura = {
-                    placa: newLeituraPosicao.placa,
-                    leiturasVeiculo: [],
+                    placa: leitura.placa,
+                    leiturasVeiculo: leiturasVeiculoInPoi,
                     totalizadorTempoVeiculo: null,
                     overlay: 'infoWindow',
-                    dadosFicticiosVeiculo: dadosFicticiosVeiculo || null
+                    dadosFicticiosVeiculo: this.dadosVeiculo
+                        .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === leitura.placa) || null
                 };
 
-                let veiculoInPoiIndex = poisVeiculosTotalizadores[
-                    poiIndex
-                ].poi.veiculos.findIndex(
-                    veiculo =>
-                        veiculo.placa.toUpperCase() ===
-                        newLeituraPosicao.placa.toUpperCase()
-                );
+                if (!poi.veiculos.find((v, index) => {
+                    if (v.placa === leitura.placa) {
+                        poi.veiculos[index] = veiculoLeitura;
+                        return true;
+                    }
 
-                if (veiculoInPoiIndex === -1) {
-                    veiculoInPoiIndex =
-                        poisVeiculosTotalizadores[poiIndex].poi.veiculos.push(
-                            veiculoLeitura
-                        ) - 1;
+                    return false;
+                }
+                ) && leitura.inPoiRadius) {
+                    poi.veiculos.push(Object.assign(veiculoLeitura));
                 }
 
-                poisVeiculosTotalizadores[poiIndex].poi.veiculos[
-                    veiculoInPoiIndex
-                ].leiturasVeiculo.push(Object.assign(newLeituraPosicao));
+                poisVeiculosTotalizadores.push({ poi: poi });
             });
-        });
+        };
 
         return poisVeiculosTotalizadores;
     }
 
-    static gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[], leituraPosicao: LeituraPosicao[]) {
-        let leituraPosicaoFilterData: LeituraPosicao[] = JSON.parse(JSON.stringify(leituraPosicao));
+    static gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[], leiturasPosicao: LeituraPosicao[]) {
         const leiturasPosicaoveiculosOutPoi: VeiculoLeitura[] = [];
-        const veiculosLeiturasPois: LeituraPosicao[] = [];
 
-        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador) => {
-            poiVeiculoTotalizador.poi.veiculos.forEach((veiculoPoi) => {
-                veiculoPoi.leiturasVeiculo.forEach((leituraPosicao) => {
-                    veiculosLeiturasPois.push(leituraPosicao);
-                });
-            });
-        });
+        const veiculosLeiturasPois: LeituraPosicao[] = poisVeiculosTotalizador.map((v) => v.poi.veiculos.map((veiculo) => veiculo.leiturasVeiculo.map((l) => l))).flat(3);
 
-        leituraPosicaoFilterData.forEach((leituraPosicao) => {
-            const newLeituraPosicao: LeituraPosicao = Object.assign({}, leituraPosicao);
-            newLeituraPosicao.inPoiRadius = false;
-            newLeituraPosicao.distanciaParaPoi = null;
-            newLeituraPosicao.center = { lat: newLeituraPosicao.latitude, lng: newLeituraPosicao.longitude };
+        for (let leituraPosicao of leiturasPosicao) {
+            leituraPosicao.inPoiRadius = false;
+            leituraPosicao.distanciaParaPoi = null;
+            leituraPosicao.center = { lat: leituraPosicao.latitude, lng: leituraPosicao.longitude };
+            let leituraProcessadaInPoi = false;
+            let placaProcessadaInPoi = false;
+            let veiculoOutPoi = false;
 
-            const leituraProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
-                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase() &&
-                    veiculoLeitura.id === newLeituraPosicao.id &&
-                    veiculoLeitura.latitude === newLeituraPosicao.latitude &&
-                    veiculoLeitura.longitude === newLeituraPosicao.longitude;
-            }) || false;
+            veiculosLeiturasPois.find((veiculoLeitura) => {
+                placaProcessadaInPoi = veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                leituraProcessadaInPoi = placaProcessadaInPoi &&
+                    veiculoLeitura.id === leituraPosicao.id &&
+                    veiculoLeitura.latitude === leituraPosicao.latitude &&
+                    veiculoLeitura.longitude === leituraPosicao.longitude;
 
-            const placaProcessadaInPoi = veiculosLeiturasPois.find((veiculoLeitura) => {
-                return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
+                return leituraProcessadaInPoi;
             }) || false;
 
             if (!leituraProcessadaInPoi && placaProcessadaInPoi) {
 
-                const dadosFicticiosVeiculo = this.dadosVeiculo
-                    .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa);
-
                 const dadosVeiculoOutPoi: VeiculoLeitura = {
-                    placa: newLeituraPosicao.placa.toUpperCase(),
-                    leiturasVeiculo: [newLeituraPosicao],
+                    placa: leituraPosicao.placa.toUpperCase(),
+                    leiturasVeiculo: [leituraPosicao],
                     totalizadorTempoVeiculo: null,
-                    dadosFicticiosVeiculo: dadosFicticiosVeiculo || null,
+                    dadosFicticiosVeiculo: this.dadosVeiculo
+                        .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === leituraPosicao.placa.toUpperCase()) || null,
                     overlay: 'infoWindow',
                 };
 
-                const indexVeiculoOutPoiList = leiturasPosicaoveiculosOutPoi.findIndex((veiculoLeitura: VeiculoLeitura) => {
-                    return veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
+                leiturasPosicaoveiculosOutPoi.find((veiculoLeitura: VeiculoLeitura, index) => {
+                    veiculoOutPoi = veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                    if (veiculoOutPoi) {
+                        leiturasPosicaoveiculosOutPoi[index].leiturasVeiculo.push(leituraPosicao);
+                    }
+                    return veiculoOutPoi;
                 });
 
-                if (indexVeiculoOutPoiList === -1) {
-                    leiturasPosicaoveiculosOutPoi.push(dadosVeiculoOutPoi);
-                } else {
-                    leiturasPosicaoveiculosOutPoi[indexVeiculoOutPoiList].leiturasVeiculo
-                        .push(newLeituraPosicao);
-                }
+                !veiculoOutPoi ? leiturasPosicaoveiculosOutPoi.push(dadosVeiculoOutPoi) : null;
             }
-
-        });
+        };
 
         return leiturasPosicaoveiculosOutPoi;
     }
 
     static calcularTempoTotalVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
-    ): PoisVeiculosTotalizador[] {
-        const currentDate = moment().set({ "hour": 0, "minute": 0, "second": 0 });
+    ) {
 
-        poisVeiculosTotalizadores.forEach(poiVeiculoTotalizador => {
+        poisVeiculosTotalizadores.map(poiVeiculoTotalizador => {
             const dataInicialTotalizadores = moment().set({ "hour": 0, "minute": 0, "second": 0 });
             const dateTotalizadoresSomaTempoTotal = dataInicialTotalizadores.clone();
 
@@ -196,15 +165,13 @@ export default class calculoPoiUtils {
                 tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
             };
         });
-
-        return poisVeiculosTotalizadores;
     }
 
     static calcularTempoVeiculosInPoi(
         poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
     ) {
-        poisVeiculosTotalizadores.forEach(poiVeiculoTotalizador => {
-            poiVeiculoTotalizador.poi.veiculos.map(veiculo => {
+        poisVeiculosTotalizadores.map((poiVeiculoTotalizador) =>
+            poiVeiculoTotalizador.poi.veiculos.map((veiculo) => {
                 const dataPrimeiraLeituraGeral = moment(
                     veiculo.leiturasVeiculo[0]?.data?.toString()
                 );
@@ -224,11 +191,12 @@ export default class calculoPoiUtils {
                     tempo_total_hora_veiculos: diffLeituraGeral.hours,
                     tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
                 };
-            });
-        });
+
+            }));
     }
 
     static gerarDadosTotalizadoresTabela(poisVeiculosTotalizadores: PoisVeiculosTotalizador[], dataPoiTable: Poi[]): Poi[] {
+
         poisVeiculosTotalizadores.forEach((poiVeiculoTotalizador) => {
             if (!dataPoiTable.find((poi) => poi.id === poiVeiculoTotalizador.poi.id)) {
                 dataPoiTable.push(poiVeiculoTotalizador.poi);
