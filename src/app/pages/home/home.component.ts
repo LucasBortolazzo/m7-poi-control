@@ -31,6 +31,7 @@ import { dadosFicticiosVeiculos, Veiculo } from './model/veiculo';
 import { VeiculoLeitura } from './model/veiculo-leitura';
 import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
+import TemplateUtils from 'src/app/shared/template-utils';
 
 @Component({
     selector: 'app-home',
@@ -316,70 +317,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._gerarGerarOvelays(poisVeiculosTotalizadorFilterData);
     }
 
-    private _poiInfoWindowTemplate(poi: Poi): string {
-        const poiRaio = (Math.round(poi.raio * 100) / 100).toFixed(2);
-        let totalLeiturasPoi = 0;
-
-        poi.veiculos.map((poiVeiculo) => poiVeiculo)
-            .map((veiculoLeitura) => {
-                totalLeiturasPoi += veiculoLeitura.leiturasVeiculo.length;
-            });
-
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
-            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
-            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
-            '<p class="poi-totalizador"> Tempo total de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + poi.totalizadorPoi.tempo_total_dia_veiculos +
-            ' dia(s), ' + poi.totalizadorPoi.tempo_total_hora_veiculos + ' hora(s) e ' + poi.totalizadorPoi.tempo_total_minuto_veiculos + ' minuto(s) </span></p > ' +
-            '<p class="poi-totalizador" > Total de veiculos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
-            '<p class="poi-totalizador" > Total de leituras de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
-            '</div>' +
-            '</div>';
-
-        return content;
-    }
-
-    private _veiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, totalizadorTempoVeiculo: TotalizadorTempo): string {
-        const dadosExibicao = {
-            nome: dadosVeiculo.nome,
-            placa: dadosVeiculo.placa,
-            chassi: dadosVeiculo.chassi,
-            renavan: dadosVeiculo.renavan,
-            modelo: dadosVeiculo.modelo,
-            cor: dadosVeiculo.cor,
-            anoFabicacao: dadosVeiculo.anoFabicacao,
-            tempoTotalVeiculoInPoi: totalizadorTempoVeiculo ? totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s), ' +
-                totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) ' +
-                totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : 'N/A',
-            idLeitura: leituraPosicao.id,
-            emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Nao',
-            latitude: leituraPosicao.latitude,
-            longitude: leituraPosicao.longitude,
-            velocidade: leituraPosicao.velocidade || 0,
-            data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy hh:MM:ss', 'pt-BR') : 'N/A',
-            distanciaParaPoi: leituraPosicao.distanciaParaPoi || 0,
-            inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
-            leituraPosicao: leituraPosicao.inPoiRadius,
-            poiDescri: leituraPosicao.poiDescri
-        };
-
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;z-index: 99999">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
-            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
-            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' - ' + dadosExibicao.data + ' | ID:' + dadosExibicao.idLeitura + ' </p>' +
-            '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span> </p>' +
-            '<p>Tempo <strong><i>Total</i></strong> do veiculo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
-            '<p class="poi-totalizador">Distancia para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: ' + dadosExibicao.inPoiRadius + '</span> </p> ' +
-            '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referencia: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
-            '</div>' +
-            '</div>';
-
-        return content;
-    }
-
     private _gerarOvelayPoi(poi: Poi) {
         this._gMapService.createCircle(poi.raio, poi.center);
-        this._gMapService.createMarkerInfoWindow(poi.center, this._poiInfoWindowTemplate(poi), 'opened');
+        this._gMapService.createMarkerInfoWindow(poi.center, TemplateUtils.poiInfoWindowTemplate(poi), 'opened');
 
         setTimeout(() => {
             this._gMapService.setMapcenter(poi.center);
@@ -391,7 +331,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
             switch (leituraVeiculo.overlay) {
                 case 'infoWindow': {
-                    this._gMapService.createMarkerInfoWindow(leitura.center, this._veiculoLeituraWindowTemplate(leitura,
+                    this._gMapService.createMarkerInfoWindow(leitura.center, TemplateUtils.veiculoLeituraWindowTemplate(leitura,
                         leituraVeiculo.dadosFicticiosVeiculo, leituraVeiculo.totalizadorTempoVeiculo), 'closed', 'car-test.png');
                     return;
                 }
