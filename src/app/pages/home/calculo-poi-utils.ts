@@ -51,8 +51,6 @@ export default class calculoPoiUtils {
                         { lat: leitura.latitude, lng: leitura.longitude }
                     );
 
-                console.log('chamando api do google');
-
                 leitura.inPoiRadius = leitura.distanciaParaPoi <= poi.raio;
                 leitura.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
                 leitura.center = { lat: leitura.latitude, lng: leitura.longitude };
@@ -189,14 +187,14 @@ export default class calculoPoiUtils {
     ) {
         poisVeiculosTotalizadores.map((poiVeiculoTotalizador) =>
             poiVeiculoTotalizador.poi.veiculos.map((veiculo) => {
-                const dataInicial = formatDate(veiculo.leiturasVeiculo[0].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
-                const dataFinal = formatDate(veiculo.leiturasVeiculo[veiculo.leiturasVeiculo.length - 1].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
+                const dataInicialFormat = formatDate(veiculo.leiturasVeiculo[0].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
+                const dataFinalFormat = formatDate(veiculo.leiturasVeiculo[veiculo.leiturasVeiculo.length - 1].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
 
-                const dataPrimeiraLeituraGeral = moment(dataInicial);
-                let dataUltimaLeituraGeral = moment(dataFinal);
+                const dataPrimeiraLeituraGeral = moment(dataInicialFormat, 'DD/MM/YYYY HH:mm:ss');
+                let dataUltimaLeituraGeral = moment(dataFinalFormat, 'DD/MM/YYYY HH:mm:ss');
 
                 if (dataPrimeiraLeituraGeral.valueOf() === dataUltimaLeituraGeral.valueOf()) {
-                    dataUltimaLeituraGeral = moment();
+                    dataUltimaLeituraGeral = moment(new Date(), 'DD/MM/YYYY HH:mm:ss');
                     veiculo.continuaNoPoi = true;
                 }
 
