@@ -55,6 +55,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     public loading = false;
     public pois: Poi[] = [];
     public placas: string[] = [];
+    public mapStyles: string[] = ['Padrão', 'Blue', 'Uber', 'Multi Brand Network', 'Cobalt', 'Midnight', 'Simple night'];
     public leituraPosicao: LeituraPosicao[] = [];
     public displayedColumns: string[] = ['id', 'nome', 'latitude', 'longitude', 'raio', 'veiculos', 'totalizadorPoi', 'verNoMapa', 'verDadosMemoriaCalculo'];
 
@@ -105,6 +106,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
             })
         );
+
+        this._subscription.add(
+            this.formFiltro.get('mapStyle').valueChanges.subscribe((mapStyleName) => {
+                this._gMapService.setMapStyle(mapStyleName);
+            })
+        );
     }
 
     private _configurarTemplate() {
@@ -112,7 +119,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _initializeMap() {
-        this._gMapService._initializeMap(
+        this._gMapService.initializeMap(
             document.querySelector('#map') as HTMLElement
         );
     }
@@ -122,6 +129,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             poiId: [1],
             placa: [null],
             dataLeitura: [null],
+            mapStyle: ['Cobalt']
         });
     }
 
@@ -231,7 +239,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _gerarOvelayPoi(poi: Poi) {
         this._gMapService.createCircle(poi.raio, poi.center);
-        this._gMapService.createMarkerInfoWindow(poi.center, TemplateUtils.poiInfoWindowTemplate(poi), 'opened');
+        this._gMapService.createMarkerInfoWindow(poi.center, TemplateUtils.getPoiInfoWindowTemplate(poi), 'opened');
     }
 
     private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
@@ -239,7 +247,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
             switch (leituraVeiculo.overlay) {
                 case 'infoWindow': {
-                    this._gMapService.createMarkerInfoWindow(leitura.center, TemplateUtils.veiculoLeituraWindowTemplate(leitura,
+                    this._gMapService.createMarkerInfoWindow(leitura.center, TemplateUtils.getVeiculoLeituraWindowTemplate(leitura,
                         leituraVeiculo.dadosFicticiosVeiculo, leituraVeiculo), 'closed', 'car-test.png');
                     return;
                 }

@@ -8,7 +8,7 @@ import { VeiculoLeitura } from '../pages/home/model/veiculo-leitura';
 
 export default class TemplateUtils {
 
-    static poiInfoWindowTemplate(poi: Poi): string {
+    static getPoiInfoWindowTemplate(poi: Poi): string {
         const poiRaio = (Math.round(poi.raio * 100) / 100).toFixed(2);
         let totalLeiturasPoi = 0;
 
@@ -31,7 +31,7 @@ export default class TemplateUtils {
         return content;
     }
 
-    static veiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, veiculoLeitura: VeiculoLeitura): string {
+    static getVeiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, veiculoLeitura: VeiculoLeitura): string {
         const dadosExibicao = {
             nome: dadosVeiculo.nome,
             placa: dadosVeiculo.placa,

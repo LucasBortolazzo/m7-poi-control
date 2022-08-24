@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import MapUtils from 'src/app/shared/map-utils';
 import { ImgTest } from '../../../../assets/img/img-test';
 import { Poi } from '../model/poi';
 
@@ -12,13 +13,18 @@ export class GMapService {
 
     constructor() { }
 
-    public _initializeMap(mapContainer: HTMLElement) {
+    public initializeMap(mapContainer: HTMLElement) {
         let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
 
         this.map = new google.maps.Map(mapContainer, {
             center: startPoint,
             zoom: 16,
+            styles: MapUtils.getDefaultStyle('Cobalt')
         });
+    }
+
+    public setMapStyle(styleName: string) {
+        this.map.setOptions({ styles: MapUtils.getDefaultStyle(styleName) });
     }
 
     public resetMap() {

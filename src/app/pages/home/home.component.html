@@ -45,6 +45,16 @@
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
+
+                    <!-- estilo do mapa -->
+                    <mat-form-field appearance="outline">
+                        <mat-label>Estilo do mapa</mat-label>
+                        <mat-select formControlName="mapStyle" name="mapStyle">
+                            <mat-option *ngFor="let mapStyle of mapStyles" [value]="mapStyle">
+                                {{ mapStyle }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </section>
 
                 <!-- botões de ação -->
