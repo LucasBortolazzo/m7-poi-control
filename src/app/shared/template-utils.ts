@@ -17,12 +17,13 @@ export default class TemplateUtils {
                 totalLeiturasPoi += veiculoLeitura.leiturasVeiculo.length;
             });
 
+        const tempoTotalVeiculoStr = this.getTempoTotalFormat(poi.totalizadorPoi);
+
         const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
             '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
             '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
             '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
-            '<p class="poi-totalizador"> Tempo total de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + poi.totalizadorPoi.tempo_total_dia_veiculos +
-            ' dia(s), ' + poi.totalizadorPoi.tempo_total_hora_veiculos + ' hora(s) e ' + poi.totalizadorPoi.tempo_total_minuto_veiculos + ' minuto(s) </span></p > ' +
+            '<p class="poi-totalizador"> Tempo total de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + tempoTotalVeiculoStr + '</span></p > ' +
             '<p class="poi-totalizador" > Total de veiculos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
             '<p class="poi-totalizador" > Total de leituras de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
             '</div>' +
@@ -32,6 +33,8 @@ export default class TemplateUtils {
     }
 
     static getVeiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, veiculoLeitura: VeiculoLeitura): string {
+
+
         const dadosExibicao = {
             nome: dadosVeiculo.nome,
             placa: dadosVeiculo.placa,
@@ -40,9 +43,7 @@ export default class TemplateUtils {
             modelo: dadosVeiculo.modelo,
             cor: dadosVeiculo.cor,
             anoFabicacao: dadosVeiculo.anoFabicacao,
-            tempoTotalVeiculoInPoi: veiculoLeitura.totalizadorTempoVeiculo ? veiculoLeitura.totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s), ' +
-                veiculoLeitura.totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) e ' +
-                veiculoLeitura.totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : 'N/A',
+            tempoTotalVeiculoInPoi: this.getTempoTotalFormat(veiculoLeitura.totalizadorTempoVeiculo),
             idLeitura: leituraPosicao.id,
             emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Nao',
             latitude: leituraPosicao.latitude,
@@ -69,5 +70,19 @@ export default class TemplateUtils {
             '</div>';
 
         return content;
+    }
+
+    static getTempoTotalFormat(totalizadorTempoVeiculo: TotalizadorTempo): string {
+        if (!totalizadorTempoVeiculo) {
+            return 'N/A';
+        }
+
+        const totalDiasStr = totalizadorTempoVeiculo.tempo_total_dia_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s)' : '';
+        const totalHorasStr = totalizadorTempoVeiculo.tempo_total_hora_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s)' : '';
+        const totalMinutosStr = totalizadorTempoVeiculo.tempo_total_minuto_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_minuto_veiculos + 'minuto(s)' : '';
+
+        return `${totalDiasStr} ${totalDiasStr && (totalHorasStr || totalMinutosStr) ? ' e ' : ''}
+                ${totalHorasStr} ${totalHorasStr && totalMinutosStr ? ' e ' : ''}
+                ${totalMinutosStr}`;
     }
 }

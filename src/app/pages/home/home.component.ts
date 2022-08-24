@@ -2,40 +2,32 @@ import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-    debounceTime,
-    delay,
-    filter,
     finalize,
     forkJoin,
-    map,
-    Observable,
     retry,
-    startWith,
     Subscription,
 } from 'rxjs';
 
-import * as moment from 'moment';
+import { NgxSpinnerService } from 'ngx-spinner';
 
-import { DialogMemoriaCalculoComponent } from '../dialog-memoria-calculo/dialog-memoria-calculo.component';
+import TemplateUtils from 'src/app/shared/template-utils';
+
 import { FilterForm } from './model/filtro-form';
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
 import { PoisVeiculosTotalizador } from './model/pois-veiculos-totalizador';
-import { TotalizadorTempo } from './model/totalizador-tempo';
-import { dadosFicticiosVeiculos, Veiculo } from './model/veiculo';
 import { VeiculoLeitura } from './model/veiculo-leitura';
+
+
 import { GMapService } from './services/gmap.service';
 import { PoiService } from './services/poi.service';
-import TemplateUtils from 'src/app/shared/template-utils';
 import calculoPoiUtils from './calculo-poi-utils';
-import { DateUtils } from 'src/app/shared/date-utils';
+import { DialogMemoriaCalculoComponent } from '../dialog-memoria-calculo/dialog-memoria-calculo.component';
 import { ConfirmDialogModel, DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component';
-import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-home',
@@ -49,15 +41,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private _subscription: Subscription = new Subscription();
     private _poisVeiculosTotalizadoresOriginal: PoisVeiculosTotalizador[] = [];
     private _leiturasPosicaoveiculosOutPoi: VeiculoLeitura[] = [];
-    private _dadosVeiculo: Veiculo[] = dadosFicticiosVeiculos;
 
     public dataPoiTable: Poi[] = [];
     public formFiltro: FormGroup;
     public loading = false;
     public pois: Poi[] = [];
     public placas: string[] = [];
-    public mapStyles: string[] = ['Padrão', 'Blue', 'Uber', 'Multi Brand Network', 'Cobalt', 'Midnight', 'Simple night'];
     public leituraPosicao: LeituraPosicao[] = [];
+
+    public mapStyles: string[] = ['Padrão', 'Blue', 'Uber', 'Multi Brand Network', 'Cobalt', 'Midnight', 'Simple night'];
     public displayedColumns: string[] = ['id', 'nome', 'latitude', 'longitude', 'raio', 'veiculos', 'totalizadorPoi', 'verNoMapa', 'verDadosMemoriaCalculo'];
 
     constructor(
@@ -96,7 +88,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.formFiltro.get('poiId').setValue(newPoi.id);
                         this._esconderFiltros();
 
-                        this._exibirMensagem('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
+                        this._exibirMensagemInformacao('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
                             .concat('será calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
                     };
 
@@ -159,31 +151,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         return objFiltro;
     }
 
-    private _carregarLeituraPosicao() {
-        this.loading = true;
-
-        this._subscription.add(
-            this._poiService
-                .getLeituraPosicao(this._filtroForm)
-                .pipe(
-                    retry(3),
-                    finalize(() => {
-                        this.loading = false;
-                    })
-                )
-                .subscribe({
-                    next: (leituraPosicao: LeituraPosicao[]) => {
-                        this.leituraPosicao = leituraPosicao;
-                    },
-                    error: e => {
-                        this._exibirMensagemErro(e);
-                    },
-                })
-        );
-    }
-
     private _carregarDados() {
         this.loading = true;
+        this._spinner.show();
 
         const dadosSource$ = forkJoin({
             pois: this._poiService.getPois(),
@@ -194,8 +164,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._subscription.add(
             dadosSource$
                 .pipe(
+                    retry(3),
                     finalize(() => {
                         this.loading = false;
+                        this._spinner.hide();
                         this._gMapService.$processarCalcularPoisEvent.next();
                     })
                 )
@@ -204,10 +176,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.pois = dados?.pois || [];
                         this.placas = dados?.placas || [];
                         this.leituraPosicao = dados?.leituraPosicao || [];
-
-                        // TODO: Remover no final
-                        // this.pois = this.pois.slice(20, 24);
-                        // this.leituraPosicao = this.leituraPosicao.slice(0, 100);
                     },
                     error: (e: HttpErrorResponse) => {
                         this._exibirMensagemErro(e);
@@ -244,72 +212,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._gerarGerarOvelays(poisVeiculosTotalizadorFilterData);
     }
 
-    private _gerarOvelayPoi(poi: Poi) {
-        this._gMapService.createCircle(poi.raio, poi.center);
-        this._gMapService.createMarkerInfoWindow(poi.center, TemplateUtils.getPoiInfoWindowTemplate(poi), 'opened');
-    }
-
-    private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
-
-        leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
-            switch (leituraVeiculo.overlay) {
-                case 'infoWindow': {
-                    this._gMapService.createMarkerInfoWindow(leitura.center, TemplateUtils.getVeiculoLeituraWindowTemplate(leitura,
-                        leituraVeiculo.dadosFicticiosVeiculo, leituraVeiculo), 'closed', leituraVeiculo.dadosFicticiosVeiculo.iconName);
-                    return;
-                }
-            }
-        });
-    }
-
-    private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
-        this._spinner.show();
-
-        try {
-
-            poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
-                this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
-
-                if (index === poisVeiculosTotalizador.length - 1) {
-                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
-                }
-
-                poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
-                    this._gerarOverlayLeituraVeiculo(veiculoInPoi);
-                });
-            });
-
-            this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
-                if (veiculoOutPoi.overlay) {
-                    this._gerarOverlayLeituraVeiculo(veiculoOutPoi);
-                }
-            });
-
-        } catch {
-            setTimeout(() => {
-                this._spinner.hide();
-            }, 1000);
-        }
-    }
-
-    private _gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
-        this._leiturasPosicaoveiculosOutPoi = calculoPoiUtils.gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador, this.leituraPosicao);
-    }
-
-    private _calcularTempoTotalVeiculosInPoi(
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
-    ) {
-        calculoPoiUtils.calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadores);
-
-        this.dataPoiTable = calculoPoiUtils.gerarDadosTotalizadoresTabela(poisVeiculosTotalizadores, this.dataPoiTable);
-    }
-
-    private _calcularTempoVeiculosInPoi(
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
-    ) {
-        calculoPoiUtils.calcularTempoVeiculosInPoi(poisVeiculosTotalizadores);
-    }
-
     private _ordenarPosicaoLeituraVeiculosPorDataLeitura(
         poisVeiculosTotalizadorFilterData: PoisVeiculosTotalizador[]
     ) {
@@ -322,6 +224,20 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             });
         });
+    }
+
+    private _calcularTempoVeiculosInPoi(
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ) {
+        calculoPoiUtils.calcularTempoVeiculosInPoi(poisVeiculosTotalizadores);
+    }
+
+    private _calcularTempoTotalVeiculosInPoi(
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ) {
+        calculoPoiUtils.calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadores);
+
+        this.dataPoiTable = calculoPoiUtils.gerarDadosTotalizadoresTabela(poisVeiculosTotalizadores, this.dataPoiTable);
     }
 
     private get _poisVeiculosTotalizadorFilterData(): PoisVeiculosTotalizador[] {
@@ -375,7 +291,59 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         return poisVeiculosTotalizadorFilterData;
     }
 
-    private _exibirMensagem(mensagem: string, duracao?: number,) {
+    private _gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
+        this._leiturasPosicaoveiculosOutPoi = calculoPoiUtils.gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador, this.leituraPosicao);
+    }
+
+    private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
+
+        this._spinner.show();
+
+        try {
+
+            poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
+                this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
+
+                if (index === poisVeiculosTotalizador.length - 1) {
+                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
+                }
+
+                poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
+                    this._gerarOverlayLeituraVeiculo(veiculoInPoi);
+                });
+            });
+
+            this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
+                if (veiculoOutPoi.overlay) {
+                    this._gerarOverlayLeituraVeiculo(veiculoOutPoi);
+                }
+            });
+
+        } catch {
+            setTimeout(() => {
+                this._spinner.hide();
+            }, 1000);
+        }
+    }
+
+    private _gerarOvelayPoi(poi: Poi) {
+        this._gMapService.createCircle(poi.raio, poi.center);
+        this._gMapService.createMarkerInfoWindow(poi.center, TemplateUtils.getPoiInfoWindowTemplate(poi), 'opened');
+    }
+
+    private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
+        leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
+            switch (leituraVeiculo.overlay) {
+                case 'infoWindow': {
+                    this._gMapService.createMarkerInfoWindow(leitura.center, TemplateUtils.getVeiculoLeituraWindowTemplate(leitura,
+                        leituraVeiculo.dadosFicticiosVeiculo, leituraVeiculo), 'closed', leituraVeiculo.dadosFicticiosVeiculo.iconName);
+                    return;
+                }
+            }
+        });
+    }
+
+    private _exibirMensagemInformacao(mensagem: string, duracao?: number,) {
         this._snackBar.open(mensagem, 'Ok', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
@@ -386,7 +354,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private _exibirMensagemErro(error: HttpErrorResponse) {
         const detalhesError = `(Status: ${error.status}. ${error.message ? ` Detalhes: ${error.message}` : ''
             })`;
-        const message = ` Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`;
+        const message = `🌧 Ops! Algo deu errado. Por favor, tente novamente mais tarde. ${detalhesError}`;
 
         this._snackBar.open(message, 'OK', {
             horizontalPosition: 'center',

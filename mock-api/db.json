@@ -177,7 +177,7 @@
         {
             "id": 25,
             "placa": "TESTE001",
-            "data": "2018-12-11T03:56:03.000+00:00",
+            "data": "2018-12-12T02:04:03.000+00:00",
             "velocidade": 0,
             "latitude": -25.3649141,
             "longitude": -51.469891,
@@ -186,46 +186,46 @@
         {
             "id": 26,
             "placa": "TESTE001",
-            "data": "2018-12-12T03:08:13.000+00:00",
+            "data": "2018-12-12T02:34:06.000+00:00",
             "velocidade": 0,
-            "latitude": -25.3649141,
-            "longitude": -51.469891,
+            "latitude": -25.3649175,
+            "longitude": -51.4699098,
             "ignicao": false
         },
         {
             "id": 27,
             "placa": "TESTE001",
-            "data": "2018-12-13T02:38:06.000+00:00",
+            "data": "2018-12-12T03:04:09.000+00:00",
             "velocidade": 0,
-            "latitude": -25.3649175,
-            "longitude": -51.4699098,
+            "latitude": -25.3649551,
+            "longitude": -51.4699588,
             "ignicao": false
         },
         {
             "id": 28,
-            "placa": "CAR0012",
+            "placa": "TESTE001",
             "data": "2018-12-12T03:34:12.000+00:00",
             "velocidade": 0,
-            "latitude": -25.3649175,
-            "longitude": -51.4699098,
+            "latitude": -25.3649138,
+            "longitude": -51.4698871,
             "ignicao": false
         },
         {
             "id": 29,
-            "placa": "CAR0012",
+            "placa": "TESTE001",
             "data": "2018-12-12T04:04:15.000+00:00",
             "velocidade": 0,
-            "latitude": -25.3649175,
-            "longitude": -51.4699098,
+            "latitude": -25.364885,
+            "longitude": -51.4699223,
             "ignicao": false
         },
         {
             "id": 30,
             "placa": "TESTE001",
-            "data": "2018-12-12T06:34:18.000+00:00",
+            "data": "2018-12-12T04:34:18.000+00:00",
             "velocidade": 0,
-            "latitude": -25.547778,
-            "longitude": -49.307222,
+            "latitude": -25.364896,
+            "longitude": -51.4699111,
             "ignicao": false
         },
         {

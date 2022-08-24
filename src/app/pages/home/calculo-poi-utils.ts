@@ -13,7 +13,18 @@ export default class calculoPoiUtils {
 
     private static dadosVeiculo: Veiculo[] = dadosFicticiosVeiculos;
 
-    static processarPoisLeiturasVeiculos(leituras: LeituraPosicao[], pois: Poi[],
+    /**
+     * @author Lucas
+     * @description Método responsável por processar as leituras de posição presentes no raio do POI, caso o POI não tiver sido processado nenhuma vez
+     * Por regra, este método vai iterar em todas as leituras passadas por parâmetro e antes de calcular a posição validará se é
+     * realmente necessário fazê-lo, por questão de performance, visto que após a distância entre o POI e a posição ser calculada uma vez,
+     * ela será sempre a mesma, por este motivo este método calcula e armazena temporariamente os dados calculados em sua memória de cálculo.
+     * @param leiturasPosicao Lista de leituras de posição que deverá ser processada
+     * @param pois Lista de pontos de interesse que deverá ser processada
+     * @param totalizadoresProcessados Lista com os totalizadores já processados até o momento
+     *
+     */
+    static processarPoisLeiturasVeiculos(leiturasPosicao: LeituraPosicao[], pois: Poi[],
         totalizadoresProcessados: PoisVeiculosTotalizador[], poiFilter?: Poi,) {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
 
@@ -22,7 +33,7 @@ export default class calculoPoiUtils {
             return poisVeiculosTotalizadores;
         }
 
-        for (let leitura of leituras) {
+        for (let leitura of leiturasPosicao) {
             pois.map((poi) => {
                 poi.veiculos = poi.veiculos ? poi.veiculos : [];
                 poi.overlay = 'circle';
@@ -106,6 +117,93 @@ export default class calculoPoiUtils {
         return poisVeiculosTotalizadores;
     }
 
+    /**
+     * @author Lucas
+     * @description Método responsável por processar e calcular o tempo total de cada veículo que está ou passou pelo raio do POI.
+     * Por regra, para saber se o veículo está ou passou pelo raio do POI, esse método calcula a diferença de tempo entre a
+     * data da última leitura encontrada para o veículo no raio POI e a data da primeira leitura encontrada para o veículo no raio do POI,
+     * ou seja: A diferença de tempo a partir do momento que o veículo entrou no raio do POI até o momento que o veículo saiu do raio POI.
+     * Existe também uma regra adicional, que valida se o veículo continua no raio do POI, sendo: Se a data inicial e final das leituras de  
+     * posição forem exatamente as mesmas(data, munutos e segundos), então considera-se que o veículo teve uma leitura de entrada
+     * processada no POI, mas não teve uma leitura de posição de saída processada, ou seja: O veículo está no raio do POI e permanece nele desde a
+     * leitura de posição inicial até a data de hoje.
+     * @param totalizadoresProcessados Lista com os totalizadores já processados até o momento
+     *
+     */
+    static calcularTempoVeiculosInPoi(
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ) {
+        poisVeiculosTotalizadores.map((poiVeiculoTotalizador) =>
+            poiVeiculoTotalizador.poi.veiculos.map((veiculo) => {
+                const dataInicialFormat = formatDate(veiculo.leiturasVeiculo[0].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
+                const dataFinalFormat = formatDate(veiculo.leiturasVeiculo[veiculo.leiturasVeiculo.length - 1].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
+
+                const dataPrimeiraLeituraGeral = moment(dataInicialFormat, 'DD/MM/YYYY HH:mm:ss');
+                let dataUltimaLeituraGeral = moment(dataFinalFormat, 'DD/MM/YYYY HH:mm:ss');
+
+                if (dataPrimeiraLeituraGeral.valueOf() === dataUltimaLeituraGeral.valueOf()) {
+                    dataUltimaLeituraGeral = moment(new Date(), 'DD/MM/YYYY HH:mm:ss');
+                    veiculo.continuaNoPoi = true;
+                }
+
+                const diffLeituraGeral = DateUtils.diffYMDHMS(
+                    dataPrimeiraLeituraGeral,
+                    dataUltimaLeituraGeral
+                );
+
+                veiculo.totalizadorTempoVeiculo = {
+                    tempo_total_dia_veiculos: diffLeituraGeral.days,
+                    tempo_total_hora_veiculos: diffLeituraGeral.hours,
+                    tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
+                };
+
+            }));
+    }
+
+    /**
+     * @author Lucas
+     * @description Método responsável por processar e calcular o tempo total de todos os veículos que estão no raio do POI.
+     * Por regra, este método vai iterar em cada totalizador presente de cada veículo encontrado no raio do POI
+     * e incrementará o tempo encontrado
+     * @param totalizadoresProcessados Lista com os totalizadores já processados até o momento
+     * @param leiturasPosicao Lista de leituras de posição que deverá ser processada
+     *
+     */
+    static calcularTempoTotalVeiculosInPoi(
+        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
+    ) {
+
+        poisVeiculosTotalizadores.map(poiVeiculoTotalizador => {
+            const dataInicialTotalizadores = moment().set({ "hour": 0, "minute": 0, "second": 0 });
+            const dataTotalizadoresSomaTempoTotal = dataInicialTotalizadores.clone();
+
+            poiVeiculoTotalizador.poi.veiculos.forEach(veiculo => {
+                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_dia_veiculos, 'day');
+                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_hora_veiculos, 'hour');
+                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos, 'minutes');
+            });
+
+            const diffLeituraGeral = DateUtils.diffYMDHMS(
+                dataInicialTotalizadores,
+                dataTotalizadoresSomaTempoTotal
+            );
+
+            poiVeiculoTotalizador.poi.totalizadorPoi = {
+                tempo_total_dia_veiculos: diffLeituraGeral.days,
+                tempo_total_hora_veiculos: diffLeituraGeral.hours,
+                tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
+            };
+        });
+    }
+
+    /**
+     * @author Lucas
+     * @description Método responsável por gerar as leituras de posição dos veículos(placas) que foram processadas no raio POI,
+     * mas que não estão dentro do raio do POI, ou seja: Leituras fora do raio POI de veículos que estão no raio do POI
+     * @param totalizadoresProcessados Lista com os totalizadores já processados até o momento
+     * @param leiturasPosicao Lista de leituras de posição que deverá ser processada
+     *
+     */
     static gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[], leiturasPosicao: LeituraPosicao[]) {
         const leiturasPosicaoveiculosOutPoi: VeiculoLeitura[] = [];
 
@@ -155,63 +253,15 @@ export default class calculoPoiUtils {
         return leiturasPosicaoveiculosOutPoi;
     }
 
-    static calcularTempoTotalVeiculosInPoi(
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
-    ) {
-
-        poisVeiculosTotalizadores.map(poiVeiculoTotalizador => {
-            const dataInicialTotalizadores = moment().set({ "hour": 0, "minute": 0, "second": 0 });
-            const dataTotalizadoresSomaTempoTotal = dataInicialTotalizadores.clone();
-
-            poiVeiculoTotalizador.poi.veiculos.forEach(veiculo => {
-                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_dia_veiculos, 'day');
-                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_hora_veiculos, 'hour');
-                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos, 'minutes');
-            });
-
-            const diffLeituraGeral = DateUtils.diffYMDHMS(
-                dataInicialTotalizadores,
-                dataTotalizadoresSomaTempoTotal
-            );
-
-            poiVeiculoTotalizador.poi.totalizadorPoi = {
-                tempo_total_dia_veiculos: diffLeituraGeral.days,
-                tempo_total_hora_veiculos: diffLeituraGeral.hours,
-                tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
-            };
-        });
-    }
-
-    static calcularTempoVeiculosInPoi(
-        poisVeiculosTotalizadores: PoisVeiculosTotalizador[]
-    ) {
-        poisVeiculosTotalizadores.map((poiVeiculoTotalizador) =>
-            poiVeiculoTotalizador.poi.veiculos.map((veiculo) => {
-                const dataInicialFormat = formatDate(veiculo.leiturasVeiculo[0].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
-                const dataFinalFormat = formatDate(veiculo.leiturasVeiculo[veiculo.leiturasVeiculo.length - 1].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
-
-                const dataPrimeiraLeituraGeral = moment(dataInicialFormat, 'DD/MM/YYYY HH:mm:ss');
-                let dataUltimaLeituraGeral = moment(dataFinalFormat, 'DD/MM/YYYY HH:mm:ss');
-
-                if (dataPrimeiraLeituraGeral.valueOf() === dataUltimaLeituraGeral.valueOf()) {
-                    dataUltimaLeituraGeral = moment(new Date(), 'DD/MM/YYYY HH:mm:ss');
-                    veiculo.continuaNoPoi = true;
-                }
-
-                const diffLeituraGeral = DateUtils.diffYMDHMS(
-                    dataPrimeiraLeituraGeral,
-                    dataUltimaLeituraGeral
-                );
-
-                veiculo.totalizadorTempoVeiculo = {
-                    tempo_total_dia_veiculos: diffLeituraGeral.days,
-                    tempo_total_hora_veiculos: diffLeituraGeral.hours,
-                    tempo_total_minuto_veiculos: diffLeituraGeral.minutes,
-                };
-
-            }));
-    }
-
+    /**
+     * @author Lucas
+     * @description Método responsável por gerar os dados totalizadores que serão exibidos em tela através de uma tabela
+     * Por padrão este método vai adicionando os POIs conforme eles forem sendo calculados(e não apenas o último), ou seja:
+     * Para cada POI calculado, esse método vai adicionar seus totalizadores para exibí-los em tela
+     * @param totalizadoresProcessados Lista com os totalizadores já processados até o momento
+     * @param dataPoiTable Dados da tabela processados até o momento
+     *
+     */
     static gerarDadosTotalizadoresTabela(poisVeiculosTotalizadores: PoisVeiculosTotalizador[], dataPoiTable: Poi[]): Poi[] {
 
         poisVeiculosTotalizadores.forEach((poiVeiculoTotalizador) => {
