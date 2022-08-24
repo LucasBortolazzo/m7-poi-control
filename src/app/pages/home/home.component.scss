@@ -30,6 +30,10 @@ main {
         }
       }
 
+      ::ng-deep .mat-expansion-panel-body {
+        padding: 0;
+      }
+
       table {
         width: 100%;
       }

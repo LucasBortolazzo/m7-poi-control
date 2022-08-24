@@ -97,7 +97,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                         this._esconderFiltros();
 
                         this._exibirMensagem('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
-                            .concat('sera calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
+                            .concat('será calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
                     };
 
                     this._gMapService.resetMap();
