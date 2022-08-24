@@ -7,6 +7,7 @@ export interface VeiculoLeitura {
     placa: string;
     leiturasVeiculo?: LeituraPosicao[];
     totalizadorTempoVeiculo?: TotalizadorTempo;
+    continuaNoPoi?: boolean;
     dadosFicticiosVeiculo: Veiculo;
     overlay: string;
 }

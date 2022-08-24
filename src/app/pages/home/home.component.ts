@@ -240,7 +240,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             switch (leituraVeiculo.overlay) {
                 case 'infoWindow': {
                     this._gMapService.createMarkerInfoWindow(leitura.center, TemplateUtils.veiculoLeituraWindowTemplate(leitura,
-                        leituraVeiculo.dadosFicticiosVeiculo, leituraVeiculo.totalizadorTempoVeiculo), 'closed', 'car-test.png');
+                        leituraVeiculo.dadosFicticiosVeiculo, leituraVeiculo), 'closed', 'car-test.png');
                     return;
                 }
             }

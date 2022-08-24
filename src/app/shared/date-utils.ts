@@ -1,10 +1,10 @@
 export class DateUtils {
     static diffYMDHMS(date1: moment.Moment, date2: moment.Moment) {
-        let years = date1.diff(date2, 'year');
-        date2.add(years, 'years');
+        // let years = date1.diff(date2, 'year');
+        // date2.add(years, 'years');
 
-        let months = date1.diff(date2, 'months');
-        date2.add(months, 'months');
+        // let months = date1.diff(date2, 'months');
+        // date2.add(months, 'months');
 
         let days = date1.diff(date2, 'days');
         date2.add(days, 'days');
@@ -17,13 +17,13 @@ export class DateUtils {
 
         let seconds = date1.diff(date2, 'seconds');
 
-        years = Math.abs(years);
-        months = Math.abs(months);
+        // years = Math.abs(years);
+        // months = Math.abs(months);
         days = Math.abs(days);
         hours = Math.abs(hours);
         minutes = Math.abs(minutes);
         seconds = Math.abs(seconds);
 
-        return { years, months, days, hours, minutes, seconds };
+        return { days, hours, minutes, seconds };
     }
 }

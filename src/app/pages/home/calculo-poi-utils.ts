@@ -160,17 +160,17 @@ export default class calculoPoiUtils {
 
         poisVeiculosTotalizadores.map(poiVeiculoTotalizador => {
             const dataInicialTotalizadores = moment().set({ "hour": 0, "minute": 0, "second": 0 });
-            const dateTotalizadoresSomaTempoTotal = dataInicialTotalizadores.clone();
+            const dataTotalizadoresSomaTempoTotal = dataInicialTotalizadores.clone();
 
             poiVeiculoTotalizador.poi.veiculos.forEach(veiculo => {
-                dateTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_dia_veiculos, 'day');
-                dateTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_hora_veiculos, 'hour');
-                dateTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos, 'minutes');
+                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_dia_veiculos, 'day');
+                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_hora_veiculos, 'hour');
+                dataTotalizadoresSomaTempoTotal.add(veiculo.totalizadorTempoVeiculo.tempo_total_minuto_veiculos, 'minutes');
             });
 
             const diffLeituraGeral = DateUtils.diffYMDHMS(
                 dataInicialTotalizadores,
-                dateTotalizadoresSomaTempoTotal
+                dataTotalizadoresSomaTempoTotal
             );
 
             poiVeiculoTotalizador.poi.totalizadorPoi = {
@@ -189,11 +189,16 @@ export default class calculoPoiUtils {
                 const dataPrimeiraLeituraGeral = moment(
                     veiculo.leiturasVeiculo[0]?.data?.toString()
                 );
-                const dataUltimaLeituraGeral = moment(
+                let dataUltimaLeituraGeral = moment(
                     veiculo.leiturasVeiculo[
                         veiculo.leiturasVeiculo.length - 1
                     ]?.data?.toString()
                 );
+
+                if (dataPrimeiraLeituraGeral.valueOf() === dataUltimaLeituraGeral.valueOf()) {
+                    dataUltimaLeituraGeral = moment();
+                    veiculo.continuaNoPoi = true;
+                }
 
                 const diffLeituraGeral = DateUtils.diffYMDHMS(
                     dataPrimeiraLeituraGeral,

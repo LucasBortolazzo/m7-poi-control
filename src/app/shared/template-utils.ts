@@ -4,6 +4,7 @@ import { LeituraPosicao } from '../pages/home/model/leitura-posicao';
 import { Poi } from '../pages/home/model/poi';
 import { TotalizadorTempo } from '../pages/home/model/totalizador-tempo';
 import { Veiculo } from '../pages/home/model/veiculo';
+import { VeiculoLeitura } from '../pages/home/model/veiculo-leitura';
 
 export default class TemplateUtils {
 
@@ -30,7 +31,7 @@ export default class TemplateUtils {
         return content;
     }
 
-    static veiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, totalizadorTempoVeiculo: TotalizadorTempo): string {
+    static veiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, veiculoLeitura: VeiculoLeitura): string {
         const dadosExibicao = {
             nome: dadosVeiculo.nome,
             placa: dadosVeiculo.placa,
@@ -39,9 +40,9 @@ export default class TemplateUtils {
             modelo: dadosVeiculo.modelo,
             cor: dadosVeiculo.cor,
             anoFabicacao: dadosVeiculo.anoFabicacao,
-            tempoTotalVeiculoInPoi: totalizadorTempoVeiculo ? totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s), ' +
-                totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) ' +
-                totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : 'N/A',
+            tempoTotalVeiculoInPoi: veiculoLeitura.totalizadorTempoVeiculo ? veiculoLeitura.totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s), ' +
+                veiculoLeitura.totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) ' +
+                veiculoLeitura.totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : 'N/A',
             idLeitura: leituraPosicao.id,
             emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Nao',
             latitude: leituraPosicao.latitude,
@@ -51,7 +52,8 @@ export default class TemplateUtils {
             distanciaParaPoi: leituraPosicao.distanciaParaPoi || 0,
             inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
             leituraPosicao: leituraPosicao.inPoiRadius,
-            poiDescri: leituraPosicao.poiDescri || 'N/A'
+            poiDescri: leituraPosicao.poiDescri || 'N/A',
+            veiculoContinuaNoPoi: veiculoLeitura.continuaNoPoi ? 'Sim' : 'Não'
         };
 
         const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;z-index: 99999">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
@@ -60,7 +62,8 @@ export default class TemplateUtils {
             '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
             '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span> </p>' +
             '<p>Tempo <strong><i>Total</i></strong> do veiculo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
-            '<p class="poi-totalizador">Distancia para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: ' + dadosExibicao.inPoiRadius + '</span> </p> ' +
+            '<p class="poi-totalizador">Distancia para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: '
+            + dadosExibicao.inPoiRadius + ', Continua no POI: ' + dadosExibicao.veiculoContinuaNoPoi + '</span> </p> ' +
             '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referencia: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
             '</div>' +
             '</div>';
