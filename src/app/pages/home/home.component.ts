@@ -34,6 +34,7 @@ import { PoiService } from './services/poi.service';
 import TemplateUtils from 'src/app/shared/template-utils';
 import calculoPoiUtils from './calculo-poi-utils';
 import { DateUtils } from 'src/app/shared/date-utils';
+import { ConfirmDialogModel, DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component';
 
 @Component({
     selector: 'app-home',
@@ -70,6 +71,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._criarFormFiltro();
         this._implementEvents();
         this._carregarDados();
+        this._configurarTemplate();
     }
 
     ngAfterViewInit(): void {
@@ -86,7 +88,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 next: (newPoi: Poi) => {
                     if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
                         this.pois.push(newPoi);
-                        //  this._processarPoisLeiturasVeiculos(newPoi);
                         this.formFiltro.get('poiId').setValue(newPoi.id);
                         this._esconderFiltros();
 
@@ -104,6 +105,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
             })
         );
+    }
+
+    private _configurarTemplate() {
+        this._exibirFiltros();
     }
 
     private _initializeMap() {
@@ -373,9 +378,48 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._matExpansionPanelFiltros.close();
     }
 
+    private _exibirFiltros() {
+        if (!this._matExpansionPanelFiltros) {
+            return;
+        }
+
+        this._matExpansionPanelFiltros.open();
+    }
+
     public visualizarPois() {
+        if (!this._filtroForm.poi) {
+            this._exibirConfirmacaoParaProcessarTodosPois();
+            return;
+        }
+
         this._gMapService.$processarCalcularPoisEvent.next();
         this._esconderFiltros();
+    }
+
+    public _exibirConfirmacaoParaProcessarTodosPois(): void {
+        const dialogData: ConfirmDialogModel = {
+            title: 'Confirmação de ação',
+            message: `Nenhum filtro de ponto de interesse foi informado, `
+                .concat(`sendo assim, serão calculados TODOS os POIs para TODAS as leituras de posições obtidas. <br>`)
+                .concat(`isso pode demorar um pouco, além de consumir aproximadamente <strong>${this.pois.length * this.leituraPosicao.length}</strong> requisições de `)
+                .concat(`suas cotas mensais da API do Google Maps.<br>Considere informar um filtro de POI 😉. <br><br>`)
+                .concat(`Tem certeza que deseja continuar?`)
+        };
+
+        const dialogRef = this._dialog.open(DialogConfirmComponent, {
+            maxWidth: "400px",
+            data: dialogData
+        });
+
+        this._subscription.add(
+            dialogRef.afterClosed().subscribe(dialogResult => {
+                if (!dialogResult) {
+                    return;
+                }
+
+                this._gMapService.$processarCalcularPoisEvent.next();
+            })
+        );
     }
 
     public redefinirFiltros() {
