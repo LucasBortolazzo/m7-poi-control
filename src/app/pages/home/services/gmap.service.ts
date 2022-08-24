@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import MapUtils from 'src/app/shared/map-utils';
-import { ImgTest } from '../../../../assets/img/img-test';
 import { Poi } from '../model/poi';
 
 @Injectable({ providedIn: 'root' })
