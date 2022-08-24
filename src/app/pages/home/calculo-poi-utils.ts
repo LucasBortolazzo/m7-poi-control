@@ -1,4 +1,7 @@
+import { formatDate } from '@angular/common';
+
 import * as moment from 'moment';
+
 import { DateUtils } from 'src/app/shared/date-utils';
 import { LeituraPosicao } from './model/leitura-posicao';
 import { Poi } from './model/poi';
@@ -186,14 +189,11 @@ export default class calculoPoiUtils {
     ) {
         poisVeiculosTotalizadores.map((poiVeiculoTotalizador) =>
             poiVeiculoTotalizador.poi.veiculos.map((veiculo) => {
-                const dataPrimeiraLeituraGeral = moment(
-                    veiculo.leiturasVeiculo[0]?.data?.toString()
-                );
-                let dataUltimaLeituraGeral = moment(
-                    veiculo.leiturasVeiculo[
-                        veiculo.leiturasVeiculo.length - 1
-                    ]?.data?.toString()
-                );
+                const dataInicial = formatDate(veiculo.leiturasVeiculo[0].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
+                const dataFinal = formatDate(veiculo.leiturasVeiculo[veiculo.leiturasVeiculo.length - 1].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
+
+                const dataPrimeiraLeituraGeral = moment(dataInicial);
+                let dataUltimaLeituraGeral = moment(dataFinal);
 
                 if (dataPrimeiraLeituraGeral.valueOf() === dataUltimaLeituraGeral.valueOf()) {
                     dataUltimaLeituraGeral = moment();
