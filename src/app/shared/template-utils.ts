@@ -41,7 +41,7 @@ export default class TemplateUtils {
             cor: dadosVeiculo.cor,
             anoFabicacao: dadosVeiculo.anoFabicacao,
             tempoTotalVeiculoInPoi: veiculoLeitura.totalizadorTempoVeiculo ? veiculoLeitura.totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s), ' +
-                veiculoLeitura.totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) ' +
+                veiculoLeitura.totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s) e ' +
                 veiculoLeitura.totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : 'N/A',
             idLeitura: leituraPosicao.id,
             emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Nao',
@@ -49,7 +49,7 @@ export default class TemplateUtils {
             longitude: leituraPosicao.longitude,
             velocidade: leituraPosicao.velocidade || 0,
             data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy hh:MM:ss', 'pt-BR') : 'N/A',
-            distanciaParaPoi: leituraPosicao.distanciaParaPoi || 0,
+            distanciaParaPoi: leituraPosicao.distanciaParaPoi || 'N/A',
             inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
             leituraPosicao: leituraPosicao.inPoiRadius,
             poiDescri: leituraPosicao.poiDescri || 'N/A',

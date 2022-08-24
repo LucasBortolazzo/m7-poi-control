@@ -101,10 +101,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                     };
 
                     this._gMapService.resetMap();
+                    this._processarPoisLeiturasVeiculos();
+                    this._calcularPois();
 
                     setTimeout(() => {
-                        this._processarPoisLeiturasVeiculos();
-                        this._calcularPois();
                         this._spinner.hide();
                     }, 500);
                 },
