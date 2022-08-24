@@ -1,4 +1,9 @@
 <main>
+    <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="#fff" type="ball-scale-ripple-multiple"
+        [fullScreen]="true">
+        <p style="color: white"> Calculando POI's, por favor aguarde.. </p>
+    </ngx-spinner>
+
     <div class="content-form">
         <mat-expansion-panel #MatExpansionPanelFiltro [expanded]="true">
 
@@ -60,7 +65,8 @@
                 <!-- botões de ação -->
                 <div class="buttons">
                     <button mat-button color="primary" (click)="redefinirFiltros()">Redefinir filtros</button>
-                    <button mat-flat-button color="primary" (click)="visualizarPois()">Visualizar</button>
+                    <button mat-flat-button color="primary" [disabled]="formFiltro.invalid"
+                        (click)="visualizarPois()">Visualizar</button>
                 </div>
             </form>
 

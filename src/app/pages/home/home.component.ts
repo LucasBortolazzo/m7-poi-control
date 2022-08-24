@@ -35,6 +35,7 @@ import TemplateUtils from 'src/app/shared/template-utils';
 import calculoPoiUtils from './calculo-poi-utils';
 import { DateUtils } from 'src/app/shared/date-utils';
 import { ConfirmDialogModel, DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-home',
@@ -64,7 +65,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         private _snackBar: MatSnackBar,
         private _gMapService: GMapService,
         private _poiService: PoiService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _spinner: NgxSpinnerService
     ) { }
 
     ngOnInit(): void {
@@ -86,7 +88,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private _implementEvents() {
         this._subscription.add(
             this._gMapService.$processarCalcularPoisEvent.subscribe({
-                next: (newPoi: Poi) => {
+                next: (newPoi: Poi | void) => {
+                    this._spinner.show();
+
                     if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
                         this.pois.push(newPoi);
                         this.formFiltro.get('poiId').setValue(newPoi.id);
@@ -94,12 +98,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
                         this._exibirMensagem('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
                             .concat('sera calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
-
                     };
 
                     this._gMapService.resetMap();
-                    this._processarPoisLeiturasVeiculos();
-                    this._calcularPois();
+
+                    setTimeout(() => {
+                        this._processarPoisLeiturasVeiculos();
+                        this._calcularPois();
+                        this._spinner.hide();
+                    }, 500);
                 },
                 error: (e: any) => {
                     console.error('Ocorreu um erro inesperado. ' + e);
@@ -431,7 +438,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public redefinirFiltros() {
-        this.formFiltro.reset();
+        this.formFiltro.get('poiId').reset();
+        this.formFiltro.get('placa').reset();
+        this.formFiltro.get('dataLeitura').reset();
     }
 
     public abrirLocalizacaoMapa(poi: Poi) {

@@ -8,11 +8,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import localePt from '@angular/common/locales/pt';
 
-import { SharedModule } from './shared/shared.module';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './pages/home/home.component';
 import {
     DateAdapter,
     MAT_DATE_FORMATS,
@@ -23,6 +18,14 @@ import {
     MAT_MOMENT_DATE_FORMATS,
     MomentDateAdapter,
 } from '@angular/material-moment-adapter';
+
+import { NgxSpinnerModule } from 'ngx-spinner';
+
+import { SharedModule } from './shared/shared.module';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { HomeComponent } from './pages/home/home.component';
 import { DialogMemoriaCalculoComponent } from './pages/dialog-memoria-calculo/dialog-memoria-calculo.component';
 import { DialogConfirmComponent } from './pages/dialog-confirm/dialog-confirm.component';
 
@@ -46,6 +49,7 @@ export const PT_BR_DATE_FORMAT = {
         AppRoutingModule,
         BrowserAnimationsModule,
         SharedModule,
+        NgxSpinnerModule,
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
@@ -60,4 +64,4 @@ export const PT_BR_DATE_FORMAT = {
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
