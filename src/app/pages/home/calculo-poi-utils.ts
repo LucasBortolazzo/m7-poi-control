@@ -10,8 +10,14 @@ export default class calculoPoiUtils {
 
     private static dadosVeiculo: Veiculo[] = dadosFicticiosVeiculos;
 
-    static processarPoisLeiturasVeiculos(leituras: LeituraPosicao[], pois: Poi[], poiFilter?: Poi) {
+    static processarPoisLeiturasVeiculos(leituras: LeituraPosicao[], pois: Poi[],
+        totalizadoresProcessados: PoisVeiculosTotalizador[], poiFilter?: Poi,) {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = [];
+
+        if (poiFilter && totalizadoresProcessados
+            .find((pt) => pt.poi.id === poiFilter.id)) {
+            return poisVeiculosTotalizadores;
+        }
 
         for (let leitura of leituras) {
             pois.map((poi) => {
@@ -26,6 +32,12 @@ export default class calculoPoiUtils {
                 return poi;
             }).map((poi) => {
 
+                const veiculosLeiturasPois: LeituraPosicao[] = totalizadoresProcessados
+                    .map((v) => v.poi.veiculos
+                        .map((veiculo) => veiculo.leiturasVeiculo
+                            .map((leituraPoi) => leituraPoi)))
+                    .flat(3);
+
                 if (poiFilter && poi.id !== poiFilter.id) {
                     return;
                 }
@@ -35,6 +47,8 @@ export default class calculoPoiUtils {
                         { lat: poi.latitude, lng: poi.longitude },
                         { lat: leitura.latitude, lng: leitura.longitude }
                     );
+
+                console.log('chamando api do google');
 
                 leitura.inPoiRadius = leitura.distanciaParaPoi <= poi.raio;
                 leitura.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;

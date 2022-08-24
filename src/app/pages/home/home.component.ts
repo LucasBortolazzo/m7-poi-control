@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 next: (newPoi: Poi) => {
                     if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
                         this.pois.push(newPoi);
-                        this._processarPoisLeiturasVeiculos(newPoi);
+                        //  this._processarPoisLeiturasVeiculos(newPoi);
                         this.formFiltro.get('poiId').setValue(newPoi.id);
                         this._esconderFiltros();
 
@@ -95,11 +95,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     };
 
-                    if (!this._poisVeiculosTotalizadoresOriginal.length) {
-                        this._processarPoisLeiturasVeiculos();
-                    };
-
                     this._gMapService.resetMap();
+                    this._processarPoisLeiturasVeiculos();
                     this._calcularPois();
                 },
                 error: (e: any) => {
@@ -117,7 +114,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _criarFormFiltro() {
         this.formFiltro = this._fb.group({
-            poiId: [null],
+            poiId: [1],
             placa: [null],
             dataLeitura: [null],
         });
@@ -199,11 +196,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    private _processarPoisLeiturasVeiculos(poiFilter?: Poi) {
+    private _processarPoisLeiturasVeiculos() {
         const poisVeiculosTotalizadores: PoisVeiculosTotalizador[] = calculoPoiUtils
-            .processarPoisLeiturasVeiculos(this.leituraPosicao, this.pois, poiFilter);
+            .processarPoisLeiturasVeiculos(this.leituraPosicao, this.pois, this._poisVeiculosTotalizadoresOriginal, this._filtroForm.poi);
 
-        this._poisVeiculosTotalizadoresOriginal = [...this._poisVeiculosTotalizadoresOriginal, ...Array.from(poisVeiculosTotalizadores)];
+        this._poisVeiculosTotalizadoresOriginal = [...this._poisVeiculosTotalizadoresOriginal, ...poisVeiculosTotalizadores];
     }
 
     private _calcularPois() {
@@ -250,9 +247,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
 
             if (index === poisVeiculosTotalizador.length - 1) {
-                setTimeout(() => {
-                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
-                }, 500);
+                this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
             }
 
             poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
