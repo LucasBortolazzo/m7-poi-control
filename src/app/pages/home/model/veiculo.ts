@@ -30,4 +30,5 @@ export const dadosFicticiosVeiculos: Veiculo[] = [
         anoFabicacao: 2016,
         iconName: 'taxi-64x64.png'
     },
+
 ];
