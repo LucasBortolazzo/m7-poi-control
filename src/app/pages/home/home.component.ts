@@ -263,23 +263,33 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
-        poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
-            this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
+        this._spinner.show();
 
-            if (index === poisVeiculosTotalizador.length - 1) {
-                this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
-            }
+        try {
 
-            poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
-                this._gerarOverlayLeituraVeiculo(veiculoInPoi);
+            poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
+                this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
+
+                if (index === poisVeiculosTotalizador.length - 1) {
+                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
+                }
+
+                poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
+                    this._gerarOverlayLeituraVeiculo(veiculoInPoi);
+                });
             });
-        });
 
-        this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
-            if (veiculoOutPoi.overlay) {
-                this._gerarOverlayLeituraVeiculo(veiculoOutPoi);
-            }
-        });
+            this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
+                if (veiculoOutPoi.overlay) {
+                    this._gerarOverlayLeituraVeiculo(veiculoOutPoi);
+                }
+            });
+
+        } catch {
+            setTimeout(() => {
+                this._spinner.hide();
+            }, 1000);
+        }
     }
 
     private _gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
