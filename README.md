@@ -22,7 +22,7 @@
   
 <h2>🧐 Features</h2>
 
-Here're some of the project's best features:
+Aqui estão alguns dos melhores recursos do projeto::
 
 *   Cálculo de pontos de interesse utilizando a Geometry Library do Google Maps JavaScript API
 *   Possibilidade de calcular pontos de interesse dinamicamente através do recurso de memória de cálculo
