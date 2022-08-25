@@ -10,7 +10,7 @@ import { Poi } from '../model/poi';
 
 @Injectable({ providedIn: 'root' })
 export class PoiService {
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     public getPois(): Observable<Poi[]> {
         const url = `${environment.api}/pois`;
@@ -18,7 +18,7 @@ export class PoiService {
     }
 
     public getPlacas(): Observable<string[]> {
-        const url = `${environment.api}/posicao/placas`;
+        const url = `${environment.api}/placas`;
         return this.http.get<any>(url);
     }
 

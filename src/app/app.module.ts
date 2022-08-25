@@ -21,6 +21,8 @@ import {
 
 import { NgxSpinnerModule } from 'ngx-spinner';
 
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+
 import { SharedModule } from './shared/shared.module';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -28,6 +30,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
 import { DialogMemoriaCalculoComponent } from './pages/dialog-memoria-calculo/dialog-memoria-calculo.component';
 import { DialogConfirmComponent } from './pages/dialog-confirm/dialog-confirm.component';
+import { InMemoryDatabase } from './mock-api/in-memory-database';
 
 registerLocaleData(localePt);
 export const PT_BR_DATE_FORMAT = {
@@ -50,6 +53,7 @@ export const PT_BR_DATE_FORMAT = {
         BrowserAnimationsModule,
         SharedModule,
         NgxSpinnerModule,
+        HttpClientInMemoryWebApiModule.forRoot(InMemoryDatabase)
     ],
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },

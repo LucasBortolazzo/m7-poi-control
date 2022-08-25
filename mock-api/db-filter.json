@@ -23,16 +23,62 @@
         }
     ],
     "placas": [
-        "TESTE001"
+        "TESTE001",
+        "CAR0012"
     ],
     "posicao": [
         {
             "id": 1,
             "placa": "TESTE001",
-            "data": "2022-06-06T03:56:03.000+00:00",
+            "data": "2022-06-06T01:56:03.000+00:00",
             "velocidade": 0,
             "latitude": -25.5674270,
             "longitude": -51.4765336,
+            "ignicao": true
+        },
+        {
+            "id": 2,
+            "placa": "CAR0012",
+            "data": "2022-06-06T03:56:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.414167,
+            "longitude": -51.566944,
+            "ignicao": true
+        },
+        {
+            "id": 3,
+            "placa": "TESTE001",
+            "data": "2022-07-07T03:56:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5674270,
+            "longitude": -51.4765336,
+            "ignicao": true
+        },
+        {
+            "id": 4,
+            "placa": "CAR0012",
+            "data": "2022-06-06T03:56:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.414167,
+            "longitude": -51.566944,
+            "ignicao": true
+        },
+        {
+            "id": 5,
+            "placa": "TESTE001",
+            "data": "2022-06-06T05:60:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.5674270,
+            "longitude": -51.4765336,
+            "ignicao": true
+        },
+        {
+            "id": 6,
+            "placa": "CAR0012",
+            "data": "2022-06-07T03:58:03.000+00:00",
+            "velocidade": 0,
+            "latitude": -25.414167,
+            "longitude": -51.566944,
             "ignicao": true
         }
     ]

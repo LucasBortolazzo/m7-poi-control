@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
 import MapUtils from 'src/app/shared/map-utils';
 import { Poi } from '../model/poi';
 
@@ -17,7 +18,7 @@ export class GMapService {
 
         this.map = new google.maps.Map(mapContainer, {
             center: startPoint,
-            zoom: 16,
+            zoom: 17,
             styles: MapUtils.getDefaultStyle('Cobalt')
         });
     }
@@ -42,7 +43,7 @@ export class GMapService {
     public setMapcenter(
         center: google.maps.LatLng | google.maps.LatLngLiteral | null
     ) {
-        this.map.setZoom(16);
+        this.map.setZoom(17);
         this.map.setCenter(center);
     }
 

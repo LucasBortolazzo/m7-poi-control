@@ -6,10 +6,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
+    delay,
     finalize,
     forkJoin,
     retry,
     Subscription,
+    tap,
 } from 'rxjs';
 
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -79,31 +81,30 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _implementEvents() {
         this._subscription.add(
-            this._gMapService.$processarCalcularPoisEvent.subscribe({
-                next: (newPoi: Poi | void) => {
-                    this._spinner.show();
+            this._gMapService.$processarCalcularPoisEvent.
+                pipe(
+                    tap(() => this._exibirAguarde()),
+                    (delay(500)))
+                .subscribe({
+                    next: (newPoi: Poi | void) => {
+                        if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
+                            this.pois.push(newPoi);
+                            this.formFiltro.get('poiId').setValue(newPoi.id);
+                            this._esconderFiltros();
 
-                    if (newPoi && !this.pois.find((poi) => poi.id === newPoi.id)) {
-                        this.pois.push(newPoi);
-                        this.formFiltro.get('poiId').setValue(newPoi.id);
-                        this._esconderFiltros();
+                            this._exibirMensagemInformacao('O POI selecionado não foi encontrado na lista de POIs pré-cadastrados, portanto ele '
+                                .concat('será calculado temporariamente, considerando o novo raio, e ficara disponivel somente até a página ser recarregada.'), 7000);
+                        };
 
-                        this._exibirMensagemInformacao('O POI selecionado nao foi encontrado na lista de POIs pre-cadastrados, portanto ele '
-                            .concat('será calculado temporariamente, considerando o novo raio, e ficara disponivel somente ate a pagina ser recarregada.'), 7000);
-                    };
-
-                    this._gMapService.resetMap();
-                    this._processarPoisLeiturasVeiculos();
-                    this._calcularPois();
-
-                    setTimeout(() => {
-                        this._spinner.hide();
-                    }, 500);
-                },
-                error: (e: any) => {
-                    console.error('Ocorreu um erro inesperado. ' + e);
-                },
-            })
+                        this._gMapService.resetMap();
+                        this._processarPoisLeiturasVeiculos();
+                        this._calcularPois();
+                    },
+                    error: (e: any) => {
+                        this._esconderAguarde();
+                        console.error('Ocorreu um erro inesperado. ' + e);
+                    },
+                })
         );
 
         this._subscription.add(
@@ -115,6 +116,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _configurarTemplate() {
         this._exibirFiltros();
+    }
+
+    private _exibirAguarde() {
+        this._spinner.show();
+        this.loading = true;
+    }
+
+    private _esconderAguarde() {
+        this._spinner.hide();
+        this.loading = false;
     }
 
     private _initializeMap() {
@@ -297,10 +308,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
 
-        this._spinner.show();
-
         try {
-
             poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
                 this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
 
@@ -319,10 +327,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
 
-        } catch {
+        } finally {
             setTimeout(() => {
-                this._spinner.hide();
-            }, 1000);
+                this._esconderAguarde();
+            }, 500);
         }
     }
 

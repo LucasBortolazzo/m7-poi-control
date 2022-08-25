@@ -1,13 +1,13 @@
 html {
   font-size: 62.5%;
   @include responsive(1300px) {
-    font-size: 58% !important;
+    font-size: 58%;
   }
   @include responsive(1200px) {
-    font-size: 55% !important;
+    font-size: 55%;
   }
   @include responsive(991px) {
-    font-size: 62.5% !important;
+    font-size: 62.5%;
   }
 }
 
