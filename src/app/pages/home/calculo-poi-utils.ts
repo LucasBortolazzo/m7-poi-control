@@ -86,7 +86,10 @@ export default class calculoPoiUtils {
                     poisVeiculosTotalizadores.splice(indexPoiDel, 1);
                 }
 
-                leiturasVeiculoInPoi.push(leitura);
+                if (leitura.inPoiRadius) {
+                    leiturasVeiculoInPoi.push(leitura);
+                }
+
                 leiturasVeiculoInPoi = [...leiturasVeiculoInPoi];
 
                 const veiculoLeitura: VeiculoLeitura = {

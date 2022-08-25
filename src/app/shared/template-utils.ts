@@ -73,7 +73,9 @@ export default class TemplateUtils {
     }
 
     static getTempoTotalFormat(totalizadorTempoVeiculo: TotalizadorTempo): string {
-        if (!totalizadorTempoVeiculo) {
+        if ((!totalizadorTempoVeiculo) ||
+            (!totalizadorTempoVeiculo.tempo_total_dia_veiculos && !totalizadorTempoVeiculo.tempo_total_hora_veiculos &&
+                !totalizadorTempoVeiculo.tempo_total_minuto_veiculos)) {
             return 'N/A';
         }
 
