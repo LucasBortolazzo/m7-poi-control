@@ -18,7 +18,7 @@ export class PoiService {
     }
 
     public getPlacas(): Observable<string[]> {
-        const url = `${environment.api}/placas`;
+        const url = `${environment.api}/posicao/placas`;
         return this.http.get<any>(url);
     }
 
@@ -34,8 +34,8 @@ export class PoiService {
             }
 
             if (filtro.dataLeitura) {
-                // const dataEncoded = encodeURIComponent(filtro.dataLeitura.toString());
-                params = params.append('data', filtro.dataLeitura.toString());
+                const dataEncoded = encodeURIComponent(filtro.dataLeitura.toString());
+                params = params.append('data', dataEncoded);
             }
         }
 

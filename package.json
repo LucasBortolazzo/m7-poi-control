@@ -7,7 +7,7 @@
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
         "test": "ng test",
-        "mock-api": "json-server ./mock-api/db-filter.json --routes mock-api/routes.json --no-cors=false",
+        "mock-api": "json-server ./mock-api/db.json --routes mock-api/routes.json --no-cors=false",
         "api-and-front-end": "concurrently \"npm run mock-api\" \"ng serve\""
     },
     "private": true,
