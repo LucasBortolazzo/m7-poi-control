@@ -50,7 +50,7 @@ export default class TemplateUtils {
             longitude: leituraPosicao.longitude,
             velocidade: leituraPosicao.velocidade || 0,
             data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy hh:MM:ss', 'pt-BR') : 'N/A',
-            distanciaParaPoi: leituraPosicao.distanciaParaPoi || 'N/A',
+            distanciaParaPoi: leituraPosicao.distanciaParaPoi ? (Math.round(leituraPosicao.distanciaParaPoi * 100) / 100).toFixed(1) + 'M' : 'N/A',
             inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
             leituraPosicao: leituraPosicao.inPoiRadius,
             poiDescri: leituraPosicao.poiDescri || 'N/A',
@@ -76,7 +76,7 @@ export default class TemplateUtils {
         if ((!totalizadorTempoVeiculo) ||
             (!totalizadorTempoVeiculo.tempo_total_dia_veiculos && !totalizadorTempoVeiculo.tempo_total_hora_veiculos &&
                 !totalizadorTempoVeiculo.tempo_total_minuto_veiculos)) {
-            return 'N/A';
+            return '-';
         }
 
         const totalDiasStr = totalizadorTempoVeiculo.tempo_total_dia_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s)' : '';

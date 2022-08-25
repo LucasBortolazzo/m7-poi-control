@@ -14,12 +14,24 @@ export class GMapService {
     constructor() { }
 
     public initializeMap(mapContainer: HTMLElement) {
-        let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
+        const startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
 
         this.map = new google.maps.Map(mapContainer, {
             center: startPoint,
             zoom: 17,
             styles: MapUtils.getDefaultStyle('Cobalt')
+        });
+
+        this._implementMapEvents();
+    }
+
+    private _implementMapEvents() {
+        this.map.addListener('zoom_changed', () => {
+            this.map.getZoom() >= 19 ?
+                this.map.setMapTypeId('terrain') :
+                this.map.setMapTypeId('roadmap');
+
+            console.log(this.map.getZoom());
         });
     }
 
@@ -60,7 +72,7 @@ export class GMapService {
             center: center ? center : this.map.getCenter(),
             radius: radius ? radius : null,
             editable: true,
-            draggable: true
+            draggable: false
         });
 
         circle.setMap(this.map);

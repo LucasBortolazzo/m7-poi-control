@@ -11,7 +11,7 @@ export interface Veiculo {
 
 export const dadosFicticiosVeiculos: Veiculo[] = [
     {
-        placa: 'TESTE001',
+        placa: 'CAR0012',
         nome: 'Scania',
         modelo: 'P 310 8x2',
         cor: 'Branco',
@@ -21,7 +21,7 @@ export const dadosFicticiosVeiculos: Veiculo[] = [
         iconName: 'scania-64x64.png'
     },
     {
-        placa: 'CAR0012',
+        placa: 'TESTE001',
         nome: 'Honda Civic',
         modelo: 'Civic',
         cor: 'Amarelo',
