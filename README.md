@@ -18,6 +18,7 @@
 
 <img src="https://github.com/LucasBortolazzo/m7-poi-control/blob/master/screenshots/5.png" alt="project-screenshot" width="960" height="503/">
 
+<img src="https://github.com/LucasBortolazzo/m7-poi-control/blob/master/screenshots/6.png" alt="project-screenshot" width="960" height="503/">
   
   
 <h2>🧐 Features</h2>
