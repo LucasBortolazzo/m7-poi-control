@@ -30,8 +30,6 @@ export class GMapService {
             this.map.getZoom() >= 19 ?
                 this.map.setMapTypeId('terrain') :
                 this.map.setMapTypeId('roadmap');
-
-            console.log(this.map.getZoom());
         });
     }
 
