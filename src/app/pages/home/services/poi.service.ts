@@ -14,12 +14,12 @@ export class PoiService {
 
     public getPois(): Observable<Poi[]> {
         const url = `${environment.api}/pois`;
-        return this.http.get<any>(url);
+        return this.http.get<Poi[]>(url);
     }
 
     public getPlacas(): Observable<string[]> {
         const url = `${environment.api}/posicao/placas`;
-        return this.http.get<any>(url);
+        return this.http.get<string[]>(url);
     }
 
     public getLeituraPosicao(
@@ -39,6 +39,6 @@ export class PoiService {
             }
         }
 
-        return this.http.get<any>(url, { params: params });
+        return this.http.get<LeituraPosicao[]>(url, { params: params });
     }
 }

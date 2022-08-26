@@ -219,45 +219,47 @@ export default class calculoPoiUtils {
             .map((veiculo) => veiculo.leiturasVeiculo.map((l) => l)))
             .flat(3);
 
-        for (let leituraPosicao of leiturasPosicao) {
-            leituraPosicao.inPoiRadius = false;
-            leituraPosicao.distanciaParaPoi = null;
-            leituraPosicao.center = { lat: leituraPosicao.latitude, lng: leituraPosicao.longitude };
+        for (const leituraPosicao of leiturasPosicao) {
+            const newLeituraPosicao = JSON.parse(JSON.stringify(leituraPosicao));
+
+            newLeituraPosicao.inPoiRadius = false;
+            newLeituraPosicao.distanciaParaPoi = null;
+            newLeituraPosicao.center = { lat: newLeituraPosicao.latitude, lng: newLeituraPosicao.longitude };
             let leituraProcessadaInPoi = false;
             let placaProcessadaInPoi = false;
             let veiculoOutPoi = false;
             let dataLeituraEhValida = true;
 
             veiculosLeiturasPois.find((veiculoLeitura) => {
-                placaProcessadaInPoi = veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                placaProcessadaInPoi = veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
                 leituraProcessadaInPoi = placaProcessadaInPoi &&
-                    veiculoLeitura.id === leituraPosicao.id &&
-                    veiculoLeitura.latitude === leituraPosicao.latitude &&
-                    veiculoLeitura.longitude === leituraPosicao.longitude;
+                    veiculoLeitura.id === newLeituraPosicao.id &&
+                    veiculoLeitura.latitude === newLeituraPosicao.latitude &&
+                    veiculoLeitura.longitude === newLeituraPosicao.longitude;
 
                 return leituraProcessadaInPoi;
             }) || false;
 
             if (dataFiltro) {
-                const dataLeitura = formatDate(leituraPosicao.data, 'dd/MM/yyyy', 'pt-BR', '+00:00');
+                const dataLeitura = formatDate(newLeituraPosicao.data, 'dd/MM/yyyy', 'pt-BR', '+00:00');
                 dataLeituraEhValida = dataLeitura === dataFiltro.toString();
             }
 
             if (!leituraProcessadaInPoi && placaProcessadaInPoi && dataLeituraEhValida) {
 
                 const dadosVeiculoOutPoi: VeiculoLeitura = {
-                    placa: leituraPosicao.placa.toUpperCase(),
-                    leiturasVeiculo: [leituraPosicao],
+                    placa: newLeituraPosicao.placa.toUpperCase(),
+                    leiturasVeiculo: [newLeituraPosicao],
                     totalizadorTempoVeiculo: null,
                     dadosFicticiosVeiculo: this.dadosVeiculo
-                        .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === leituraPosicao.placa.toUpperCase()) || null,
+                        .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase()) || null,
                     overlay: 'infoWindow',
                 };
 
                 leiturasPosicaoveiculosOutPoi.find((veiculoLeitura: VeiculoLeitura, index) => {
-                    veiculoOutPoi = veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
+                    veiculoOutPoi = veiculoLeitura.placa.toUpperCase() === newLeituraPosicao.placa.toUpperCase();
                     if (veiculoOutPoi) {
-                        leiturasPosicaoveiculosOutPoi[index].leiturasVeiculo.push(leituraPosicao);
+                        leiturasPosicaoveiculosOutPoi[index].leiturasVeiculo.push(newLeituraPosicao);
                     }
                     return veiculoOutPoi;
                 });

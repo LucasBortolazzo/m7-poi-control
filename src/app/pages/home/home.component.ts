@@ -114,6 +114,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._subscription.add(
             this.formFiltro.get('exibirSomenteEntradaSaidaVeiculoInPoi').valueChanges.subscribe(() => {
+                this._esconderFiltros();
                 this._gMapService.$processarCalcularPoisEvent.next();
             })
         );
@@ -304,32 +305,28 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._exibirAguarde();
         this._gMapService.resetMap();
 
-        setTimeout(() => {
-            try {
-                poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
-                    this._gerarOverlayPoi(poiVeiculoTotalizador.poi);
+        try {
+            poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
+                this._gerarOverlayPoi(poiVeiculoTotalizador.poi);
 
-                    if (index === poisVeiculosTotalizador.length - 1) {
-                        this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
-                    }
+                if (index === poisVeiculosTotalizador.length - 1) {
+                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
+                }
 
-                    poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
-                        this._gerarOverlayLeituraVeiculo(veiculoInPoi, 'veiculoInPoi');
-                    });
+                poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
+                    this._gerarOverlayLeituraVeiculo(veiculoInPoi, 'veiculoInPoi');
                 });
+            });
 
-                this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
-                    if (veiculoOutPoi.overlay) {
-                        this._gerarOverlayLeituraVeiculo(veiculoOutPoi, 'veiculoOutPoi');
-                    }
-                });
+            this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
+                if (veiculoOutPoi.overlay) {
+                    this._gerarOverlayLeituraVeiculo(veiculoOutPoi, 'veiculoOutPoi');
+                }
+            });
 
-            } finally {
-                setTimeout(() => {
-                    this._esconderAguarde();
-                }, 500);
-            }
-        }, 500);
+        } finally {
+            this._esconderAguarde();
+        }
     }
 
     private _gerarOverlayPoi(poi: Poi) {
