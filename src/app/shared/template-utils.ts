@@ -49,7 +49,7 @@ export default class TemplateUtils {
             latitude: leituraPosicao.latitude,
             longitude: leituraPosicao.longitude,
             velocidade: leituraPosicao.velocidade || 0,
-            data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy hh:MM:ss', 'pt-BR') : 'N/A',
+            data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy HH:mm:ss', 'pt-BR', '+00:00') : 'N/A',
             distanciaParaPoi: leituraPosicao.distanciaParaPoi ? (Math.round(leituraPosicao.distanciaParaPoi * 100) / 100).toFixed(1) + 'M' : 'N/A',
             inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
             leituraPosicao: leituraPosicao.inPoiRadius,
@@ -62,10 +62,10 @@ export default class TemplateUtils {
             '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' - ' + dadosExibicao.data + ' | ID:' + dadosExibicao.idLeitura + ' </p>' +
             '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
             '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span> </p>' +
-            '<p>Tempo <strong><i>Total</i></strong> do veiculo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
-            '<p class="poi-totalizador">Distancia para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: '
+            '<p>Tempo <strong><i>Total</i></strong> do veículo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
+            '<p class="poi-totalizador">Distância para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: '
             + dadosExibicao.inPoiRadius + ', Continua no POI: ' + dadosExibicao.veiculoContinuaNoPoi + '</span> </p> ' +
-            '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referencia: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
+            '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referência: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
             '</div>' +
             '</div>';
 

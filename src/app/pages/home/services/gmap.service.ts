@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 
 import MapUtils from 'src/app/shared/map-utils';
 import { Poi } from '../model/poi';

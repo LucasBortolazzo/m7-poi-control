@@ -23,6 +23,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
 @NgModule({
@@ -51,6 +53,7 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
         MatSelectModule,
         MatTableModule,
         MatDialogModule,
+        MatCheckboxModule,
     ],
     providers: [MatDatepickerModule],
 })

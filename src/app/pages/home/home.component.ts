@@ -96,7 +96,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                                 .concat('será calculado temporariamente, considerando o novo raio, e ficara disponivel somente até a página ser recarregada.'), 7000);
                         };
 
-                        this._gMapService.resetMap();
                         this._processarPoisLeiturasVeiculos();
                         this._calcularPois();
                     },
@@ -110,6 +109,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._subscription.add(
             this.formFiltro.get('mapStyle').valueChanges.subscribe((mapStyleName) => {
                 this._gMapService.setMapStyle(mapStyleName);
+            })
+        );
+
+        this._subscription.add(
+            this.formFiltro.get('exibirSomenteEntradaSaidaVeiculoInPoi').valueChanges.subscribe(() => {
+                this._gMapService.$processarCalcularPoisEvent.next();
             })
         );
     }
@@ -139,6 +144,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             poiId: [1],
             placa: [null],
             dataLeitura: [null],
+            exibirSomenteEntradaSaidaVeiculoInPoi: [],
             mapStyle: ['Cobalt']
         });
     }
@@ -147,24 +153,25 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         const poiId = this.formFiltro.get('poiId').value || null;
         const poi: Poi = poiId ? this.pois.find((poi) => poi.id === poiId) : null;
         const placa = this.formFiltro.get('placa').value || null;
+        const exibirSomenteEntradaSaidaVeiculoInPoi = this.formFiltro.get('exibirSomenteEntradaSaidaVeiculoInPoi').value || null;
         let dataLeitura = this.formFiltro.get('dataLeitura').value || null;
 
         dataLeitura = dataLeitura
-            ? formatDate(dataLeitura, 'MM/dd/yyyy', 'en')
+            ? formatDate(dataLeitura, 'dd/MM/yyyy', 'pt-BR')
             : dataLeitura;
 
         const objFiltro: FilterForm = {
             poi: poi,
             placa: placa,
             dataLeitura: dataLeitura,
+            exibirSomenteEntradaSaidaVeiculoInPoi: exibirSomenteEntradaSaidaVeiculoInPoi,
         };
 
         return objFiltro;
     }
 
     private _carregarDados() {
-        this.loading = true;
-        this._spinner.show();
+        this._exibirAguarde();
 
         const dadosSource$ = forkJoin({
             pois: this._poiService.getPois(),
@@ -203,23 +210,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _calcularPois() {
-        let poisVeiculosTotalizadorFilterData: PoisVeiculosTotalizador[] =
-            this._poisVeiculosTotalizadorFilterData;
+        let poisVeiculosTotalizadorFilterData: PoisVeiculosTotalizador[] = this._poisVeiculosTotalizadorFilterData;
 
-        this._ordenarPosicaoLeituraVeiculosPorDataLeitura(
-            poisVeiculosTotalizadorFilterData
-        );
-
-        this._calcularTempoVeiculosInPoi(
-            poisVeiculosTotalizadorFilterData
-        );
-
-        this._calcularTempoTotalVeiculosInPoi(
-            poisVeiculosTotalizadorFilterData
-        );
-
+        this._ordenarPosicaoLeituraVeiculosPorDataLeitura(poisVeiculosTotalizadorFilterData);
+        this._calcularTempoVeiculosInPoi(poisVeiculosTotalizadorFilterData);
+        this._calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadorFilterData);
         this._gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizadorFilterData);
-
         this._gerarGerarOvelays(poisVeiculosTotalizadorFilterData);
     }
 
@@ -280,9 +276,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                                 const dataLeitura = formatDate(
                                     poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo[j].data, 'dd/MM/yyyy', 'pt-BR', '+00:00'
                                 );
-                                const dataFiltro = formatDate(
-                                    this._filtroForm.dataLeitura, 'dd/MM/yyyy', 'pt-BR', '+00:00'
-                                );
+                                const dataFiltro = this._filtroForm.dataLeitura.toString();
 
                                 if (dataLeitura !== dataFiltro) {
                                     poiVeiculoTotalizador.poi.veiculos[i].leiturasVeiculo.splice(j, 1);
@@ -303,44 +297,64 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
-        this._leiturasPosicaoveiculosOutPoi = calculoPoiUtils.gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador, this.leituraPosicao);
+        this._leiturasPosicaoveiculosOutPoi = calculoPoiUtils.gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador, this.leituraPosicao, this._filtroForm.dataLeitura);
     }
 
     private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
+        this._exibirAguarde();
+        this._gMapService.resetMap();
 
-        try {
-            poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
-                this._gerarOvelayPoi(poiVeiculoTotalizador.poi);
+        setTimeout(() => {
+            try {
+                poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
+                    this._gerarOverlayPoi(poiVeiculoTotalizador.poi);
 
-                if (index === poisVeiculosTotalizador.length - 1) {
-                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
-                }
+                    if (index === poisVeiculosTotalizador.length - 1) {
+                        this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
+                    }
 
-                poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
-                    this._gerarOverlayLeituraVeiculo(veiculoInPoi);
+                    poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
+                        this._gerarOverlayLeituraVeiculo(veiculoInPoi, 'veiculoInPoi');
+                    });
                 });
-            });
 
-            this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
-                if (veiculoOutPoi.overlay) {
-                    this._gerarOverlayLeituraVeiculo(veiculoOutPoi);
-                }
-            });
+                this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
+                    if (veiculoOutPoi.overlay) {
+                        this._gerarOverlayLeituraVeiculo(veiculoOutPoi, 'veiculoOutPoi');
+                    }
+                });
 
-        } finally {
-            setTimeout(() => {
-                this._esconderAguarde();
-            }, 500);
-        }
+            } finally {
+                setTimeout(() => {
+                    this._esconderAguarde();
+                }, 500);
+            }
+        }, 500);
     }
 
-    private _gerarOvelayPoi(poi: Poi) {
+    private _gerarOverlayPoi(poi: Poi) {
         this._gMapService.createCircle(poi.raio, poi.center);
         this._gMapService.createMarkerInfoWindow(poi.center, TemplateUtils.getPoiInfoWindowTemplate(poi), 'opened');
     }
 
-    private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura) {
-        leituraVeiculo.leiturasVeiculo.forEach((leitura) => {
+    private _gerarOverlayLeituraVeiculo(leituraVeiculo: VeiculoLeitura, veiculoInOutPoi: string = 'veiculoInPoi' || 'veiculoOutPoi') {
+        leituraVeiculo.leiturasVeiculo.forEach((leitura, index) => {
+            const leituraEhEntradaOuSaida = index === 0 || index === leituraVeiculo.leiturasVeiculo.length - 1;
+
+            if ((this._filtroForm.exibirSomenteEntradaSaidaVeiculoInPoi &&
+                !leituraEhEntradaOuSaida) &&
+                veiculoInOutPoi === 'veiculoInPoi') {
+                return;
+            }
+
+            if (this._filtroForm.dataLeitura) {
+                const dataLeitura = formatDate(leitura.data, 'dd/MM/yyyy', 'pt-BR', '+00:00');
+
+                if (dataLeitura !== this._filtroForm.dataLeitura.toString()) {
+                    return;
+                }
+            }
+
             switch (leituraVeiculo.overlay) {
                 case 'infoWindow': {
                     this._gMapService.createMarkerInfoWindow(leitura.center, TemplateUtils.getVeiculoLeituraWindowTemplate(leitura,
@@ -402,8 +416,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             title: 'Confirmação de ação',
             message: `Nenhum filtro de ponto de interesse foi informado, `
                 .concat(`sendo assim, serão calculados TODOS os POIs para TODAS as leituras de posições obtidas. <br>`)
-                .concat(`isso pode demorar um pouco, além de consumir aproximadamente <strong>${this.pois.length * this.leituraPosicao.length}</strong> requisições de `)
-                .concat(`suas cotas mensais da API do Google Maps.<br>Considere informar um filtro de POI 😉. <br><br>`)
+                .concat(`isso pode demorar um pouco, pois serão processados aproximadamente <strong>${this.pois.length * this.leituraPosicao.length}</strong> registros.<br>`)
+                .concat(`Considere informar um filtro de POI 😉. <br><br>`)
                 .concat(`Tem certeza que deseja continuar?`)
         };
 

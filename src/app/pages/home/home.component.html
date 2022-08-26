@@ -1,7 +1,7 @@
 <main>
     <ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="large" color="#fff" type="ball-scale-ripple-multiple"
         [fullScreen]="true">
-        <p style="color: white"> Calculando POI's, por favor aguarde.. </p>
+        <p style="color: white"> Calculando POI, por favor aguarde.. </p>
     </ngx-spinner>
 
     <div class="content-form">
@@ -49,6 +49,13 @@
                             aria-label="Data da leitura(DD/MM/YYYY)" formControlName="dataLeitura" />
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <!-- Exibir somente entrada e saída do veículo no POI -->
+                    <mat-form-field appearance="outline">
+                        <input hidden=true matInput>
+                        <mat-checkbox formControlName="exibirSomenteEntradaSaidaVeiculoInPoi">Exibir somente
+                            entrada/saída do veículo</mat-checkbox>
                     </mat-form-field>
 
                     <!-- estilo do mapa -->

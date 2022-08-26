@@ -26,4 +26,12 @@ export class DateUtils {
 
         return { days, hours, minutes, seconds };
     }
+
+    static strToDate(dtStr: string): Date {
+        if (!dtStr) return null;
+        let dateParts = dtStr.split("/") as any;
+        let timeParts = dateParts[2].split(" ")[1].split(":");
+        dateParts[2] = dateParts[2].split(" ")[0] as any;
+        return new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0], timeParts[0], timeParts[1], timeParts[2]);
+    }
 }

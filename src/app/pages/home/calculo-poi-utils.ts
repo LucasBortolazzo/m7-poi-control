@@ -138,14 +138,17 @@ export default class calculoPoiUtils {
     ) {
         poisVeiculosTotalizadores.map((poiVeiculoTotalizador) =>
             poiVeiculoTotalizador.poi.veiculos.map((veiculo) => {
-                const dataInicialFormat = formatDate(veiculo.leiturasVeiculo[0].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
-                const dataFinalFormat = formatDate(veiculo.leiturasVeiculo[veiculo.leiturasVeiculo.length - 1].data, 'dd/MM/YYYY HH:mm:ss', 'pt-br');
+                const dataInicialLeituraOriginal = new Date(veiculo.leiturasVeiculo[0].data);
+                const dataInicialLeituraSemTimeZone = new Date(dataInicialLeituraOriginal.toISOString().slice(0, -1));
 
-                const dataPrimeiraLeituraGeral = moment(dataInicialFormat, 'DD/MM/YYYY HH:mm:ss');
-                let dataUltimaLeituraGeral = moment(dataFinalFormat, 'DD/MM/YYYY HH:mm:ss');
+                const dataFinaleituraOriginal = new Date(veiculo.leiturasVeiculo[veiculo.leiturasVeiculo.length - 1].data);
+                const dataFinaleituraSemTimeZone = new Date(dataFinaleituraOriginal.toISOString().slice(0, -1));
+
+                const dataPrimeiraLeituraGeral = moment(dataInicialLeituraSemTimeZone, 'dd/MM/yyyy HH:mm:ss');
+                let dataUltimaLeituraGeral = moment(dataFinaleituraSemTimeZone, 'dd/MM/yyyy HH:mm:ss');
 
                 if (dataPrimeiraLeituraGeral.valueOf() === dataUltimaLeituraGeral.valueOf()) {
-                    dataUltimaLeituraGeral = moment(new Date(), 'DD/MM/YYYY HH:mm:ss');
+                    dataUltimaLeituraGeral = moment(new Date(), 'dd/MM/yyyy HH:mm:ss');
                     veiculo.continuaNoPoi = true;
                 }
 
@@ -207,10 +210,14 @@ export default class calculoPoiUtils {
      * @param leiturasPosicao Lista de leituras de posição que deverá ser processada
      *
      */
-    static gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[], leiturasPosicao: LeituraPosicao[]) {
+    static gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador: PoisVeiculosTotalizador[],
+        leiturasPosicao: LeituraPosicao[],
+        dataFiltro: Date) {
         const leiturasPosicaoveiculosOutPoi: VeiculoLeitura[] = [];
 
-        const veiculosLeiturasPois: LeituraPosicao[] = poisVeiculosTotalizador.map((v) => v.poi.veiculos.map((veiculo) => veiculo.leiturasVeiculo.map((l) => l))).flat(3);
+        const veiculosLeiturasPois: LeituraPosicao[] = poisVeiculosTotalizador.map((v) => v.poi.veiculos
+            .map((veiculo) => veiculo.leiturasVeiculo.map((l) => l)))
+            .flat(3);
 
         for (let leituraPosicao of leiturasPosicao) {
             leituraPosicao.inPoiRadius = false;
@@ -219,6 +226,7 @@ export default class calculoPoiUtils {
             let leituraProcessadaInPoi = false;
             let placaProcessadaInPoi = false;
             let veiculoOutPoi = false;
+            let dataLeituraEhValida = true;
 
             veiculosLeiturasPois.find((veiculoLeitura) => {
                 placaProcessadaInPoi = veiculoLeitura.placa.toUpperCase() === leituraPosicao.placa.toUpperCase();
@@ -230,7 +238,12 @@ export default class calculoPoiUtils {
                 return leituraProcessadaInPoi;
             }) || false;
 
-            if (!leituraProcessadaInPoi && placaProcessadaInPoi) {
+            if (dataFiltro) {
+                const dataLeitura = formatDate(leituraPosicao.data, 'dd/MM/yyyy', 'pt-BR', '+00:00');
+                dataLeituraEhValida = dataLeitura === dataFiltro.toString();
+            }
+
+            if (!leituraProcessadaInPoi && placaProcessadaInPoi && dataLeituraEhValida) {
 
                 const dadosVeiculoOutPoi: VeiculoLeitura = {
                     placa: leituraPosicao.placa.toUpperCase(),
