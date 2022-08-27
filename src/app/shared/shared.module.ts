@@ -24,6 +24,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
@@ -54,6 +55,7 @@ import { NgxJsonViewerModule } from 'ngx-json-viewer';
         MatTableModule,
         MatDialogModule,
         MatCheckboxModule,
+        MatChipsModule,
     ],
     providers: [MatDatepickerModule],
 })

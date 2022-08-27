@@ -50,9 +50,12 @@ export class GMapService {
     }
 
     public setMapcenter(
-        center: google.maps.LatLng | google.maps.LatLngLiteral | null
+        center: google.maps.LatLng | google.maps.LatLngLiteral | null,
+        resetZoom: boolean = true
     ) {
-        this.map.setZoom(17);
+        if (resetZoom) {
+            this.map.setZoom(17);
+        }
         this.map.setCenter(center);
     }
 
@@ -142,6 +145,7 @@ export class GMapService {
         marker.addListener("click", () => {
             this.closeAllInfoWindow();
             infoWindow.open(this.map, marker);
+            this.setMapcenter(infoWindow.getPosition(), false);
         });
     }
 

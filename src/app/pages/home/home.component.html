@@ -14,12 +14,6 @@
                 <mat-panel-description>Filtros</mat-panel-description>
             </mat-expansion-panel-header>
 
-            <p class="welcome">
-                Ola 👋. Seja bem vindo ao <strong><i>Poi Control</i> </strong>. Para visualizar informacoes especificas
-                utilize
-                os filtros abaixo:
-            </p>
-
             <form [formGroup]="formFiltro">
                 <section class="fields">
 
@@ -55,7 +49,7 @@
                     <mat-form-field appearance="outline">
                         <input hidden=true matInput>
                         <mat-checkbox formControlName="exibirSomenteEntradaSaidaVeiculoInPoi">Exibir somente
-                            entrada/saída do veículo</mat-checkbox>
+                            entrada e saída do veículo no POI</mat-checkbox>
                     </mat-form-field>
 
                     <!-- estilo do mapa -->
@@ -143,9 +137,11 @@
                 <ng-container matColumnDef="totalizadorPoi">
                     <th mat-header-cell *matHeaderCellDef>Tempo total dos veiculos no POI</th>
                     <td mat-cell *matCellDef="let poi">
-                        {{ poi.totalizadorPoi.tempo_total_dia_veiculos }} dia(s),
-                        {{ poi.totalizadorPoi.tempo_total_hora_veiculos }} hora(s) e
-                        {{ poi.totalizadorPoi.tempo_total_minuto_veiculos }} minuto(s)
+                        <mat-chip-list>
+                            <mat-chip color="warn" selected>{{ poi.totalizadorPoi.tempo_total_dia_veiculos }} dia(s),
+                                {{ poi.totalizadorPoi.tempo_total_hora_veiculos }} hora(s) e
+                                {{ poi.totalizadorPoi.tempo_total_minuto_veiculos }} minuto(s)</mat-chip>
+                        </mat-chip-list>
                     </td>
                 </ng-container>
 

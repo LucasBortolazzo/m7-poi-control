@@ -325,7 +325,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             });
 
         } finally {
-            this._esconderAguarde();
+            setTimeout(() => {
+                this._esconderAguarde();
+            }, 1000);
         }
     }
 

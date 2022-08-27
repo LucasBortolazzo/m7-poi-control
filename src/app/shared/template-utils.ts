@@ -19,10 +19,10 @@ export default class TemplateUtils {
 
         const tempoTotalVeiculoStr = this.getTempoTotalFormat(poi.totalizadorPoi);
 
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
+        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;max-width: 32rem">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
             '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
             '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + poi.latitude + ', Longitude: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
+            '<p class="poi-subtitle" style="font-style: italic;"> Lat: ' + poi.latitude + ', Lng: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
             '<p class="poi-totalizador"> Tempo total de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + tempoTotalVeiculoStr + '</span></p > ' +
             '<p class="poi-totalizador" > Total de veiculos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
             '<p class="poi-totalizador" > Total de leituras de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
@@ -57,11 +57,11 @@ export default class TemplateUtils {
             veiculoContinuaNoPoi: veiculoLeitura.continuaNoPoi ? 'Sim' : 'Não'
         };
 
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;z-index: 99999">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
+        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;z-index: 99999;max-width: 27rem">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
             '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
             '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' - ' + dadosExibicao.data + ' | ID:' + dadosExibicao.idLeitura + ' </p>' +
             '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Latitude: ' + dadosExibicao.latitude + ', Longitude: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span> </p>' +
+            '<p class="poi-subtitle" style="font-style: italic;"> Lat: ' + dadosExibicao.latitude + ', Lng: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span> </p>' +
             '<p>Tempo <strong><i>Total</i></strong> do veículo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
             '<p class="poi-totalizador">Distância para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: '
             + dadosExibicao.inPoiRadius + ', Continua no POI: ' + dadosExibicao.veiculoContinuaNoPoi + '</span> </p> ' +
