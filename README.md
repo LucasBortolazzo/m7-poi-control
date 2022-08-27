@@ -4,7 +4,7 @@
 
 <h2>🚀 Demo</h2>
 
-[https://challenge-frontend-mobi7.netlify.app/#/](https://challenge-frontend-mobi7.netlify.app/#/)
+[https://poi-control.netlify.app/#/)
 
 <h2>Project Screenshots:</h2>
 
@@ -20,7 +20,7 @@
   
 <h2>🧐 Features</h2>
 
-Aqui estão alguns dos melhores recursos do projeto::
+Aqui estão alguns dos melhores recursos do projeto:
 
 *   Cálculo de pontos de interesse utilizando a Geometry Library do Google Maps JavaScript API
 *   Possibilidade de calcular pontos de interesse dinamicamente através do recurso de memória de cálculo
