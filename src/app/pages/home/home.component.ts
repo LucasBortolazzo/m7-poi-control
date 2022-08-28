@@ -142,7 +142,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _criarFormFiltro() {
         this.formFiltro = this._fb.group({
-            poiId: [1],
+            poiId: [null],
             placa: [null],
             dataLeitura: [null],
             exibirSomenteEntradaSaidaVeiculoInPoi: [true],
@@ -305,14 +305,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._exibirAguarde();
         this._gMapService.resetMap();
 
+        const timeoutForRendererMap = !this._filtroForm.exibirSomenteEntradaSaidaVeiculoInPoi ? 2500 : 1000;
+
         try {
+
             poisVeiculosTotalizador.forEach((poiVeiculoTotalizador, index) => {
                 this._gerarOverlayPoi(poiVeiculoTotalizador.poi);
 
                 if (index === poisVeiculosTotalizador.length - 1) {
                     setTimeout(() => {
                         this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
-                    }, 1000);
+                    }, timeoutForRendererMap);
                 }
 
                 poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
@@ -329,7 +332,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
         } finally {
-            this._esconderAguarde();
+            setTimeout(() => {
+                this._esconderAguarde();
+            }, timeoutForRendererMap);
         }
     }
 
