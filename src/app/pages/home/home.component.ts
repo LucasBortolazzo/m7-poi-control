@@ -145,7 +145,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             poiId: [1],
             placa: [null],
             dataLeitura: [null],
-            exibirSomenteEntradaSaidaVeiculoInPoi: [],
+            exibirSomenteEntradaSaidaVeiculoInPoi: [true],
             mapStyle: ['Cobalt']
         });
     }
@@ -217,7 +217,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._calcularTempoVeiculosInPoi(poisVeiculosTotalizadorFilterData);
         this._calcularTempoTotalVeiculosInPoi(poisVeiculosTotalizadorFilterData);
         this._gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizadorFilterData);
-        this._gerarGerarOvelays(poisVeiculosTotalizadorFilterData);
+        this._gerarOvelays(poisVeiculosTotalizadorFilterData);
     }
 
     private _ordenarPosicaoLeituraVeiculosPorDataLeitura(
@@ -268,7 +268,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                         if (this._filtroForm.placa) {
                             if (poiVeiculoTotalizador.poi.veiculos[i].placa.toUpperCase() !== this._filtroForm.placa.toUpperCase()) {
                                 poiVeiculoTotalizador.poi.veiculos.splice(i, 1);
-                                return;
+                                continue;
                             }
                         }
 
@@ -301,7 +301,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this._leiturasPosicaoveiculosOutPoi = calculoPoiUtils.gerarLeiturasPosicaoVeiculosOutPoi(poisVeiculosTotalizador, this.leituraPosicao, this._filtroForm.dataLeitura);
     }
 
-    private _gerarGerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
+    private _gerarOvelays(poisVeiculosTotalizador: PoisVeiculosTotalizador[]) {
         this._exibirAguarde();
         this._gMapService.resetMap();
 
@@ -310,7 +310,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._gerarOverlayPoi(poiVeiculoTotalizador.poi);
 
                 if (index === poisVeiculosTotalizador.length - 1) {
-                    this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
+                    setTimeout(() => {
+                        this._gMapService.setMapcenter(poiVeiculoTotalizador.poi.center);
+                    }, 1000);
                 }
 
                 poiVeiculoTotalizador.poi.veiculos.forEach((veiculoInPoi) => {
@@ -318,16 +320,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             });
 
-            this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
-                if (veiculoOutPoi.overlay) {
-                    this._gerarOverlayLeituraVeiculo(veiculoOutPoi, 'veiculoOutPoi');
-                }
-            });
+            if (this._filtroForm.poi && !this._filtroForm.exibirSomenteEntradaSaidaVeiculoInPoi) {
+                this._leiturasPosicaoveiculosOutPoi.forEach((veiculoOutPoi) => {
+                    if (veiculoOutPoi.overlay) {
+                        this._gerarOverlayLeituraVeiculo(veiculoOutPoi, 'veiculoOutPoi');
+                    }
+                });
+            }
 
         } finally {
-            setTimeout(() => {
-                this._esconderAguarde();
-            }, 1000);
+            this._esconderAguarde();
         }
     }
 

@@ -1,5 +1,4 @@
 import { formatDate } from '@angular/common';
-
 import { LeituraPosicao } from '../pages/home/model/leitura-posicao';
 import { Poi } from '../pages/home/model/poi';
 import { TotalizadorTempo } from '../pages/home/model/totalizador-tempo';
@@ -19,21 +18,50 @@ export default class TemplateUtils {
 
         const tempoTotalVeiculoStr = this.getTempoTotalFormat(poi.totalizadorPoi);
 
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;max-width: 32rem">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
-            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
-            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + poi.id + ' - ' + poi.nome + ' </p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Lat: ' + poi.latitude + ', Lng: ' + poi.longitude + ', Raio: ' + poiRaio.toString() + ' Metros </p>' +
-            '<p class="poi-totalizador"> Tempo total de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + tempoTotalVeiculoStr + '</span></p > ' +
-            '<p class="poi-totalizador" > Total de veiculos distintos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + poi.veiculos.length + ' </span></p> ' +
-            '<p class="poi-totalizador" > Total de leituras de veiculos no POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + totalLeiturasPoi + ' </span></p> ' +
-            '</div>' +
-            '</div>';
+        const content =
+            '<div class="container"> '
+            + '    <div class="card"> '
+            + '        <div class="title"> '
+            + '            <div class="right"> '
+            + '                <div class="info"> '
+            + '                    <i class="fa-solid fa-location-dot"></i> '
+            + '                    <h2>' + poi.id + ' - ' + poi.nome + '</h2> '
+            + '                </div> '
+            + '                <div class="info"> '
+            + '                    <i class="fa-solid fa-location-crosshairs"></i> '
+            + '                    <h3>Lat: ' + poi.latitude + '</h3> '
+            + '                </div> '
+            + '                <div class="info"> '
+            + '                    <i class="fa-solid fa-location-arrow"></i> '
+            + '                    <h3>Lng: ' + poi.longitude + '</h3> '
+            + '                </div> '
+            + '                <div class="info"> '
+            + '                    <i class="fa-solid fa-circle-dot"></i> '
+            + '                    <h3>Raio: ' + poiRaio.toString() + ' Metros</h3> '
+            + '                </div> '
+            + '            </div> '
+            + '        </div> '
+            + '        <div class="content"> '
+            + '            <div class="info"> '
+            + '                <i class="fa-solid fa-car-rear"></i> '
+            + '                <h3>Total de veiculos distintos no POI: ' + poi.veiculos.length + '</h3> '
+            + '            </div> '
+            + '            <div class="info"> '
+            + '                <i class="fa-solid fa-arrow-up-1-9"></i> '
+            + '                <h3>Total de leituras de veiculos no POI: ' + totalLeiturasPoi + '</h3> '
+            + '            </div> '
+            + '            <div class="info"> '
+            + '                <i class="fa-solid fa-user-clock"></i> '
+            + '                <h3>Tempo total dos veículos no POI: ' + tempoTotalVeiculoStr + '</h3> '
+            + '            </div> '
+            + '        </div> '
+            + '    </div> '
+            + '</div>';
 
         return content;
     }
 
     static getVeiculoLeituraWindowTemplate(leituraPosicao: LeituraPosicao, dadosVeiculo: Veiculo, veiculoLeitura: VeiculoLeitura): string {
-
 
         const dadosExibicao = {
             nome: dadosVeiculo.nome,
@@ -48,26 +76,54 @@ export default class TemplateUtils {
             emMovimento: leituraPosicao.ignicao ? 'Sim' : 'Nao',
             latitude: leituraPosicao.latitude,
             longitude: leituraPosicao.longitude,
-            velocidade: leituraPosicao.velocidade || 0,
+            velocidade: leituraPosicao.velocidade + 'KM/H' || 0,
             data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy HH:mm:ss', 'pt-BR', '+00:00') : 'N/A',
-            distanciaParaPoi: leituraPosicao.distanciaParaPoi ? (Math.round(leituraPosicao.distanciaParaPoi * 100) / 100).toFixed(1) + 'M' : 'N/A',
+            distanciaParaPoi: leituraPosicao.distanciaParaPoi ? (Math.round(leituraPosicao.distanciaParaPoi * 100) / 100).toFixed(1) + ' Metros' : 'N/A',
             inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
-            leituraPosicao: leituraPosicao.inPoiRadius,
             poiDescri: leituraPosicao.poiDescri || 'N/A',
-            veiculoContinuaNoPoi: veiculoLeitura.continuaNoPoi ? 'Sim' : 'Não'
+            veiculoContinuaNoPoi: veiculoLeitura.continuaNoPoi ? 'Sim' : 'Não',
+            motorista: dadosVeiculo.motorista.toUpperCase(),
+            URLFotoMotorista: '../../assets/img/' + dadosVeiculo.iconMotorista
         };
 
-        const content = '<div class="content" style="box-shadow: 0px 1px 17px 0px #aaa;z-index: 99999;max-width: 27rem">' + //inline style because infoWindow does not apply the styles defined in the class/ID. Possible bug in infoWindow??
-            '<div id="#poiContent" style="display: flex;flex-direction: column;"> ' +
-            '<p class="poi-title" style="text-align: center;font-size: 1.5rem;font-weight: bold;color: #3f51b5;"> ' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + ' - ' + dadosExibicao.data + ' | ID:' + dadosExibicao.idLeitura + ' </p>' +
-            '<p class="poi-subtitle" style=""> Chassi: ' + dadosExibicao.chassi + ', Renavan: ' + dadosExibicao.renavan + '</p>' +
-            '<p class="poi-subtitle" style="font-style: italic;"> Lat: ' + dadosExibicao.latitude + ', Lng: ' + dadosExibicao.longitude + ', Velocidade: ' + dadosExibicao.velocidade + ' KM/H <span>, Mov: ' + dadosExibicao.emMovimento + '</span> </p>' +
-            '<p>Tempo <strong><i>Total</i></strong> do veículo no POI: <span style="font-size: 1.4rem;font-weight: bold;">' + dadosExibicao.tempoTotalVeiculoInPoi + '</span> </p>' +
-            '<p class="poi-totalizador">Distância para POI: <span style="font-size: 1.4rem;font-weight: bold;"> ' + dadosExibicao.distanciaParaPoi + '</span>, <span> Leitura no raio do POI: '
-            + dadosExibicao.inPoiRadius + ', Continua no POI: ' + dadosExibicao.veiculoContinuaNoPoi + '</span> </p> ' +
-            '<p class="poi-totalizador" style="font-size: 1.2rem;font-style: italic"> POI Referência: <span style="font-size: 1.2rem;font-style: italic;"> ' + dadosExibicao.poiDescri + ' </span></p> ' +
-            '</div>' +
-            '</div>';
+        const content =
+            '<div class="container"> '
+            + '    <div class="card"> '
+            + '        <div class="title"> '
+            + '            <div class="left"> '
+            + '                <img src="' + dadosExibicao.URLFotoMotorista + '" alt="Foto do motorista do veículo" /> '
+            + '            </div> '
+            + '            <div class="right"> '
+            + '                <div class="info"> '
+            + '                    <i class="fa-solid fa-circle-user"></i> '
+            + '                    <h2>' + dadosExibicao.motorista + '</h2> '
+            + '                </div> '
+            + '                <div class="info"> '
+            + '                    <i class="fa-solid fa-car"></i> '
+            + '                    <h3>' + dadosExibicao.nome + ' - ' + dadosExibicao.placa + '</h3> '
+            + '                </div> '
+            + '                <div class="info"> '
+            + '                    <i class="fa-solid fa-calendar-day"></i> '
+            + '                    <h3>' + dadosExibicao.data + ' | ID:' + dadosExibicao.idLeitura + ' | ' + dadosExibicao.velocidade + '</h3> '
+            + '                </div> '
+            + '            </div> '
+            + '        </div> '
+            + '        <div class="content"> '
+            + '            <div class="info"> '
+            + '                <i class="fa-solid fa-map-location-dot"></i> '
+            + '                <h3>Lat: ' + dadosExibicao.latitude + ' | Lng: ' + dadosExibicao.longitude + '</h3> '
+            + '            </div> '
+            + '            <div class="info"> '
+            + '                <i class="fa-solid fa-people-arrows"></i> '
+            + '                <h3>Distância para ' + dadosExibicao.poiDescri + ': ' + dadosExibicao.distanciaParaPoi + '</h3> '
+            + '            </div> '
+            + '            <div class="info"> '
+            + '                <i class="fa-solid fa-user-clock"></i> '
+            + '                <h3>Tempo total no raio do POI: ' + dadosExibicao.tempoTotalVeiculoInPoi + '</h3> '
+            + '            </div> '
+            + '        </div> '
+            + '    </div> '
+            + '</div>';
 
         return content;
     }
@@ -81,7 +137,7 @@ export default class TemplateUtils {
 
         const totalDiasStr = totalizadorTempoVeiculo.tempo_total_dia_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_dia_veiculos + ' dia(s)' : '';
         const totalHorasStr = totalizadorTempoVeiculo.tempo_total_hora_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_hora_veiculos + ' hora(s)' : '';
-        const totalMinutosStr = totalizadorTempoVeiculo.tempo_total_minuto_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_minuto_veiculos + 'minuto(s)' : '';
+        const totalMinutosStr = totalizadorTempoVeiculo.tempo_total_minuto_veiculos > 0 ? totalizadorTempoVeiculo.tempo_total_minuto_veiculos + ' minuto(s)' : '';
 
         return `${totalDiasStr} ${totalDiasStr && (totalHorasStr || totalMinutosStr) ? ' e ' : ''}
                 ${totalHorasStr} ${totalHorasStr && totalMinutosStr ? ' e ' : ''}

@@ -34,6 +34,7 @@ export default class calculoPoiUtils {
         }
 
         for (let leitura of leiturasPosicao) {
+
             pois.map((poi) => {
                 poi.veiculos = poi.veiculos ? poi.veiculos : [];
                 poi.overlay = 'circle';
@@ -45,6 +46,7 @@ export default class calculoPoiUtils {
 
                 return poi;
             }).map((poi) => {
+                const newLeituraPosicao = Object.assign({}, leitura);
 
                 const veiculosLeiturasPois: LeituraPosicao[] = totalizadoresProcessados
                     .map((v) => v.poi.veiculos
@@ -56,21 +58,21 @@ export default class calculoPoiUtils {
                     return;
                 }
 
-                leitura.distanciaParaPoi =
+                newLeituraPosicao.distanciaParaPoi =
                     google.maps.geometry.spherical.computeDistanceBetween(
                         { lat: poi.latitude, lng: poi.longitude },
-                        { lat: leitura.latitude, lng: leitura.longitude }
+                        { lat: newLeituraPosicao.latitude, lng: newLeituraPosicao.longitude }
                     );
 
-                leitura.inPoiRadius = leitura.distanciaParaPoi <= poi.raio;
-                leitura.poiDescri = `Poi: ${poi.id} - ${poi.nome} - (lat: ${poi.latitude} lng: ${poi.longitude})`;
-                leitura.center = { lat: leitura.latitude, lng: leitura.longitude };
+                newLeituraPosicao.inPoiRadius = newLeituraPosicao.distanciaParaPoi <= poi.raio;
+                newLeituraPosicao.poiDescri = `${poi.nome}`;
+                newLeituraPosicao.center = { lat: newLeituraPosicao.latitude, lng: newLeituraPosicao.longitude };
 
                 let leiturasVeiculoInPoi = poisVeiculosTotalizadores.map((a) => a.poi).map((b) => {
 
                     return b.veiculos.filter((v) => {
 
-                        if (v.placa === leitura.placa && poi.id === b.id) {
+                        if (v.placa === newLeituraPosicao.placa && poi.id === b.id) {
                             poi.veiculos = b.veiculos;
                             return true;
                         }
@@ -86,31 +88,31 @@ export default class calculoPoiUtils {
                     poisVeiculosTotalizadores.splice(indexPoiDel, 1);
                 }
 
-                if (leitura.inPoiRadius) {
-                    leiturasVeiculoInPoi.push(leitura);
+                if (newLeituraPosicao.inPoiRadius) {
+                    leiturasVeiculoInPoi.push(newLeituraPosicao);
                 }
 
                 leiturasVeiculoInPoi = [...leiturasVeiculoInPoi];
 
                 const veiculoLeitura: VeiculoLeitura = {
-                    placa: leitura.placa,
+                    placa: newLeituraPosicao.placa,
                     leiturasVeiculo: leiturasVeiculoInPoi,
                     totalizadorTempoVeiculo: null,
                     overlay: 'infoWindow',
                     dadosFicticiosVeiculo: this.dadosVeiculo
-                        .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === leitura.placa) || null
+                        .find((dadosVeiculo) => dadosVeiculo.placa.toUpperCase() === newLeituraPosicao.placa) || null
                 };
 
                 if (!poi.veiculos.find((v, index) => {
-                    if (v.placa === leitura.placa) {
+                    if (v.placa === newLeituraPosicao.placa) {
                         poi.veiculos[index] = veiculoLeitura;
                         return true;
                     }
 
                     return false;
                 }
-                ) && leitura.inPoiRadius) {
-                    poi.veiculos.push(Object.assign(veiculoLeitura));
+                ) && newLeituraPosicao.inPoiRadius) {
+                    poi.veiculos.push(Object.assign({}, veiculoLeitura));
                 }
 
                 poisVeiculosTotalizadores.push({ poi: poi });

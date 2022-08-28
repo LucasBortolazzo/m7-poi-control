@@ -7,6 +7,8 @@ export interface Veiculo {
     chassi: string,
     anoFabicacao: number,
     iconName: string;
+    motorista: string;
+    iconMotorista: string;
 }
 
 export const dadosFicticiosVeiculos: Veiculo[] = [
@@ -18,7 +20,9 @@ export const dadosFicticiosVeiculos: Veiculo[] = [
         renavan: '5744060464-1',
         chassi: '6lA 6tzA5216',
         anoFabicacao: 2015,
-        iconName: 'scania-64x64.png'
+        iconName: 'scania-64x64.png',
+        motorista: 'Pedro Luiz',
+        iconMotorista: 'motorista-CAR0012.png'
     },
     {
         placa: 'TESTE001',
@@ -28,7 +32,9 @@ export const dadosFicticiosVeiculos: Veiculo[] = [
         renavan: '4676394060-5',
         chassi: '13S mZynZr',
         anoFabicacao: 2016,
-        iconName: 'taxi-64x64.png'
+        iconName: 'taxi-64x64.png',
+        motorista: 'Maria Oliveira',
+        iconMotorista: 'motorista-TESTE001.png'
     },
 
 ];
