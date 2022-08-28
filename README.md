@@ -16,7 +16,7 @@
 
 <img src="https://github.com/LucasBortolazzo/m7-poi-control/blob/master/screenshots/10.png" alt="project-screenshot" width="960" height="503/">
 
-<img src="https://github.com/LucasBortolazzo/m7-poi-control/blob/master/screenshots/11.png" alt="project-screenshot" width="960" height="503/">
+<img src="https://github.com/LucasBortolazzo/m7-poi-control/blob/master/screenshots/11.png" alt="project-screenshot" width="660" height="503/">
 
 <img src="https://github.com/LucasBortolazzo/m7-poi-control/blob/master/screenshots/12.png" alt="project-screenshot" width="960" height="503/">
   
