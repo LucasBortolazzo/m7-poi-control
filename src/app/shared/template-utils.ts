@@ -78,9 +78,9 @@ export default class TemplateUtils {
             longitude: leituraPosicao.longitude,
             velocidade: leituraPosicao.velocidade + 'KM/H' || 0,
             data: leituraPosicao.data ? formatDate(leituraPosicao.data, 'dd/MM/yyyy HH:mm:ss', 'pt-BR', '+00:00') : 'N/A',
-            distanciaParaPoi: leituraPosicao.distanciaParaPoi ? (Math.round(leituraPosicao.distanciaParaPoi * 100) / 100).toFixed(1) + ' Metros' : 'N/A',
+            distanciaParaPoi: leituraPosicao.distanciaParaPoi ? (Math.round(leituraPosicao.distanciaParaPoi * 100) / 100).toFixed(1) + ' Metros' : '-',
             inPoiRadius: leituraPosicao.inPoiRadius ? 'Sim' : 'Nao',
-            poiDescri: leituraPosicao.poiDescri || 'N/A',
+            poiDescri: leituraPosicao.poiDescri || '-',
             veiculoContinuaNoPoi: veiculoLeitura.continuaNoPoi ? 'Sim' : 'Não',
             motorista: dadosVeiculo.motorista.toUpperCase(),
             URLFotoMotorista: '../../assets/img/' + dadosVeiculo.iconMotorista
@@ -115,7 +115,7 @@ export default class TemplateUtils {
             + '            </div> '
             + '            <div class="info"> '
             + '                <i class="fa-solid fa-people-arrows"></i> '
-            + '                <h3>Distância para ' + dadosExibicao.poiDescri + ': ' + dadosExibicao.distanciaParaPoi + '</h3> '
+            + '                <h3>Distância para POI: ' + dadosExibicao.distanciaParaPoi + '</h3> '
             + '            </div> '
             + '            <div class="info"> '
             + '                <i class="fa-solid fa-user-clock"></i> '
