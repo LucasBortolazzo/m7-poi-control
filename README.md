@@ -1,6 +1,6 @@
 <h1 align="center" id="title">Point of interest control</h1>
 
-<p id="description">Challenge front-end da Mobi7.</p>
+<p id="description">Aplicação web de controle de POI's.</p>
 
 <h2>🚀 Demo</h2>
 
@@ -46,5 +46,6 @@ Tecnologias utilizadas neste projeto:
 *   Angular
 *   HTML
 *   SASS
+*   Angular material
 *   Typescript
 *   Google Maps JavaScript API
